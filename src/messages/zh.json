@@ -1,0 +1,124 @@
+{
+  "Header": {
+    "menu": "菜单",
+    "cart": "购物车",
+    "language": "语言"
+  },
+  "Menu": {
+    "home": "首页",
+    "shop": "商店",
+    "lookbooks": "作品集",
+    "about": "关于",
+    "project": "合作",
+    "contact": "联系",
+    "visit": "到访 · 咨询"
+  },
+  "Home": {
+    "viewDetails": "查看详情",
+    "watchFilm": "观看影片"
+  },
+  "Shop": {
+    "title": "商店",
+    "all": "全部",
+    "categoryFlowerBasket": "花篮",
+    "categoryFlowerBouquet": "花束",
+    "categoryFlower": "鲜花",
+    "categoryCenterpiece": "餐桌花艺",
+    "categoryOrchid": "兰花",
+    "categoryFlowerBox": "花盒",
+    "compositions": "作品",
+    "addToCart": "加入购物车",
+    "buyNow": "立即购买",
+    "size": "尺寸",
+    "wrap": "包装",
+    "fulfillment": "配送方式",
+    "delivery": "配送",
+    "pickup": "自取",
+    "chooseDate": "选择日期",
+    "quantity": "数量",
+    "inStock": "有库存",
+    "description": "商品说明",
+    "care": "养护指南",
+    "shipping": "配送说明"
+  },
+  "Lookbooks": {
+    "title": "作品集",
+    "all": "全部",
+    "fashion": "时尚",
+    "brands": "品牌",
+    "hotels": "酒店",
+    "company": "企业",
+    "fineDining": "高端餐饮",
+    "wedding": "婚礼",
+    "vip": "VIP",
+    "etc": "其他",
+    "stories": "篇"
+  },
+  "Lookbook": {
+    "date": "日期",
+    "magazine": "类别",
+    "client": "客户",
+    "mainFlorist": "主花艺师",
+    "subFlorist": "助理花艺师"
+  },
+  "About": {
+    "label": "关于 — 工作室",
+    "title": "花卉,一种语言",
+    "florists": "花艺师",
+    "floristsTitle": "三双手,一间工作室"
+  },
+  "Project": {
+    "label": "咨询",
+    "title": "开始一个项目",
+    "subtitle": "为合作、品牌伙伴关系与定制委托而设。",
+    "company": "公司",
+    "companyPlaceholder": "品牌或机构",
+    "name": "姓名",
+    "namePlaceholder": "您的姓名",
+    "type": "类型",
+    "typeSelect": "— 请选择 —",
+    "typeWedding": "婚礼",
+    "typeBrand": "品牌",
+    "typeCorporate": "企业活动",
+    "typeFineDining": "高端餐饮",
+    "typePopUp": "快闪",
+    "typeCollab": "合作",
+    "typeRecurring": "定期供花",
+    "typeOther": "其他",
+    "budget": "预算",
+    "budgetPlaceholder": "大致范围",
+    "message": "内容",
+    "messagePlaceholder": "请告诉我们您的项目 — 日期、场地、风格,以及任何想分享的细节。",
+    "submit": "发送咨询",
+    "submitNote": "通常 2 个工作日内回复 · chezsuaflower@gmail.com",
+    "success": "感谢您的来信。我们将在 2 个工作日内回复。",
+    "error": "发送失败,请重试或直接发送邮件给我们。"
+  },
+  "Contact": {
+    "label": "到访 · 联系",
+    "title": "你好",
+    "atelier": "工作室",
+    "atelierValue": "首尔 · 江南区",
+    "atelierNote": "需提前预约",
+    "phone": "电话",
+    "email": "邮箱",
+    "hours": "营业时间",
+    "hoursValue": "周二 — 周六",
+    "hoursTime": "10:00 — 19:00 KST"
+  },
+  "Footer": {
+    "tagline": "编辑式花艺 · 首尔",
+    "inquiries": "咨询",
+    "startProject": "开始一个项目"
+  },
+  "Common": {
+    "loading": "加载中…",
+    "back": "返回",
+    "next": "下一步",
+    "submit": "提交",
+    "cancel": "取消",
+    "save": "保存",
+    "delete": "删除",
+    "edit": "编辑"
+  }
+}

@@ -1,0 +1,124 @@
+{
+  "Header": {
+    "menu": "Menu",
+    "cart": "Cart",
+    "language": "Language"
+  },
+  "Menu": {
+    "home": "Home",
+    "shop": "Shop",
+    "lookbooks": "Lookbooks",
+    "about": "About",
+    "project": "Project",
+    "contact": "Contact",
+    "visit": "Visit · Inquire"
+  },
+  "Home": {
+    "viewDetails": "View Details",
+    "watchFilm": "Watch Film"
+  },
+  "Shop": {
+    "title": "Shop",
+    "all": "All",
+    "categoryFlowerBasket": "Flower Basket",
+    "categoryFlowerBouquet": "Flower Bouquet",
+    "categoryFlower": "Flower",
+    "categoryCenterpiece": "Centerpiece",
+    "categoryOrchid": "Orchid",
+    "categoryFlowerBox": "Flower Box",
+    "compositions": "Compositions",
+    "addToCart": "Add to Cart",
+    "buyNow": "Buy Now",
+    "size": "Size",
+    "wrap": "Wrap",
+    "fulfillment": "Fulfillment",
+    "delivery": "Delivery",
+    "pickup": "Pick Up",
+    "chooseDate": "Choose Date",
+    "quantity": "Quantity",
+    "inStock": "In Stock",
+    "description": "Description",
+    "care": "Care",
+    "shipping": "Shipping"
+  },
+  "Lookbooks": {
+    "title": "Lookbooks",
+    "all": "All",
+    "fashion": "Fashion",
+    "brands": "Brands",
+    "hotels": "Hotels",
+    "company": "Company",
+    "fineDining": "Fine Dining",
+    "wedding": "Wedding",
+    "vip": "VIP",
+    "etc": "ETC",
+    "stories": "Stories"
+  },
+  "Lookbook": {
+    "date": "Date",
+    "magazine": "Magazine",
+    "client": "Client",
+    "mainFlorist": "Main Florist",
+    "subFlorist": "Sub Florist"
+  },
+  "About": {
+    "label": "About — The Atelier",
+    "title": "Flowers as a language",
+    "florists": "The Florists",
+    "floristsTitle": "Three hands, one studio"
+  },
+  "Project": {
+    "label": "Inquiries",
+    "title": "Start a project",
+    "subtitle": "For collaborations, brand partnerships, and bespoke commissions.",
+    "company": "Company",
+    "companyPlaceholder": "Brand or organization",
+    "name": "Name",
+    "namePlaceholder": "Your name",
+    "type": "Type",
+    "typeSelect": "— Select —",
+    "typeWedding": "Wedding",
+    "typeBrand": "Brand",
+    "typeCorporate": "Corporate Event",
+    "typeFineDining": "Fine Dining",
+    "typePopUp": "Pop-up",
+    "typeCollab": "Collaboration",
+    "typeRecurring": "Recurring Florals",
+    "typeOther": "Other",
+    "budget": "Budget",
+    "budgetPlaceholder": "Approximate range",
+    "message": "Message",
+    "messagePlaceholder": "Tell us about your project — date, venue, mood, anything we should know.",
+    "submit": "Send Inquiry",
+    "submitNote": "Replies typically within 2 business days · chezsuaflower@gmail.com",
+    "success": "Thank you. We'll reply within 2 business days.",
+    "error": "Something went wrong. Please try again or email us directly."
+  },
+  "Contact": {
+    "label": "Visit · Contact",
+    "title": "Say hello",
+    "atelier": "Atelier",
+    "atelierValue": "Seoul · 강남구",
+    "atelierNote": "Open by appointment",
+    "phone": "Phone",
+    "email": "Email",
+    "hours": "Hours",
+    "hoursValue": "Tue — Sat",
+    "hoursTime": "10:00 — 19:00 KST"
+  },
+  "Footer": {
+    "tagline": "Editorial Floristry · Seoul",
+    "inquiries": "Inquiries",
+    "startProject": "Start a project"
+  },
+  "Common": {
+    "loading": "Loading…",
+    "back": "Back",
+    "next": "Next",
+    "submit": "Submit",
+    "cancel": "Cancel",
+    "save": "Save",
+    "delete": "Delete",
+    "edit": "Edit"
+  }
+}

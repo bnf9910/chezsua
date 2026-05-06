@@ -1,0 +1,124 @@
+{
+  "Header": {
+    "menu": "메뉴",
+    "cart": "장바구니",
+    "language": "언어"
+  },
+  "Menu": {
+    "home": "홈",
+    "shop": "상품",
+    "lookbooks": "룩북",
+    "about": "소개",
+    "project": "프로젝트",
+    "contact": "연락처",
+    "visit": "방문 · 문의"
+  },
+  "Home": {
+    "viewDetails": "자세히 보기",
+    "watchFilm": "영상 보기"
+  },
+  "Shop": {
+    "title": "상품",
+    "all": "전체",
+    "categoryFlowerBasket": "꽃바구니",
+    "categoryFlowerBouquet": "꽃다발",
+    "categoryFlower": "꽃",
+    "categoryCenterpiece": "센터피스",
+    "categoryOrchid": "서양난",
+    "categoryFlowerBox": "플라워 박스",
+    "compositions": "작품",
+    "addToCart": "장바구니에 담기",
+    "buyNow": "바로 구매",
+    "size": "사이즈",
+    "wrap": "포장",
+    "fulfillment": "수령 방법",
+    "delivery": "배송",
+    "pickup": "픽업",
+    "chooseDate": "날짜 선택",
+    "quantity": "수량",
+    "inStock": "재고 있음",
+    "description": "상품 설명",
+    "care": "케어 가이드",
+    "shipping": "배송 안내"
+  },
+  "Lookbooks": {
+    "title": "룩북",
+    "all": "전체",
+    "fashion": "패션",
+    "brands": "브랜드",
+    "hotels": "호텔",
+    "company": "기업",
+    "fineDining": "파인 다이닝",
+    "wedding": "웨딩",
+    "vip": "VIP",
+    "etc": "기타",
+    "stories": "스토리"
+  },
+  "Lookbook": {
+    "date": "일자",
+    "magazine": "매거진",
+    "client": "클라이언트",
+    "mainFlorist": "메인 플로리스트",
+    "subFlorist": "서브 플로리스트"
+  },
+  "About": {
+    "label": "소개 — 아틀리에",
+    "title": "꽃이라는 언어",
+    "florists": "플로리스트",
+    "floristsTitle": "세 사람의 손, 하나의 스튜디오"
+  },
+  "Project": {
+    "label": "협업 문의",
+    "title": "프로젝트 시작하기",
+    "subtitle": "협업, 브랜드 파트너십, 맞춤 커미션을 위한 문의 양식입니다.",
+    "company": "회사명",
+    "companyPlaceholder": "브랜드 또는 기관",
+    "name": "이름",
+    "namePlaceholder": "담당자명",
+    "type": "종류",
+    "typeSelect": "— 선택 —",
+    "typeWedding": "웨딩",
+    "typeBrand": "브랜드",
+    "typeCorporate": "기업 행사",
+    "typeFineDining": "요식업",
+    "typePopUp": "팝업",
+    "typeCollab": "콜라보",
+    "typeRecurring": "정기 꽃",
+    "typeOther": "기타",
+    "budget": "예산",
+    "budgetPlaceholder": "대략적인 범위",
+    "message": "내용",
+    "messagePlaceholder": "프로젝트에 대해 알려주세요 — 날짜, 장소, 분위기, 그 외 공유하고 싶은 것들",
+    "submit": "문의 보내기",
+    "submitNote": "보통 영업일 기준 2일 이내 회신 · chezsuaflower@gmail.com",
+    "success": "감사합니다. 영업일 기준 2일 이내 회신드리겠습니다.",
+    "error": "전송에 실패했습니다. 다시 시도하시거나 이메일로 직접 문의해 주세요."
+  },
+  "Contact": {
+    "label": "방문 · 연락처",
+    "title": "안녕하세요",
+    "atelier": "아틀리에",
+    "atelierValue": "서울 · 강남구",
+    "atelierNote": "사전 예약제",
+    "phone": "전화",
+    "email": "이메일",
+    "hours": "운영 시간",
+    "hoursValue": "화 — 토",
+    "hoursTime": "오전 10시 — 오후 7시"
+  },
+  "Footer": {
+    "tagline": "에디토리얼 플로리스트리 · 서울",
+    "inquiries": "문의",
+    "startProject": "프로젝트 시작하기"
+  },
+  "Common": {
+    "loading": "불러오는 중…",
+    "back": "뒤로",
+    "next": "다음",
+    "submit": "제출",
+    "cancel": "취소",
+    "save": "저장",
+    "delete": "삭제",
+    "edit": "수정"
+  }
+}

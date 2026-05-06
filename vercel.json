@@ -1,0 +1,37 @@
+{
+  "$schema": "https://openapi.vercel.sh/vercel.json",
+  "buildCommand": "next build",
+  "framework": "nextjs",
+  "regions": ["icn1"],
+  "redirects": [
+    {
+      "source": "/",
+      "destination": "/zh",
+      "permanent": false,
+      "has": [
+        {
+          "type": "header",
+          "key": "accept-language",
+          "value": ".*zh.*"
+        }
+      ]
+    },
+    {
+      "source": "/",
+      "destination": "/ko",
+      "permanent": false,
+      "has": [
+        {
+          "type": "header",
+          "key": "accept-language",
+          "value": ".*ko.*"
+        }
+      ]
+    },
+    {
+      "source": "/",
+      "destination": "/en",
+      "permanent": false
+    }
+  ]
+}
