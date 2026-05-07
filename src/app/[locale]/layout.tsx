@@ -1,11 +1,12 @@
+import { setRequestLocale, getMessages } from 'next-intl/server';
 import { NextIntlClientProvider } from 'next-intl';
-import { getMessages, setRequestLocale } from 'next-intl/server';
 import { Cormorant_Garamond, Inter, JetBrains_Mono } from 'next/font/google';
 import { notFound } from 'next/navigation';
 import { Header } from '@/components/layout/Header';
 import { Footer } from '@/components/layout/Footer';
 import { MenuOverlay } from '@/components/layout/MenuOverlay';
 import { PageTracker } from '@/components/layout/PageTracker';
+import { getSiteMenus } from '@/lib/site-menus';
 import { routing, type Locale } from '@/lib/i18n';
 import '@/styles/globals.css';
 
@@ -48,7 +49,7 @@ export async function generateMetadata({
         locale === 'ko'
           ? '쉐수아 — 에디토리얼 플로리스트리'
           : locale === 'zh'
-            ? '鲜花 · 编辑式花艺'
+            ? 'CHEZSUA — 编辑式花艺'
             : 'CHEZSUA — Editorial Floristry',
       template:
         locale === 'ko' ? '%s | 쉐수아' : locale === 'zh' ? '%s | CHEZSUA' : '%s | CHEZSUA',
@@ -90,9 +91,10 @@ export default async function LocaleLayout({
 }) {
   const { locale } = await params;
   if (!routing.locales.includes(locale as Locale)) notFound();
-
   setRequestLocale(locale);
+
   const messages = await getMessages();
+  const menus = await getSiteMenus();
 
   return (
     <html
@@ -101,8 +103,8 @@ export default async function LocaleLayout({
     >
       <body>
         <NextIntlClientProvider messages={messages}>
-          <Header locale={locale as Locale} />
-          <MenuOverlay locale={locale as Locale} />
+          <Header locale={locale as Locale} menus={menus} />
+          <MenuOverlay locale={locale as Locale} menus={menus} />
           <main>{children}</main>
           <Footer />
           <PageTracker />

@@ -1,103 +1,87 @@
 import { Link } from '@/lib/i18n';
-import { useTranslations } from 'next-intl';
-import { formatDate, truncate } from '@/lib/utils';
-import { getPlaceholderClass } from '@/lib/sample-data';
-import type { Lookbook } from '@/lib/types';
+import { formatDate } from '@/lib/utils';
 import type { Locale } from '@/lib/i18n';
+import type { Lookbook } from '@/lib/types';
 
 interface MagazineArticleProps {
   lookbook: Lookbook;
   locale: Locale;
-  seed: number;
   reverse?: boolean;
+  index: number;
 }
 
-export function MagazineArticle({ lookbook, locale, seed, reverse }: MagazineArticleProps) {
-  const t = useTranslations('Lookbook');
-  const tHome = useTranslations('Home');
-  const number = String(42 - seed).padStart(3, '0');
+// 인덱스에 따른 그라디언트 - 인라인 스타일로 강제 적용
+const GRADIENTS = [
+  'linear-gradient(135deg, #E5C5BB 0%, #C4A089 100%)',
+  'linear-gradient(135deg, #C4D0C0 0%, #8FA68C 100%)',
+  'linear-gradient(135deg, #E8DFC8 0%, #C9B98F 100%)',
+  'linear-gradient(135deg, #D6CFB8 0%, #A8A07A 100%)',
+  'linear-gradient(135deg, #B8C7B0 0%, #7A9079 100%)',
+];
 
-  const title = locale === 'ko' ? lookbook.title_ko : lookbook.title_en;
-  const excerpt =
-    locale === 'ko'
-      ? lookbook.excerpt_ko ?? truncate(lookbook.article_ko, 50)
-      : lookbook.excerpt_en ?? truncate(lookbook.article_en, 50);
+export function MagazineArticle({ lookbook, locale, reverse, index }: MagazineArticleProps) {
+  const title = locale === 'ko' ? lookbook.title_ko : locale === 'zh' ? lookbook.title_zh : lookbook.title_en;
+  const article = locale === 'ko' ? lookbook.article_ko : locale === 'zh' ? lookbook.article_zh : lookbook.article_en;
+  const gradient = GRADIENTS[index % GRADIENTS.length];
 
   return (
     <article
-      className={`grid min-h-screen items-stretch ${
-        reverse
-          ? 'grid-cols-[30fr_70fr] max-lg:grid-cols-1'
-          : 'grid-cols-[70fr_30fr] max-lg:grid-cols-1'
+      className={`grid grid-cols-[7fr_3fr] gap-16 items-center max-lg:grid-cols-1 max-lg:gap-8 ${
+        reverse ? 'lg:[direction:rtl]' : ''
       }`}
     >
-      {/* Image side */}
-      <div
-        className={`relative overflow-hidden bg-bg-secondary min-h-screen max-lg:min-h-[80vh] ${
-          reverse ? 'order-2' : 'order-1'
-        } max-lg:order-1`}
+      {/* Image - 70% */}
+      <Link
+        href={`/lookbooks/story/${lookbook.slug}`}
+        className="block aspect-[4/5] overflow-hidden relative group lg:[direction:ltr]"
+        style={{ background: gradient }}
       >
-        <span className="absolute top-7 left-7 text-mono text-[10px] tracking-[0.3em] text-white/95 z-10 uppercase">
-          — N° {number}
-        </span>
+        {/* Subtle texture overlay */}
         <div
-          className={`absolute inset-0 ${getPlaceholderClass(seed)}`}
-          aria-hidden="true"
-        >
-          <div
-            className="absolute inset-0"
-            style={{
-              background:
-                'radial-gradient(circle at 30% 20%, rgba(255,255,255,0.6) 0%, transparent 50%), radial-gradient(circle at 70% 80%, rgba(45,63,46,0.3) 0%, transparent 50%)',
-            }}
-          />
-        </div>
-      </div>
+          className="absolute inset-0 opacity-30 mix-blend-overlay"
+          style={{
+            backgroundImage:
+              "url(\"data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='200' height='200'><filter id='n'><feTurbulence type='fractalNoise' baseFrequency='0.65'/></filter><rect width='200' height='200' filter='url(%23n)' opacity='0.4'/></svg>\")",
+          }}
+        />
 
-      {/* Content side */}
-      <div
-        className={`px-14 py-20 flex flex-col justify-center bg-bg-primary max-lg:p-7 max-lg:py-16 ${
-          reverse ? 'order-1' : 'order-2'
-        } max-lg:order-2 ${seed === 0 ? 'pt-[130px] max-lg:pt-16' : ''}`}
-      >
-        {/* Meta */}
-        <div className="text-mono text-[10px] tracking-[0.08em] leading-loose mb-7 pb-5 border-b border-line uppercase">
-          <MetaRow label={t('date')} value={formatDate(lookbook.publish_date, locale)} />
-          <MetaRow label={t('magazine')} value={lookbook.magazine} />
-          <MetaRow label={t('client')} value={lookbook.client} />
-          <MetaRow label={t('mainFlorist')} value={lookbook.main_florist} />
-          {lookbook.sub_florist && <MetaRow label={t('subFlorist')} value={lookbook.sub_florist} />}
-        </div>
+        {/* Hover overlay */}
+        <div className="absolute inset-0 bg-ink-primary/0 group-hover:bg-ink-primary/15 transition-colors duration-500" />
 
-        <div className="text-mono text-[10px] tracking-[0.3em] uppercase text-accent-green mb-4">
-          Article — N° {number}
+        {/* Index number */}
+        <div className="absolute top-7 left-7 text-bg-primary text-mono text-xs tracking-[0.3em] font-medium opacity-90">
+          {String(index + 1).padStart(2, '0')} / 05
         </div>
+      </Link>
 
-        <h2 className="text-serif text-[clamp(36px,3.2vw,56px)] font-normal leading-[1.05] tracking-[-0.015em] mb-6 text-ink-primary [&>em]:italic [&>em]:font-light">
-          {title}
+      {/* Text - 30% */}
+      <div className="flex flex-col gap-3 lg:[direction:ltr]">
+        <div className="text-mono text-[10px] tracking-[0.3em] uppercase text-accent-green">
+          {formatDate(lookbook.publish_date, locale)}
+        </div>
+        <h2 className="text-serif text-[clamp(28px,3vw,44px)] font-light leading-[1.1] tracking-[-0.01em]">
+          <Link
+            href={`/lookbooks/story/${lookbook.slug}`}
+            className="hover:text-accent-green transition-colors"
+          >
+            {title}
+          </Link>
         </h2>
-
-        <p className="text-serif text-[17px] font-normal leading-[1.55] text-ink-secondary mb-8">
-          {excerpt}
-        </p>
-
+        <div className="text-mono text-[10px] tracking-[0.25em] uppercase text-ink-muted mt-1">
+          {lookbook.client}
+        </div>
+        {article && (
+          <p className="text-serif text-base leading-[1.7] text-ink-secondary mt-3 line-clamp-4">
+            {article.split('\n')[0]}
+          </p>
+        )}
         <Link
-          href={`/lookbooks/${lookbook.slug}`}
-          className="inline-flex items-center gap-3 text-mono text-[11px] tracking-[0.3em] uppercase text-ink-primary border-b border-ink-primary pb-1.5 transition-all duration-300 hover:gap-5 w-fit"
+          href={`/lookbooks/story/${lookbook.slug}`}
+          className="text-mono text-[10px] tracking-[0.3em] uppercase text-ink-primary border-b border-ink-primary pb-1 mt-4 self-start hover:text-accent-green hover:border-accent-green transition-colors"
         >
-          {tHome('viewDetails')}
-          <span className="font-sans">→</span>
+          {locale === 'ko' ? '자세히 보기' : locale === 'zh' ? '查看详情' : 'View Details'} →
         </Link>
       </div>
     </article>
-  );
-}
-
-function MetaRow({ label, value }: { label: string; value: string }) {
-  return (
-    <div className="grid grid-cols-[90px_1fr] gap-2">
-      <span className="text-ink-muted">{label}</span>
-      <span className="text-ink-primary">{value}</span>
-    </div>
   );
 }
