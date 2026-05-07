@@ -20,7 +20,6 @@ export function Header({ locale, menus }: HeaderProps) {
   const [langOpen, setLangOpen] = useState(false);
 
   function switchLocale(newLocale: 'en' | 'ko' | 'zh') {
-    // /en/shop → /ko/shop
     const segments = pathname.split('/');
     if (['en', 'ko', 'zh'].includes(segments[1])) {
       segments[1] = newLocale;
@@ -35,24 +34,28 @@ export function Header({ locale, menus }: HeaderProps) {
     window.dispatchEvent(new CustomEvent('chezsua:menu', { detail: { open: true } }));
   }
 
-  // Home에서는 로고 숨김 (시안 의도)
+  // Home에서는 로고 대신 N° 042 표시
   const isHome = pathname === `/${currentLocale}` || pathname === `/${currentLocale}/`;
 
   return (
-    <header className="fixed top-0 left-0 right-0 z-50 px-12 pt-7 max-md:px-6 max-md:pt-5">
-      <div className="flex justify-between items-center">
-        {/* Logo */}
-        <Link
-          href="/"
-          className={`text-serif text-xl tracking-[0.3em] text-ink-primary transition-opacity ${
-            isHome ? 'opacity-0 pointer-events-none' : 'opacity-100'
-          }`}
-        >
-          CHEZ<span className="text-accent-green">·</span>SUA
-        </Link>
+    <header className="fixed top-0 left-0 right-0 z-30 px-12 pt-7 max-md:px-6 max-md:pt-5 pointer-events-none">
+      <div className="flex justify-between items-center pointer-events-auto">
+        {/* Left: N° 042 on home, CHEZ·SUA logo elsewhere */}
+        {isHome ? (
+          <span className="text-mono text-[11px] tracking-[0.3em] uppercase text-ink-primary">
+            — N° 042
+          </span>
+        ) : (
+          <Link
+            href="/"
+            className="text-serif text-xl tracking-[0.3em] text-ink-primary"
+          >
+            CHEZ<span className="text-accent-green">·</span>SUA
+          </Link>
+        )}
 
         {/* Right: Lang | Menu | Cart */}
-        <div className="flex items-center gap-7 ml-auto max-md:gap-4">
+        <div className="flex items-center gap-7 max-md:gap-4">
           {/* Language */}
           <div className="relative">
             <button
