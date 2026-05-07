@@ -34,17 +34,15 @@ export function Header({ locale, menus }: HeaderProps) {
     window.dispatchEvent(new CustomEvent('chezsua:menu', { detail: { open: true } }));
   }
 
-  // Home에서는 로고 대신 N° 042 표시
+  // 홈에서는 로고 숨김 (좌측 완전 비워둠)
   const isHome = pathname === `/${currentLocale}` || pathname === `/${currentLocale}/`;
 
   return (
     <header className="fixed top-0 left-0 right-0 z-30 px-12 pt-7 max-md:px-6 max-md:pt-5 pointer-events-none">
       <div className="flex justify-between items-center pointer-events-auto">
-        {/* Left: N° 042 on home, CHEZ·SUA logo elsewhere */}
+        {/* Left: 홈에서는 빈 공간, 다른 페이지에선 CHEZ·SUA 로고 */}
         {isHome ? (
-          <span className="text-mono text-[11px] tracking-[0.3em] uppercase text-ink-primary">
-            — N° 042
-          </span>
+          <span aria-hidden="true" />
         ) : (
           <Link
             href="/"
@@ -55,7 +53,7 @@ export function Header({ locale, menus }: HeaderProps) {
         )}
 
         {/* Right: Lang | Menu | Cart */}
-        <div className="flex items-center gap-7 max-md:gap-4">
+        <div className="flex items-center gap-7 ml-auto max-md:gap-4">
           {/* Language */}
           <div className="relative">
             <button

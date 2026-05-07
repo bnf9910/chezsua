@@ -1,12 +1,12 @@
 import { setRequestLocale } from 'next-intl/server';
 import { createClient } from '@/lib/supabase/server';
 import { MagazineArticle } from '@/components/home/MagazineArticle';
+import { VideoArticle } from '@/components/home/VideoArticle';
 import type { Locale } from '@/lib/i18n';
 import type { Lookbook } from '@/lib/types';
 
 // ============ 시안 v6 샘플 룩북 5개 ============
-// DB에 룩북이 0개일 때 fallback으로 표시.
-// 관리자가 룩북을 1개라도 추가하면 자동으로 사라지고 실제 데이터 표시.
+// DB에 룩북이 0개일 때 fallback. 관리자가 룩북 추가하면 자동으로 사라짐.
 const FALLBACK_LOOKBOOKS: Lookbook[] = [
   {
     id: 'fallback-1',
@@ -45,8 +45,8 @@ const FALLBACK_LOOKBOOKS: Lookbook[] = [
     images: [],
     category: 'hotels',
     client: 'Four Seasons Seoul',
-    main_florist: 'YOON',
-    sub_florist: 'KIM',
+    main_florist: 'SUA',
+    sub_florist: 'YOON',
     publish_date: '2026-08-21',
     status: 'published',
     sort_order: 2,
@@ -69,13 +69,13 @@ const FALLBACK_LOOKBOOKS: Lookbook[] = [
     images: [],
     category: 'wedding',
     client: 'Private — Jeju',
-    main_florist: 'CHOI',
-    sub_florist: 'YOON',
+    main_florist: 'SUA',
+    sub_florist: 'CHOI',
     publish_date: '2026-08-12',
     status: 'published',
     sort_order: 3,
     is_featured: true,
-    is_video: false,
+    is_video: true,
     video_url: null,
     created_at: new Date().toISOString(),
     updated_at: new Date().toISOString(),
@@ -83,10 +83,10 @@ const FALLBACK_LOOKBOOKS: Lookbook[] = [
   {
     id: 'fallback-4',
     slug: 'sample-4',
-    title_en: 'The table as *theatre*',
+    title_en: 'Tabletop as *theatre*',
     title_ko: '*극장으로서의* 테이블',
     title_zh: '作为*剧场*的餐桌',
-    article_en: 'A seasonal collaboration with Chef Anh — twelve courses, twelve compositions, each a still life in a moment.',
+    article_en: 'A seasonal collaboration with chef Anh Sung-jae — twelve courses, twelve compositions, each a fleeting still life.',
     article_ko: '안성재 셰프와의 시즌 콜라보 — 12개 코스, 12개 구성, 각각이 순간의 정물화.',
     article_zh: '与安主厨的季节合作 — 十二道菜，十二个构图，每一刻都是静物。',
     cover_image: '',
@@ -94,7 +94,7 @@ const FALLBACK_LOOKBOOKS: Lookbook[] = [
     category: 'fine-dining',
     client: 'Mosu Seoul',
     main_florist: 'YOON',
-    sub_florist: 'CHOI',
+    sub_florist: 'SUA',
     publish_date: '2026-07-29',
     status: 'published',
     sort_order: 4,
@@ -150,7 +150,6 @@ export default async function HomePage({ params }: HomePageProps) {
       .limit(5);
     lookbooks = (data as Lookbook[]) || [];
   } catch {
-    // DB 연결 실패 → fallback 사용
     lookbooks = [];
   }
 
@@ -159,15 +158,31 @@ export default async function HomePage({ params }: HomePageProps) {
 
   return (
     <div>
-      {displayLookbooks.map((lookbook, idx) => (
-        <MagazineArticle
-          key={lookbook.id}
-          lookbook={lookbook}
-          locale={locale as Locale}
-          index={idx}
-          isFirst={idx === 0}
-        />
-      ))}
+      {displayLookbooks.map((lookbook, idx) => {
+        // is_video true이거나 fallback의 3번째(index=2)는 영상 article로
+        const isVideo = lookbook.is_video || (lookbooks.length === 0 && idx === 2);
+
+        if (isVideo) {
+          return (
+            <VideoArticle
+              key={lookbook.id}
+              lookbook={lookbook}
+              locale={locale as Locale}
+              index={idx}
+            />
+          );
+        }
+
+        return (
+          <MagazineArticle
+            key={lookbook.id}
+            lookbook={lookbook}
+            locale={locale as Locale}
+            index={idx}
+            isFirst={idx === 0}
+          />
+        );
+      })}
     </div>
   );
 }
