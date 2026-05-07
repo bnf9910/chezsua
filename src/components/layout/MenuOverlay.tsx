@@ -27,7 +27,6 @@ export function MenuOverlay({ locale, menus }: MenuOverlayProps) {
       setIsLoggedIn(!!user);
 
       if (user) {
-        // role 확인
         const { data: profile } = await supabase
           .from('users')
           .select('role')
@@ -57,7 +56,6 @@ export function MenuOverlay({ locale, menus }: MenuOverlayProps) {
     return () => window.removeEventListener('chezsua:menu', handler);
   }, []);
 
-  // 메뉴 열릴 때 body 스크롤 잠금
   useEffect(() => {
     if (open) {
       document.body.style.overflow = 'hidden';
@@ -83,14 +81,12 @@ export function MenuOverlay({ locale, menus }: MenuOverlayProps) {
 
   return (
     <>
-      {/* Backdrop */}
       <div
         onClick={close}
         className="fixed inset-0 bg-ink-primary/40 z-40"
         style={{ animation: 'menuFadeIn 0.4s ease' }}
       />
 
-      {/* Slide-in panel */}
       <aside
         role="dialog"
         aria-modal="true"
@@ -149,28 +145,14 @@ export function MenuOverlay({ locale, menus }: MenuOverlayProps) {
             );
           })}
 
-          {/* 관리자만 표시되는 Admin 메뉴 */}
+          {/* 관리자만 보이는 Dashboard 메뉴 - 일반 메뉴와 동일한 스타일 */}
           {isAdmin && (
             <a
               href="/admin"
               onClick={close}
-              className="text-serif text-[44px] font-normal leading-tight py-1 transition-all duration-300 hover:translate-x-2 max-md:text-[32px] flex items-baseline gap-3"
-              style={{ color: '#C53030', fontWeight: 500 }}
+              className="text-serif text-[44px] font-normal leading-tight text-ink-primary py-1 transition-all duration-300 hover:translate-x-2 max-md:text-[32px]"
             >
-              <span
-                className="text-mono text-[9px] tracking-[0.25em] uppercase px-1.5 py-0.5 rounded"
-                style={{
-                  backgroundColor: '#C53030',
-                  color: '#fff',
-                  fontStyle: 'normal',
-                  fontWeight: 500,
-                  textDecoration: 'none',
-                  fontSize: '9px',
-                }}
-              >
-                ADMIN
-              </span>
-              Admin Panel
+              Dashboard
             </a>
           )}
         </nav>
@@ -248,7 +230,6 @@ export function MenuOverlay({ locale, menus }: MenuOverlayProps) {
         </div>
       </aside>
 
-      {/* CSS animations */}
       <style jsx>{`
         @keyframes menuFadeIn {
           from { opacity: 0; }
