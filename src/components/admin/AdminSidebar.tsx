@@ -2,8 +2,6 @@
 
 import { usePathname } from 'next/navigation';
 import Link from 'next/link';
-import { useEffect, useState } from 'react';
-import { createClient } from '@/lib/supabase/client';
 
 interface NavItem {
   label: string;
@@ -120,16 +118,12 @@ const NAV_ITEMS: NavItem[] = [
   },
 ];
 
-export function AdminSidebar() {
-  const pathname = usePathname();
-  const [userEmail, setUserEmail] = useState<string>('');
+interface AdminSidebarProps {
+  userEmail: string;
+}
 
-  useEffect(() => {
-    const supabase = createClient();
-    supabase.auth.getUser().then(({ data: { user } }) => {
-      setUserEmail(user?.email || '');
-    });
-  }, []);
+export function AdminSidebar({ userEmail }: AdminSidebarProps) {
+  const pathname = usePathname();
 
   function isActive(href: string) {
     if (href === '/admin') return pathname === '/admin';
@@ -137,7 +131,7 @@ export function AdminSidebar() {
   }
 
   return (
-    <aside className="w-[240px] h-screen bg-ink-primary text-bg-primary flex flex-col fixed left-0 top-0 z-40">
+    <aside className="h-screen bg-ink-primary text-bg-primary flex flex-col sticky top-0 z-40">
       {/* Logo */}
       <div className="px-6 pt-6 pb-3">
         <div className="text-mono text-[9px] tracking-[0.3em] uppercase text-bg-primary/50 mb-3">
