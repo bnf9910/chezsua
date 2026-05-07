@@ -20,7 +20,7 @@ const GRADIENTS = [
 
 export function LookbookCard({ lookbook, locale, index = 0 }: LookbookCardProps) {
   const title = locale === 'ko' ? lookbook.title_ko : locale === 'zh' ? lookbook.title_zh : lookbook.title_en;
-  const gradient = GRADIENTS[index % GRADIENTS.length];
+  const gradient = GRADIENTS[index % GRADIENTS.length] || GRADIENTS[0];
 
   return (
     <Link
@@ -29,7 +29,7 @@ export function LookbookCard({ lookbook, locale, index = 0 }: LookbookCardProps)
     >
       <div
         className="aspect-[3/4] overflow-hidden relative mb-5"
-        style={{ background: gradient }}
+        style={{ backgroundImage: gradient }}
       >
         <div
           className="absolute inset-0 opacity-30 mix-blend-overlay"

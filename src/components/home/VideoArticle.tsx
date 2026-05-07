@@ -19,7 +19,7 @@ const GRADIENTS = [
 export function VideoArticle({ lookbook, locale, reverse, index }: VideoArticleProps) {
   const title = locale === 'ko' ? lookbook.title_ko : locale === 'zh' ? lookbook.title_zh : lookbook.title_en;
   const article = locale === 'ko' ? lookbook.article_ko : locale === 'zh' ? lookbook.article_zh : lookbook.article_en;
-  const gradient = GRADIENTS[index % GRADIENTS.length];
+  const gradient = GRADIENTS[index % GRADIENTS.length] || GRADIENTS[0];
 
   return (
     <article
@@ -27,11 +27,10 @@ export function VideoArticle({ lookbook, locale, reverse, index }: VideoArticleP
         reverse ? 'lg:[direction:rtl]' : ''
       }`}
     >
-      {/* Video / Image - 70% */}
       <Link
         href={`/lookbooks/story/${lookbook.slug}`}
         className="block aspect-[16/9] overflow-hidden relative group lg:[direction:ltr]"
-        style={{ background: gradient }}
+        style={{ backgroundImage: gradient }}
       >
         <div
           className="absolute inset-0 opacity-30 mix-blend-overlay"
@@ -41,7 +40,6 @@ export function VideoArticle({ lookbook, locale, reverse, index }: VideoArticleP
           }}
         />
 
-        {/* Play button */}
         <div className="absolute inset-0 flex items-center justify-center">
           <div className="w-20 h-20 rounded-full bg-bg-primary/90 flex items-center justify-center group-hover:scale-110 transition-transform">
             <svg width="24" height="28" viewBox="0 0 24 28" fill="none">
@@ -59,7 +57,6 @@ export function VideoArticle({ lookbook, locale, reverse, index }: VideoArticleP
         </div>
       </Link>
 
-      {/* Text - 30% */}
       <div className="flex flex-col gap-3 lg:[direction:ltr]">
         <div className="text-mono text-[10px] tracking-[0.3em] uppercase text-accent-green">
           {formatDate(lookbook.publish_date, locale)}

@@ -10,7 +10,7 @@ interface MagazineArticleProps {
   index: number;
 }
 
-// 인덱스에 따른 그라디언트 - 인라인 스타일로 강제 적용
+// 인덱스에 따른 그라디언트
 const GRADIENTS = [
   'linear-gradient(135deg, #E5C5BB 0%, #C4A089 100%)',
   'linear-gradient(135deg, #C4D0C0 0%, #8FA68C 100%)',
@@ -22,7 +22,7 @@ const GRADIENTS = [
 export function MagazineArticle({ lookbook, locale, reverse, index }: MagazineArticleProps) {
   const title = locale === 'ko' ? lookbook.title_ko : locale === 'zh' ? lookbook.title_zh : lookbook.title_en;
   const article = locale === 'ko' ? lookbook.article_ko : locale === 'zh' ? lookbook.article_zh : lookbook.article_en;
-  const gradient = GRADIENTS[index % GRADIENTS.length];
+  const gradient = GRADIENTS[index % GRADIENTS.length] || GRADIENTS[0];
 
   return (
     <article
@@ -34,7 +34,7 @@ export function MagazineArticle({ lookbook, locale, reverse, index }: MagazineAr
       <Link
         href={`/lookbooks/story/${lookbook.slug}`}
         className="block aspect-[4/5] overflow-hidden relative group lg:[direction:ltr]"
-        style={{ background: gradient }}
+        style={{ backgroundImage: gradient }}
       >
         {/* Subtle texture overlay */}
         <div
