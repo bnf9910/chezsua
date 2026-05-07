@@ -1,61 +1,91 @@
-@import 'tailwindcss';
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
 
-@theme {
-  /* Colors */
-  --color-bg-primary: #f1f5ef;
-  --color-bg-secondary: #e6ede3;
-  --color-bg-soft: #f7f9f5;
-  --color-ink-primary: #1a1f1b;
-  --color-ink-secondary: #3a3f3a;
-  --color-ink-muted: #6b7068;
-  --color-accent-green: #2d3f2e;
-  --color-accent-sage: #8fa68c;
-  --color-accent-cream: #e8dfc8;
-  --color-accent-blush: #e5c5bb;
-  --color-line: #d2dcce;
-  --color-line-soft: #e0e8dc;
+@layer base {
+  :root {
+    /* Colors */
+    --color-bg-primary: #f1f5ef;
+    --color-bg-secondary: #e6ede3;
+    --color-bg-soft: #f7f9f5;
+    --color-ink-primary: #1a1f1b;
+    --color-ink-secondary: #3a3f3a;
+    --color-ink-muted: #6b7068;
+    --color-accent-green: #2d3f2e;
+    --color-accent-sage: #8fa68c;
+    --color-accent-cream: #e8dfc8;
+    --color-accent-blush: #e5c5bb;
+    --color-line: #d2dcce;
+    --color-line-soft: #e0e8dc;
+  }
 
-  /* Fonts */
-  --font-serif: var(--font-cormorant), Georgia, serif;
-  --font-sans: var(--font-inter), -apple-system, sans-serif;
-  --font-korean: var(--font-pretendard), -apple-system, sans-serif;
-  --font-mono: var(--font-jetbrains), monospace;
+  * {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+  }
+
+  html {
+    scroll-behavior: smooth;
+  }
+
+  body {
+    font-family: var(--font-inter), -apple-system, sans-serif;
+    background: #f1f5ef;
+    color: #1a1f1b;
+    line-height: 1.6;
+    -webkit-font-smoothing: antialiased;
+  }
+
+  img {
+    max-width: 100%;
+    display: block;
+  }
+
+  a {
+    color: inherit;
+    text-decoration: none;
+  }
+
+  button {
+    font-family: inherit;
+    cursor: pointer;
+    border: none;
+    background: none;
+  }
 }
 
-/* Base resets */
-* {
-  margin: 0;
-  padding: 0;
-  box-sizing: border-box;
-}
+@layer components {
+  /* Typography utilities */
+  .text-serif {
+    font-family: var(--font-cormorant), Georgia, serif;
+  }
+  .text-mono {
+    font-family: var(--font-jetbrains), monospace;
+  }
+  .text-korean {
+    font-family: var(--font-pretendard), -apple-system, sans-serif;
+  }
 
-html {
-  scroll-behavior: smooth;
-}
+  /* Display headings - magazine style */
+  .text-display {
+    font-family: var(--font-cormorant), Georgia, serif;
+    font-weight: 300;
+    line-height: 1.05;
+    letter-spacing: -0.015em;
+  }
 
-body {
-  font-family: var(--font-sans);
-  background: var(--color-bg-primary);
-  color: var(--color-ink-primary);
-  line-height: 1.6;
-  -webkit-font-smoothing: antialiased;
-}
+  .text-display em {
+    font-style: italic;
+  }
 
-img {
-  max-width: 100%;
-  display: block;
-}
-
-a {
-  color: inherit;
-  text-decoration: none;
-}
-
-button {
-  font-family: inherit;
-  cursor: pointer;
-  border: none;
-  background: none;
+  /* Caption / metadata */
+  .text-caption {
+    font-family: var(--font-jetbrains), monospace;
+    font-size: 11px;
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+  }
 }
 
 /* ===========================================
@@ -92,56 +122,23 @@ main, header, footer, nav, [role='dialog'] {
 }
 
 /* ===========================================
-   Typography utilities
-   =========================================== */
-.text-serif {
-  font-family: var(--font-serif);
-}
-.text-mono {
-  font-family: var(--font-mono);
-}
-.text-korean {
-  font-family: var(--font-korean);
-}
-
-/* Display headings - magazine style */
-.text-display {
-  font-family: var(--font-serif);
-  font-weight: 300;
-  line-height: 1.05;
-  letter-spacing: -0.015em;
-}
-
-.text-display em {
-  font-style: italic;
-}
-
-/* Caption / metadata */
-.text-caption {
-  font-family: var(--font-mono);
-  font-size: 11px;
-  letter-spacing: 0.2em;
-  text-transform: uppercase;
-}
-
-/* ===========================================
    Selection
    =========================================== */
 ::selection {
-  background: var(--color-accent-green);
-  color: var(--color-bg-primary);
+  background: #2d3f2e;
+  color: #f1f5ef;
 }
 
 /* ===========================================
    Focus
    =========================================== */
 :focus-visible {
-  outline: 2px solid var(--color-accent-green);
+  outline: 2px solid #2d3f2e;
   outline-offset: 2px;
 }
 
 /* ===========================================
-   Scrollbar (subtle)
+   Scrollbar
    =========================================== */
 ::-webkit-scrollbar {
   width: 8px;
@@ -151,9 +148,9 @@ main, header, footer, nav, [role='dialog'] {
   background: transparent;
 }
 ::-webkit-scrollbar-thumb {
-  background: var(--color-line);
+  background: #d2dcce;
   border-radius: 4px;
 }
 ::-webkit-scrollbar-thumb:hover {
-  background: var(--color-ink-muted);
+  background: #6b7068;
 }
