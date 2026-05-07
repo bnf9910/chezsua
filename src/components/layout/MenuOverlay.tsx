@@ -15,17 +15,34 @@ export function MenuOverlay({ locale, menus }: MenuOverlayProps) {
   const [open, setOpen] = useState(false);
   const [mounted, setMounted] = useState(false);
   const [isLoggedIn, setIsLoggedIn] = useState(false);
+  const [isAdmin, setIsAdmin] = useState(false);
 
   useEffect(() => {
     setMounted(true);
 
     const supabase = createClient();
-    supabase.auth.getUser().then(({ data: { user } }) => {
-      setIsLoggedIn(!!user);
-    });
 
-    const { data: { subscription } } = supabase.auth.onAuthStateChange((_event, session) => {
-      setIsLoggedIn(!!session?.user);
+    async function checkAuth() {
+      const { data: { user } } = await supabase.auth.getUser();
+      setIsLoggedIn(!!user);
+
+      if (user) {
+        // role 확인
+        const { data: profile } = await supabase
+          .from('users')
+          .select('role')
+          .eq('id', user.id)
+          .single();
+        setIsAdmin(profile?.role === 'admin');
+      } else {
+        setIsAdmin(false);
+      }
+    }
+
+    checkAuth();
+
+    const { data: { subscription } } = supabase.auth.onAuthStateChange(() => {
+      checkAuth();
     });
 
     return () => subscription.unsubscribe();
@@ -131,6 +148,31 @@ export function MenuOverlay({ locale, menus }: MenuOverlayProps) {
               </Link>
             );
           })}
+
+          {/* 관리자만 표시되는 Admin 메뉴 */}
+          {isAdmin && (
+            <a
+              href="/admin"
+              onClick={close}
+              className="text-serif text-[44px] font-normal leading-tight py-1 transition-all duration-300 hover:translate-x-2 max-md:text-[32px] flex items-baseline gap-3"
+              style={{ color: '#C53030', fontWeight: 500 }}
+            >
+              <span
+                className="text-mono text-[9px] tracking-[0.25em] uppercase px-1.5 py-0.5 rounded"
+                style={{
+                  backgroundColor: '#C53030',
+                  color: '#fff',
+                  fontStyle: 'normal',
+                  fontWeight: 500,
+                  textDecoration: 'none',
+                  fontSize: '9px',
+                }}
+              >
+                ADMIN
+              </span>
+              Admin Panel
+            </a>
+          )}
         </nav>
 
         {/* Login / My Account 영역 */}
