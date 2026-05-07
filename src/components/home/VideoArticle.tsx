@@ -47,32 +47,34 @@ export function VideoArticle({ lookbook, locale, index }: VideoArticleProps) {
   }[locale];
 
   return (
-    <article className="grid bg-bg-soft py-[120px] max-md:py-16">
-      <div className="max-w-[1600px] mx-auto px-12 w-full grid grid-cols-[280px_1fr_280px] gap-14 items-center max-lg:grid-cols-1 max-lg:gap-10 max-md:px-7">
+    // 매거진 article과 비슷한 크기감을 위해 min-height: 100vh
+    <article className="grid bg-bg-soft min-h-screen items-center py-16 max-md:py-10">
+      {/* 좌측 메타 (180px) | 영상 (1fr) | 우측 텍스트 (220px) - 영상이 훨씬 커짐 */}
+      <div className="w-full px-12 max-md:px-7 grid grid-cols-[180px_1fr_220px] gap-10 items-center max-lg:grid-cols-1 max-lg:gap-8">
         {/* 좌측 메타 */}
         <div className="text-mono text-[10px] tracking-[0.12em] text-ink-secondary leading-[2.1] uppercase max-lg:text-center">
           <span className="text-ink-muted block">{labels.date}</span>
           <div>{formatArticleDate(lookbook.publish_date, locale)}</div>
 
-          <span className="text-ink-muted block mt-4">{labels.magazine}</span>
+          <span className="text-ink-muted block mt-3">{labels.magazine}</span>
           <div>{magazineCategory(lookbook.category, locale)}</div>
 
-          <span className="text-ink-muted block mt-4">{labels.client}</span>
+          <span className="text-ink-muted block mt-3">{labels.client}</span>
           <div className="normal-case">{lookbook.client}</div>
 
-          <span className="text-ink-muted block mt-4">{labels.mainFlorist}</span>
+          <span className="text-ink-muted block mt-3">{labels.mainFlorist}</span>
           <div>{lookbook.main_florist || 'YOON'}</div>
 
-          <span className="text-ink-muted block mt-4">{labels.subFlorist}</span>
+          <span className="text-ink-muted block mt-3">{labels.subFlorist}</span>
           <div>{lookbook.sub_florist || 'CHOI'}</div>
         </div>
 
-        {/* 중앙 영상 */}
+        {/* 중앙 영상 — aspect ratio 16:9, 큰 사이즈 */}
         <Link
           href={`/lookbooks/story/${lookbook.slug}`}
-          className="block aspect-[16/9] bg-ink-primary relative overflow-hidden group"
+          className="block aspect-[16/9] bg-ink-primary relative overflow-hidden group w-full max-h-[80vh]"
         >
-          {/* 세이지 그린 그라디언트 + SVG 일러스트 */}
+          {/* 그라디언트 배경 + SVG 일러스트 */}
           <div
             className="absolute inset-0"
             style={{ backgroundImage: 'linear-gradient(135deg, #B5C2A8 0%, #8FA68C 50%, #4A5F4A 100%)' }}
@@ -88,20 +90,25 @@ export function VideoArticle({ lookbook, locale, index }: VideoArticleProps) {
             </svg>
           </div>
 
+          {/* 영상 N° 라벨 (좌측 상단) */}
+          <span className="absolute top-7 left-7 text-mono text-[10px] tracking-[0.3em] uppercase text-white/95 z-[2]">
+            — N° {issueNo}
+          </span>
+
           {/* Play button */}
           <div className="absolute inset-0 flex items-center justify-center z-[2]">
             <div
-              className="w-[88px] h-[88px] border border-white/70 rounded-full flex items-center justify-center transition-all group-hover:bg-white/90 backdrop-blur-sm"
+              className="w-24 h-24 border border-white/70 rounded-full flex items-center justify-center transition-all group-hover:bg-white/90 backdrop-blur-sm"
               style={{ background: 'rgba(0,0,0,0.2)' }}
             >
               <span
-                className="block ml-1"
+                className="block ml-1.5"
                 style={{
                   width: 0,
                   height: 0,
-                  borderLeft: '14px solid #fff',
-                  borderTop: '9px solid transparent',
-                  borderBottom: '9px solid transparent',
+                  borderLeft: '16px solid #fff',
+                  borderTop: '11px solid transparent',
+                  borderBottom: '11px solid transparent',
                 }}
               />
             </div>
@@ -111,14 +118,14 @@ export function VideoArticle({ lookbook, locale, index }: VideoArticleProps) {
         {/* 우측 텍스트 */}
         <div className="max-lg:text-center">
           <div className="text-mono text-[10px] tracking-[0.3em] uppercase text-accent-green mb-3">
-            {labels.film}
+            ▶ {labels.film}
           </div>
           <h3
-            className="text-serif text-[32px] font-normal leading-[1.05] tracking-[-0.015em] text-ink-primary mb-4"
+            className="text-serif text-[36px] font-normal leading-[1.05] tracking-[-0.015em] text-ink-primary mb-4 max-lg:text-[32px]"
             dangerouslySetInnerHTML={{ __html: renderTitleWithEmphasis(title || '') }}
           />
           {excerpt && (
-            <p className="text-serif text-base leading-[1.65] text-ink-secondary mb-6">
+            <p className="text-serif text-[15px] leading-[1.6] text-ink-secondary mb-6 line-clamp-4">
               {excerpt}
             </p>
           )}
