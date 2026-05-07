@@ -12,6 +12,13 @@ interface HeaderProps {
   menus?: SiteMenuItem[];
 }
 
+// 표시할 언어 목록 (zh는 일단 숨김 - 코드와 라우팅은 유지)
+const VISIBLE_LANGUAGES: Array<{ code: 'en' | 'ko'; label: string }> = [
+  { code: 'en', label: 'EN' },
+  { code: 'ko', label: 'KO' },
+  // { code: 'zh', label: 'ZH' }, // 중국어 - 일단 가림
+];
+
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
 export function Header({ locale, menus }: HeaderProps) {
   const router = useRouter();
@@ -34,7 +41,7 @@ export function Header({ locale, menus }: HeaderProps) {
     window.dispatchEvent(new CustomEvent('chezsua:menu', { detail: { open: true } }));
   }
 
-  // 홈에서는 로고 숨김 (좌측 완전 비워둠)
+  // 홈에서는 로고 숨김
   const isHome = pathname === `/${currentLocale}` || pathname === `/${currentLocale}/`;
 
   return (
@@ -68,30 +75,17 @@ export function Header({ locale, menus }: HeaderProps) {
             </button>
             {langOpen && (
               <div className="absolute right-0 top-9 bg-bg-primary border border-line py-1 min-w-[80px] shadow-md">
-                <button
-                  onClick={() => switchLocale('en')}
-                  className={`block w-full px-4 py-2 text-mono text-[11px] tracking-[0.2em] text-left uppercase hover:bg-bg-secondary ${
-                    currentLocale === 'en' ? 'text-ink-primary font-semibold' : 'text-ink-secondary'
-                  }`}
-                >
-                  EN
-                </button>
-                <button
-                  onClick={() => switchLocale('ko')}
-                  className={`block w-full px-4 py-2 text-mono text-[11px] tracking-[0.2em] text-left uppercase hover:bg-bg-secondary ${
-                    currentLocale === 'ko' ? 'text-ink-primary font-semibold' : 'text-ink-secondary'
-                  }`}
-                >
-                  KO
-                </button>
-                <button
-                  onClick={() => switchLocale('zh')}
-                  className={`block w-full px-4 py-2 text-mono text-[11px] tracking-[0.2em] text-left uppercase hover:bg-bg-secondary ${
-                    currentLocale === 'zh' ? 'text-ink-primary font-semibold' : 'text-ink-secondary'
-                  }`}
-                >
-                  ZH
-                </button>
+                {VISIBLE_LANGUAGES.map((lang) => (
+                  <button
+                    key={lang.code}
+                    onClick={() => switchLocale(lang.code)}
+                    className={`block w-full px-4 py-2 text-mono text-[11px] tracking-[0.2em] text-left uppercase hover:bg-bg-secondary ${
+                      currentLocale === lang.code ? 'text-ink-primary font-semibold' : 'text-ink-secondary'
+                    }`}
+                  >
+                    {lang.label}
+                  </button>
+                ))}
               </div>
             )}
           </div>

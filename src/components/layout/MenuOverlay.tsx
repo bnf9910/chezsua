@@ -2,6 +2,7 @@
 
 import { useEffect, useState } from 'react';
 import { Link } from '@/lib/i18n';
+import { createClient } from '@/lib/supabase/client';
 import type { Locale } from '@/lib/i18n';
 import type { SiteMenuItem } from '@/lib/site-menus';
 
@@ -13,10 +14,21 @@ interface MenuOverlayProps {
 export function MenuOverlay({ locale, menus }: MenuOverlayProps) {
   const [open, setOpen] = useState(false);
   const [mounted, setMounted] = useState(false);
+  const [isLoggedIn, setIsLoggedIn] = useState(false);
 
-  // 클라이언트 hydration 후에만 마운트 (SSR과 분리)
   useEffect(() => {
     setMounted(true);
+
+    const supabase = createClient();
+    supabase.auth.getUser().then(({ data: { user } }) => {
+      setIsLoggedIn(!!user);
+    });
+
+    const { data: { subscription } } = supabase.auth.onAuthStateChange((_event, session) => {
+      setIsLoggedIn(!!session?.user);
+    });
+
+    return () => subscription.unsubscribe();
   }, []);
 
   useEffect(() => {
@@ -45,10 +57,7 @@ export function MenuOverlay({ locale, menus }: MenuOverlayProps) {
     window.dispatchEvent(new CustomEvent('chezsua:menu', { detail: { open: false } }));
   };
 
-  // SSR 시점이나 마운트 전에는 아무것도 렌더링 안 함 (메뉴 자동 펼침 방지)
   if (!mounted) return null;
-
-  // 메뉴가 닫혀있으면 DOM 자체를 안 그림 → 절대 화면에 안 나타남
   if (!open) return null;
 
   const topMenus = menus
@@ -60,7 +69,7 @@ export function MenuOverlay({ locale, menus }: MenuOverlayProps) {
       {/* Backdrop */}
       <div
         onClick={close}
-        className="fixed inset-0 bg-ink-primary/40 z-40 animate-fadeIn"
+        className="fixed inset-0 bg-ink-primary/40 z-40"
         style={{ animation: 'menuFadeIn 0.4s ease' }}
       />
 
@@ -74,7 +83,7 @@ export function MenuOverlay({ locale, menus }: MenuOverlayProps) {
         <button
           onClick={close}
           aria-label="Close menu"
-          className="absolute top-7 right-12 text-mono text-[11px] tracking-[0.3em] uppercase text-ink-primary hover:text-accent-green transition-colors"
+          className="absolute top-7 right-12 text-mono text-[11px] tracking-[0.3em] uppercase text-ink-primary hover:text-accent-green transition-colors max-md:right-7"
         >
           Close ×
         </button>
@@ -124,12 +133,51 @@ export function MenuOverlay({ locale, menus }: MenuOverlayProps) {
           })}
         </nav>
 
+        {/* Login / My Account 영역 */}
+        <div className="mt-10 pt-8 border-t border-line-soft">
+          {isLoggedIn ? (
+            <>
+              <Link
+                href="/account"
+                onClick={close}
+                className="block text-mono text-[12px] tracking-[0.25em] uppercase text-accent-green hover:text-ink-primary transition-colors mb-3"
+              >
+                → My Account
+              </Link>
+              <Link
+                href="/auth/signout"
+                onClick={close}
+                className="block text-mono text-[11px] tracking-[0.2em] uppercase text-ink-muted hover:text-ink-primary transition-colors"
+              >
+                Logout
+              </Link>
+            </>
+          ) : (
+            <>
+              <Link
+                href="/auth/login"
+                onClick={close}
+                className="block text-mono text-[12px] tracking-[0.25em] uppercase text-accent-green hover:text-ink-primary transition-colors mb-3"
+              >
+                → Login
+              </Link>
+              <Link
+                href="/auth/register"
+                onClick={close}
+                className="block text-mono text-[11px] tracking-[0.2em] uppercase text-ink-muted hover:text-ink-primary transition-colors"
+              >
+                Sign Up
+              </Link>
+            </>
+          )}
+        </div>
+
         <div className="mt-auto pt-12 border-t border-line">
           <div className="text-mono text-[10px] tracking-[0.3em] uppercase text-ink-muted mb-4">
             Visit · Inquire
           </div>
           <div className="text-sm text-ink-secondary leading-loose mb-6">
-            {locale === 'ko' ? '서울 · 강남구' : 'Seoul · Gangnam'}
+            Seoul · Gangnam
             <br />
             +82 02-XXXX-XXXX
             <br />
