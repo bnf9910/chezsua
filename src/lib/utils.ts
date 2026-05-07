@@ -11,10 +11,17 @@ export function formatPrice(amount: number, currency: 'KRW' | 'USD' = 'KRW'): st
 /**
  * Format date for display
  */
-export function formatDate(dateStr: string, locale: 'en' | 'ko' = 'en'): string {
+export function formatDate(dateStr: string, locale: 'en' | 'ko' | 'zh' = 'en'): string {
   const date = new Date(dateStr);
   if (locale === 'ko') {
     return date.toLocaleDateString('ko-KR', {
+      year: 'numeric',
+      month: 'short',
+      day: 'numeric',
+    });
+  }
+  if (locale === 'zh') {
+    return date.toLocaleDateString('zh-CN', {
       year: 'numeric',
       month: 'short',
       day: 'numeric',
