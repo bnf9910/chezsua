@@ -1,7 +1,39 @@
-export default function EditProductPage() {
+import { redirect, notFound } from 'next/navigation';
+import { createClient } from '@/lib/supabase/server';
+import { ProductForm } from '@/components/admin/ProductForm';
+
+interface PageProps {
+  params: Promise<{ id: string }>;
+}
+
+export default async function EditProductPage({ params }: PageProps) {
+  const { id } = await params;
+  const supabase = await createClient();
+
+  const { data: { user } } = await supabase.auth.getUser();
+  if (!user) redirect('/auth/login');
+
+  const { data: profile } = await supabase
+    .from('users')
+    .select('role')
+    .eq('id', user.id)
+    .single();
+
+  if (profile?.role !== 'admin') redirect('/');
+
+  const { data: product } = await supabase
+    .from('products')
+    .select('*')
+    .eq('id', id)
+    .single();
+
+  if (!product) notFound();
+
   return (
-    <div className="p-12 max-md:p-7">
-      <h1 className="text-serif text-5xl font-light italic mb-3">Edit Product</h1>
-    </div>
+    <ProductForm
+      initialData={product}
+      isEditMode={true}
+      productId={id}
+    />
   );
 }

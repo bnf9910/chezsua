@@ -2,11 +2,33 @@
 
 import { useState } from 'react';
 
+interface AboutSettings {
+  label_en: string;
+  label_ko: string;
+  headline_en: string;
+  headline_ko: string;
+  intro_en: string;
+  intro_ko: string;
+  florists_title_en: string;
+  florists_title_ko: string;
+  florists_text_en: string;
+  florists_text_ko: string;
+  philosophy_title_en: string;
+  philosophy_title_ko: string;
+  philosophy_text_en: string;
+  philosophy_text_ko: string;
+  studio_title_en: string;
+  studio_title_ko: string;
+  studio_text_en: string;
+  studio_text_ko: string;
+}
+
 interface Settings {
   site: { name: string; tagline: string; description: string };
   contact: { phone: string; email: string; address: string; hours: string };
   social: { instagram: string; naver_blog: string; youtube: string };
   seo: { default_title: string; default_description: string; default_keywords: string };
+  about: AboutSettings;
 }
 
 interface Props {
@@ -18,7 +40,7 @@ export function SettingsClient({ initialSettings }: Props) {
   const [saving, setSaving] = useState(false);
   const [savedMessage, setSavedMessage] = useState('');
 
-  function updateField(section: keyof Settings, field: string, value: string) {
+  function updateField<K extends keyof Settings>(section: K, field: string, value: string) {
     setSettings((prev) => ({
       ...prev,
       [section]: { ...prev[section], [field]: value },
@@ -55,7 +77,7 @@ export function SettingsClient({ initialSettings }: Props) {
     <form onSubmit={handleSave}>
       {/* 사이트 정보 */}
       <Section title="Site Information / 사이트 정보">
-        <Field label="Site Name" hint="사이트 이름 (보통 CHEZSUA)">
+        <Field label="Site Name">
           <input
             type="text"
             value={settings.site.name}
@@ -138,7 +160,6 @@ export function SettingsClient({ initialSettings }: Props) {
             type="url"
             value={settings.social.naver_blog}
             onChange={(e) => updateField('social', 'naver_blog', e.target.value)}
-            placeholder="https://blog.naver.com/chezsua_"
             className="input"
           />
         </Field>
@@ -147,7 +168,177 @@ export function SettingsClient({ initialSettings }: Props) {
             type="url"
             value={settings.social.youtube}
             onChange={(e) => updateField('social', 'youtube', e.target.value)}
-            placeholder="https://youtube.com/@chezsua"
+            className="input"
+          />
+        </Field>
+      </Section>
+
+      {/* About 페이지 - NEW! */}
+      <Section title="About Page / 어바웃 페이지">
+        <p className="col-span-2 text-mono text-[10px] text-ink-muted mb-2">
+          💡 *별표*로 감싸면 italic 강조 (예: The Language of *Flowers*)
+        </p>
+
+        {/* Hero */}
+        <Field label="Label EN" hint="페이지 상단 라벨 (영문)">
+          <input
+            type="text"
+            value={settings.about.label_en}
+            onChange={(e) => updateField('about', 'label_en', e.target.value)}
+            placeholder="About — The Atelier"
+            className="input"
+          />
+        </Field>
+        <Field label="Label KO" hint="페이지 상단 라벨 (한국어)">
+          <input
+            type="text"
+            value={settings.about.label_ko}
+            onChange={(e) => updateField('about', 'label_ko', e.target.value)}
+            placeholder="ABOUT — 아틀리에"
+            className="input"
+          />
+        </Field>
+
+        <Field label="Headline EN *" hint="큰 제목 (영문)">
+          <input
+            type="text"
+            value={settings.about.headline_en}
+            onChange={(e) => updateField('about', 'headline_en', e.target.value)}
+            placeholder="The Language of *Flowers*"
+            className="input"
+          />
+        </Field>
+        <Field label="Headline KO" hint="큰 제목 (한국어)">
+          <input
+            type="text"
+            value={settings.about.headline_ko}
+            onChange={(e) => updateField('about', 'headline_ko', e.target.value)}
+            placeholder="*꽃*의 언어"
+            className="input"
+          />
+        </Field>
+
+        <Field label="Intro EN" hint="소개 문단 (영문)">
+          <textarea
+            value={settings.about.intro_en}
+            onChange={(e) => updateField('about', 'intro_en', e.target.value)}
+            rows={4}
+            className="input"
+          />
+        </Field>
+        <Field label="Intro KO" hint="소개 문단 (한국어)">
+          <textarea
+            value={settings.about.intro_ko}
+            onChange={(e) => updateField('about', 'intro_ko', e.target.value)}
+            rows={4}
+            className="input"
+          />
+        </Field>
+
+        <SubSection>플로리스트 / Florists</SubSection>
+
+        <Field label="Florists Title EN">
+          <input
+            type="text"
+            value={settings.about.florists_title_en}
+            onChange={(e) => updateField('about', 'florists_title_en', e.target.value)}
+            className="input"
+          />
+        </Field>
+        <Field label="Florists Title KO">
+          <input
+            type="text"
+            value={settings.about.florists_title_ko}
+            onChange={(e) => updateField('about', 'florists_title_ko', e.target.value)}
+            className="input"
+          />
+        </Field>
+
+        <Field label="Florists Text EN">
+          <textarea
+            value={settings.about.florists_text_en}
+            onChange={(e) => updateField('about', 'florists_text_en', e.target.value)}
+            rows={4}
+            className="input"
+          />
+        </Field>
+        <Field label="Florists Text KO">
+          <textarea
+            value={settings.about.florists_text_ko}
+            onChange={(e) => updateField('about', 'florists_text_ko', e.target.value)}
+            rows={4}
+            className="input"
+          />
+        </Field>
+
+        <SubSection>철학 / Philosophy</SubSection>
+
+        <Field label="Philosophy Title EN">
+          <input
+            type="text"
+            value={settings.about.philosophy_title_en}
+            onChange={(e) => updateField('about', 'philosophy_title_en', e.target.value)}
+            className="input"
+          />
+        </Field>
+        <Field label="Philosophy Title KO">
+          <input
+            type="text"
+            value={settings.about.philosophy_title_ko}
+            onChange={(e) => updateField('about', 'philosophy_title_ko', e.target.value)}
+            className="input"
+          />
+        </Field>
+
+        <Field label="Philosophy Text EN">
+          <textarea
+            value={settings.about.philosophy_text_en}
+            onChange={(e) => updateField('about', 'philosophy_text_en', e.target.value)}
+            rows={4}
+            className="input"
+          />
+        </Field>
+        <Field label="Philosophy Text KO">
+          <textarea
+            value={settings.about.philosophy_text_ko}
+            onChange={(e) => updateField('about', 'philosophy_text_ko', e.target.value)}
+            rows={4}
+            className="input"
+          />
+        </Field>
+
+        <SubSection>스튜디오 / Studio</SubSection>
+
+        <Field label="Studio Title EN">
+          <input
+            type="text"
+            value={settings.about.studio_title_en}
+            onChange={(e) => updateField('about', 'studio_title_en', e.target.value)}
+            className="input"
+          />
+        </Field>
+        <Field label="Studio Title KO">
+          <input
+            type="text"
+            value={settings.about.studio_title_ko}
+            onChange={(e) => updateField('about', 'studio_title_ko', e.target.value)}
+            className="input"
+          />
+        </Field>
+
+        <Field label="Studio Text EN">
+          <textarea
+            value={settings.about.studio_text_en}
+            onChange={(e) => updateField('about', 'studio_text_en', e.target.value)}
+            rows={4}
+            className="input"
+          />
+        </Field>
+        <Field label="Studio Text KO">
+          <textarea
+            value={settings.about.studio_text_ko}
+            onChange={(e) => updateField('about', 'studio_text_ko', e.target.value)}
+            rows={4}
             className="input"
           />
         </Field>
@@ -155,21 +346,19 @@ export function SettingsClient({ initialSettings }: Props) {
 
       {/* SEO */}
       <Section title="SEO / 검색 최적화">
-        <Field label="Default Title" hint="기본 페이지 제목 (브라우저 탭에 표시)">
+        <Field label="Default Title">
           <input
             type="text"
             value={settings.seo.default_title}
             onChange={(e) => updateField('seo', 'default_title', e.target.value)}
-            placeholder="CHEZSUA — Editorial Floristry, Seoul"
             className="input"
           />
         </Field>
-        <Field label="Default Description" hint="검색 결과에 표시되는 설명 (160자 이내 권장)">
+        <Field label="Default Description" hint="160자 이내 권장">
           <textarea
             value={settings.seo.default_description}
             onChange={(e) => updateField('seo', 'default_description', e.target.value)}
             rows={3}
-            placeholder="Seoul-based luxury florist..."
             className="input"
           />
         </Field>
@@ -178,7 +367,6 @@ export function SettingsClient({ initialSettings }: Props) {
             value={settings.seo.default_keywords}
             onChange={(e) => updateField('seo', 'default_keywords', e.target.value)}
             rows={2}
-            placeholder="서울 플로리스트, 강남 플로리스트, 럭셔리 플로리스트..."
             className="input"
           />
         </Field>
@@ -227,6 +415,16 @@ function Section({ title, children }: { title: string; children: React.ReactNode
       </h2>
       <div className="grid grid-cols-2 gap-5 max-md:grid-cols-1">{children}</div>
     </section>
+  );
+}
+
+function SubSection({ children }: { children: React.ReactNode }) {
+  return (
+    <div className="col-span-2 mt-2 mb-1 pt-3 border-t border-line-soft">
+      <h3 className="text-mono text-[10px] tracking-[0.25em] uppercase text-ink-muted">
+        {children}
+      </h3>
+    </div>
   );
 }
 
