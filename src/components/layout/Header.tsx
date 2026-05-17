@@ -12,13 +12,12 @@ export function Header({ isAdmin = false }: HeaderProps) {
   const [scrolled, setScrolled] = useState(false);
   const pathname = usePathname();
 
-  // 어떤 페이지인지 판단
-  // /ko/shop, /ko/shop/category, /ko/lookbooks, /ko/lookbooks/category 등
-  const isShopOrLookbook =
-    pathname?.match(/^\/(en|ko|zh)\/(shop|lookbooks)/) !== null;
-
-  // 홈페이지 여부 (홈에서는 로고 안 보임)
+  // 홈페이지 여부 (홈에서는 검은색 CHEZSUA 텍스트)
   const isHome = pathname?.match(/^\/(en|ko|zh)?\/?$/) !== null;
+
+  // Shop/Lookbooks/About/Project (골드 로고)
+  const isInnerPage =
+    pathname?.match(/^\/(en|ko|zh)\/(shop|lookbooks|about|project|account|terms|privacy|contact|auth)/) !== null;
 
   useEffect(() => {
     function handleScroll() {
@@ -45,8 +44,16 @@ export function Header({ isAdmin = false }: HeaderProps) {
     >
       <div className="flex justify-between items-center px-12 max-md:px-6">
         {/* Logo Area */}
-        {isShopOrLookbook ? (
-          // Shop/Lookbooks: 큰 골드 로고 이미지
+        {isHome ? (
+          // 홈: 검은색 CHEZSUA 텍스트
+          <Link
+            href="/"
+            className="text-serif text-2xl tracking-[0.25em] text-ink-primary font-normal hover:text-accent-green transition-colors"
+          >
+            CHEZSUA
+          </Link>
+        ) : isInnerPage ? (
+          // Shop/Lookbooks/About/Project: 골드 로고 (크기 살짝 축소)
           <Link href="/" className="block">
             {/* eslint-disable-next-line @next/next/no-img-element */}
             <img
@@ -54,19 +61,16 @@ export function Header({ isAdmin = false }: HeaderProps) {
               alt="CHEZSUA"
               className={`transition-all duration-300 ${
                 scrolled
-                  ? 'h-12 max-md:h-9'
-                  : 'h-16 max-md:h-12'
+                  ? 'h-9 max-md:h-7'
+                  : 'h-11 max-md:h-9'
               }`}
             />
           </Link>
-        ) : isHome ? (
-          // 홈: 로고 숨김 (Hero 영상이 메인)
-          <div />
         ) : (
-          // 나머지: 텍스트 로고
+          // 기타: 검은색 텍스트
           <Link
             href="/"
-            className="text-serif text-2xl tracking-[0.25em] text-ink-primary font-normal hover:text-accent-gold transition-colors"
+            className="text-serif text-2xl tracking-[0.25em] text-ink-primary font-normal hover:text-accent-green transition-colors"
           >
             CHEZSUA
           </Link>
@@ -88,7 +92,7 @@ export function Header({ isAdmin = false }: HeaderProps) {
           <button
             onClick={openMenu}
             aria-label="Open menu"
-            className="text-mono text-[11px] tracking-[0.3em] uppercase text-ink-primary hover:text-accent-gold transition-colors"
+            className="text-mono text-[11px] tracking-[0.3em] uppercase text-ink-primary hover:text-accent-green transition-colors"
           >
             Menu
           </button>

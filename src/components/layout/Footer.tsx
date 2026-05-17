@@ -52,9 +52,7 @@ export async function Footer({ locale: propLocale }: FooterProps = {}) {
     terms: locale === 'ko' ? '이용약관' : 'Terms',
     privacy: locale === 'ko' ? '개인정보 처리방침' : 'Privacy',
     copyright: locale === 'ko' ? '모든 권리 보유' : 'All rights reserved',
-    reservationOnly: locale === 'ko'
-      ? 'Sat / Sun / Public Holidays — Reservation Only'
-      : 'Sat / Sun / Public Holidays — Reservation Only',
+    reservationOnly: 'Sat / Sun / Public Holidays — Reservation Only',
   };
 
   return (
@@ -98,7 +96,7 @@ export async function Footer({ locale: propLocale }: FooterProps = {}) {
             </div>
           </div>
 
-          {/* Visit + Hours + Reservation Only */}
+          {/* Visit + Hours + Reservation Only (흰색) */}
           <div>
             <h3 className="text-mono text-[10px] tracking-[0.3em] uppercase text-accent-gold mb-4">
               {labels.visit}
@@ -108,8 +106,8 @@ export async function Footer({ locale: propLocale }: FooterProps = {}) {
               {settings.contact.hours && (
                 <div className="text-bg-primary/70 mt-1">{settings.contact.hours}</div>
               )}
-              {/* Reservation Only 안내 - 골드 강조 */}
-              <div className="text-mono text-[10px] tracking-[0.15em] text-accent-gold mt-2 italic">
+              {/* Reservation Only - 흰색으로 변경 */}
+              <div className="text-mono text-[10px] tracking-[0.15em] text-bg-primary mt-2">
                 {labels.reservationOnly}
               </div>
             </div>
