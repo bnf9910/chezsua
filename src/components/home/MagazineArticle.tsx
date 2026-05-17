@@ -34,7 +34,7 @@ function formatDate(date: string | undefined): string {
 }
 
 export function MagazineArticle({ lookbook, isReversed }: Props) {
-  // 항상 영어 콘텐츠 (한국어 페이지에서도)
+  // 영어 고정
   const title = lookbook.title_en || lookbook.title_ko;
   const article = lookbook.article_en || lookbook.article_ko;
 
@@ -43,14 +43,14 @@ export function MagazineArticle({ lookbook, isReversed }: Props) {
 
   return (
     <article
-      className={`grid grid-cols-[7fr_5fr] items-stretch min-h-[80vh] max-lg:grid-cols-1 max-lg:min-h-0 ${
+      className={`grid grid-cols-[7fr_3fr] items-stretch h-screen w-full max-lg:grid-cols-1 max-lg:h-auto ${
         isReversed ? 'lg:[direction:rtl]' : ''
       }`}
     >
-      {/* Image */}
+      {/* Image - 가로 70% + 세로 100vh */}
       <Link
         href={`/lookbooks/story/${lookbook.slug}`}
-        className="block relative overflow-hidden bg-bg-soft lg:[direction:ltr] group max-lg:aspect-[4/3]"
+        className="relative block w-full h-full overflow-hidden bg-bg-soft lg:[direction:ltr] group max-lg:aspect-[4/3] max-lg:h-auto"
       >
         {coverImage ? (
           // eslint-disable-next-line @next/next/no-img-element
@@ -66,12 +66,12 @@ export function MagazineArticle({ lookbook, isReversed }: Props) {
         )}
       </Link>
 
-      {/* Content */}
-      <div className="flex items-center px-16 py-20 max-lg:px-7 max-lg:py-12 lg:[direction:ltr]">
-        <div className="w-full max-w-[500px]">
+      {/* Text - 가로 30% + 세로 가운데 정렬 */}
+      <div className="flex items-center justify-center px-12 py-16 max-lg:px-7 max-lg:py-12 lg:[direction:ltr]">
+        <div className="w-full max-w-md flex flex-col gap-3">
           {/* Title */}
           <h2
-            className="text-serif text-5xl font-light leading-[1.15] mb-8 text-ink-primary max-md:text-3xl"
+            className="text-serif text-[clamp(28px,2.5vw,42px)] font-light leading-[1.15] tracking-[-0.01em] text-ink-primary"
             style={{
               wordBreak: 'keep-all',
               overflowWrap: 'break-word',
@@ -83,53 +83,36 @@ export function MagazineArticle({ lookbook, isReversed }: Props) {
           </h2>
 
           {/* Meta */}
-          <div className="space-y-1.5 mb-8 text-sm">
-            {date && (
-              <div className="flex gap-4">
-                <span className="text-mono text-[10px] tracking-[0.25em] uppercase text-ink-muted w-20">
-                  Date
-                </span>
-                <span className="text-ink-primary">{formatDate(date)}</span>
-              </div>
-            )}
-            {lookbook.client && (
-              <div className="flex gap-4">
-                <span className="text-mono text-[10px] tracking-[0.25em] uppercase text-ink-muted w-20">
-                  Client
-                </span>
-                <span className="text-ink-primary uppercase">{lookbook.client}</span>
-              </div>
-            )}
-            {lookbook.category && (
-              <div className="flex gap-4">
-                <span className="text-mono text-[10px] tracking-[0.25em] uppercase text-ink-muted w-20">
-                  Category
-                </span>
-                <span className="text-ink-primary uppercase">{lookbook.category}</span>
-              </div>
-            )}
-          </div>
+          {date && (
+            <div className="text-mono text-[10px] tracking-[0.3em] uppercase text-accent-green mt-2">
+              {formatDate(date)}
+            </div>
+          )}
+          {lookbook.client && (
+            <div className="text-mono text-[10px] tracking-[0.25em] uppercase text-ink-muted">
+              {lookbook.client}
+            </div>
+          )}
 
           {/* Article Preview */}
           {article && (
-            <div
-              className="text-serif text-ink-secondary mb-8 leading-[1.85]"
+            <p
+              className="text-serif text-base leading-[1.7] text-ink-secondary mt-3"
               style={{
                 display: '-webkit-box',
                 WebkitLineClamp: 4,
                 WebkitBoxOrient: 'vertical',
                 overflow: 'hidden',
-                fontSize: '16px',
               }}
             >
-              {article}
-            </div>
+              {article.split('\n')[0]}
+            </p>
           )}
 
           {/* View Details */}
           <Link
             href={`/lookbooks/story/${lookbook.slug}`}
-            className="text-mono text-[11px] tracking-[0.3em] uppercase text-ink-primary hover:text-accent-green border-b border-ink-primary hover:border-accent-green pb-1 inline-flex items-center gap-2 transition-colors"
+            className="text-mono text-[10px] tracking-[0.3em] uppercase text-ink-primary hover:text-accent-green border-b border-ink-primary hover:border-accent-green pb-1 mt-5 self-start inline-flex items-center gap-2 transition-colors"
           >
             View Details <span>→</span>
           </Link>
