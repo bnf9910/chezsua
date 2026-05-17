@@ -23,23 +23,20 @@ interface Props {
   isReversed?: boolean;
 }
 
-function formatDate(date: string | undefined, locale: Locale): string {
+function formatDate(date: string | undefined): string {
   if (!date) return '';
   try {
     const d = new Date(date);
-    if (locale === 'ko') {
-      return `${d.getFullYear()}.${String(d.getMonth() + 1).padStart(2, '0')}.${String(d.getDate()).padStart(2, '0')}`;
-    }
     return d.toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' });
   } catch {
     return '';
   }
 }
 
-export function MagazineArticle({ lookbook, locale, isReversed }: Props) {
-  const isKo = locale === 'ko';
-  const title = isKo ? lookbook.title_ko || lookbook.title_en : lookbook.title_en || lookbook.title_ko;
-  const article = isKo ? lookbook.article_ko || lookbook.article_en : lookbook.article_en || lookbook.article_ko;
+export function MagazineArticle({ lookbook, isReversed }: Props) {
+  // 항상 영어 콘텐츠 (한국어 페이지에서도)
+  const title = lookbook.title_en || lookbook.title_ko;
+  const article = lookbook.article_en || lookbook.article_ko;
 
   const coverImage = lookbook.cover_image || (lookbook.images && lookbook.images[0]);
   const date = lookbook.publish_date || lookbook.created_at;
@@ -50,7 +47,7 @@ export function MagazineArticle({ lookbook, locale, isReversed }: Props) {
         isReversed ? 'lg:[direction:rtl]' : ''
       }`}
     >
-      {/* Image - 풀와이드 한쪽 끝까지 */}
+      {/* Image */}
       <Link
         href={`/lookbooks/story/${lookbook.slug}`}
         className="block relative overflow-hidden bg-bg-soft lg:[direction:ltr] group max-lg:aspect-[4/3]"
@@ -60,7 +57,7 @@ export function MagazineArticle({ lookbook, locale, isReversed }: Props) {
           <img
             src={coverImage}
             alt={title || ''}
-            className="absolute inset-0 w-full h-full object-cover group-hover:scale-[1.02] transition-transform duration-1000 max-lg:relative"
+            className="absolute inset-0 w-full h-full object-contain group-hover:scale-[1.02] transition-transform duration-1000 max-lg:relative"
           />
         ) : (
           <div className="absolute inset-0 flex items-center justify-center text-ink-muted">
@@ -74,9 +71,7 @@ export function MagazineArticle({ lookbook, locale, isReversed }: Props) {
         <div className="w-full max-w-[500px]">
           {/* Title */}
           <h2
-            className={`text-5xl font-light leading-[1.15] mb-8 text-ink-primary max-md:text-3xl ${
-              isKo ? 'text-korean-serif' : 'text-serif'
-            }`}
+            className="text-serif text-5xl font-light leading-[1.15] mb-8 text-ink-primary max-md:text-3xl"
             style={{
               wordBreak: 'keep-all',
               overflowWrap: 'break-word',
@@ -94,7 +89,7 @@ export function MagazineArticle({ lookbook, locale, isReversed }: Props) {
                 <span className="text-mono text-[10px] tracking-[0.25em] uppercase text-ink-muted w-20">
                   Date
                 </span>
-                <span className="text-ink-primary">{formatDate(date, locale)}</span>
+                <span className="text-ink-primary">{formatDate(date)}</span>
               </div>
             )}
             {lookbook.client && (
@@ -118,17 +113,13 @@ export function MagazineArticle({ lookbook, locale, isReversed }: Props) {
           {/* Article Preview */}
           {article && (
             <div
-              className={`text-ink-secondary mb-8 leading-[1.85] ${
-                isKo ? 'text-korean-serif' : 'text-serif'
-              }`}
+              className="text-serif text-ink-secondary mb-8 leading-[1.85]"
               style={{
                 display: '-webkit-box',
                 WebkitLineClamp: 4,
                 WebkitBoxOrient: 'vertical',
                 overflow: 'hidden',
-                fontSize: isKo ? '15px' : '16px',
-                wordBreak: 'keep-all',
-                overflowWrap: 'break-word',
+                fontSize: '16px',
               }}
             >
               {article}

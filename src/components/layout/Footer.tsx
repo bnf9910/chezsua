@@ -23,6 +23,8 @@ export async function Footer({ locale: propLocale }: FooterProps = {}) {
     }
   }
 
+  const isKo = locale === 'ko';
+
   const supabase = await createClient();
   const { data: settingsRows } = await supabase.from('settings').select('*');
 
@@ -43,22 +45,37 @@ export async function Footer({ locale: propLocale }: FooterProps = {}) {
     }
   });
 
-  const labels = {
-    contact: locale === 'ko' ? '연락처' : 'Contact',
-    visit: locale === 'ko' ? '방문 안내' : 'Visit',
-    follow: locale === 'ko' ? '팔로우' : 'Follow',
-    inquiries: locale === 'ko' ? '문의' : 'Inquiries',
-    startProject: locale === 'ko' ? '프로젝트 시작하기' : 'Start a Project',
-    terms: locale === 'ko' ? '이용약관' : 'Terms',
-    privacy: locale === 'ko' ? '개인정보 처리방침' : 'Privacy',
-    copyright: locale === 'ko' ? '모든 권리 보유' : 'All rights reserved',
-    reservationOnly: 'Sat / Sun / Public Holidays — Reservation Only',
-  };
+  // Footer 한국어 라벨
+  const labels = isKo
+    ? {
+        contact: '연락처',
+        visit: '방문 안내',
+        follow: '팔로우',
+        inquiries: '문의',
+        startProject: '프로젝트 시작하기',
+        terms: '이용약관',
+        privacy: '개인정보 처리방침',
+        copyright: '모든 권리 보유',
+        reservationOnly: '토 / 일 / 공휴일 — 예약제 운영',
+        tagline: '에디토리얼 플로리스트 · 서울',
+      }
+    : {
+        contact: 'Contact',
+        visit: 'Visit',
+        follow: 'Follow',
+        inquiries: 'Inquiries',
+        startProject: 'Start a Project',
+        terms: 'Terms',
+        privacy: 'Privacy',
+        copyright: 'All rights reserved',
+        reservationOnly: 'Sat / Sun / Public Holidays — Reservation Only',
+        tagline: 'Editorial Floristry · Seoul',
+      };
 
   return (
     <footer className="bg-ink-primary text-bg-primary py-20 px-12 max-md:py-14 max-md:px-6">
       <div className="max-w-[1400px] mx-auto">
-        {/* 상단: 흰색 텍스트 로고 (어두운 배경에 잘 보이도록) */}
+        {/* 상단 로고 */}
         <div className="text-center mb-16 pb-16 border-b border-bg-primary/10">
           <Link
             href={`/${locale}`}
@@ -68,8 +85,8 @@ export async function Footer({ locale: propLocale }: FooterProps = {}) {
               CHEZSUA
             </span>
           </Link>
-          <p className="text-mono text-[11px] tracking-[0.3em] uppercase text-bg-primary/60 mt-4">
-            {settings.site.tagline}
+          <p className={`text-mono text-[11px] tracking-[0.3em] uppercase text-bg-primary/60 mt-4 ${isKo ? 'text-korean-serif' : ''}`}>
+            {labels.tagline}
           </p>
         </div>
 
@@ -77,10 +94,10 @@ export async function Footer({ locale: propLocale }: FooterProps = {}) {
         <div className="grid grid-cols-4 gap-10 max-lg:grid-cols-2 max-md:grid-cols-1 max-md:gap-8 mb-16">
           {/* Contact */}
           <div>
-            <h3 className="text-mono text-[10px] tracking-[0.3em] uppercase text-accent-warm mb-4">
+            <h3 className={`text-[11px] tracking-[0.3em] uppercase text-accent-warm mb-4 ${isKo ? 'text-korean-serif font-medium' : 'text-mono'}`}>
               {labels.contact}
             </h3>
-            <div className="text-sm text-bg-primary/90 leading-loose">
+            <div className={`text-sm text-bg-primary/90 leading-loose ${isKo ? 'text-korean-serif' : ''}`}>
               {settings.contact.phone && <div>{settings.contact.phone}</div>}
               {settings.contact.email && (
                 <a
@@ -95,16 +112,15 @@ export async function Footer({ locale: propLocale }: FooterProps = {}) {
 
           {/* Visit */}
           <div>
-            <h3 className="text-mono text-[10px] tracking-[0.3em] uppercase text-accent-warm mb-4">
+            <h3 className={`text-[11px] tracking-[0.3em] uppercase text-accent-warm mb-4 ${isKo ? 'text-korean-serif font-medium' : 'text-mono'}`}>
               {labels.visit}
             </h3>
-            <div className="text-sm text-bg-primary/90 leading-loose">
+            <div className={`text-sm text-bg-primary/90 leading-loose ${isKo ? 'text-korean-serif' : ''}`}>
               {settings.contact.address && <div>{settings.contact.address}</div>}
               {settings.contact.hours && (
                 <div className="text-bg-primary/70 mt-1">{settings.contact.hours}</div>
               )}
-              {/* Reservation Only - 흰색 */}
-              <div className="text-mono text-[10px] tracking-[0.15em] text-bg-primary mt-2">
+              <div className={`text-[10px] tracking-[0.15em] text-bg-primary mt-2 ${isKo ? 'text-korean-serif' : 'text-mono'}`}>
                 {labels.reservationOnly}
               </div>
             </div>
@@ -112,7 +128,7 @@ export async function Footer({ locale: propLocale }: FooterProps = {}) {
 
           {/* Follow */}
           <div>
-            <h3 className="text-mono text-[10px] tracking-[0.3em] uppercase text-accent-warm mb-4">
+            <h3 className={`text-[11px] tracking-[0.3em] uppercase text-accent-warm mb-4 ${isKo ? 'text-korean-serif font-medium' : 'text-mono'}`}>
               {labels.follow}
             </h3>
             <div className="flex gap-3">
@@ -163,12 +179,12 @@ export async function Footer({ locale: propLocale }: FooterProps = {}) {
 
           {/* Inquiries */}
           <div>
-            <h3 className="text-mono text-[10px] tracking-[0.3em] uppercase text-accent-warm mb-4">
+            <h3 className={`text-[11px] tracking-[0.3em] uppercase text-accent-warm mb-4 ${isKo ? 'text-korean-serif font-medium' : 'text-mono'}`}>
               {labels.inquiries}
             </h3>
             <Link
               href={`/${locale}/project`}
-              className="text-sm text-bg-primary hover:text-accent-warm transition-colors border-b border-bg-primary/30 pb-1 inline-block"
+              className={`text-sm text-bg-primary hover:text-accent-warm transition-colors border-b border-bg-primary/30 pb-1 inline-block ${isKo ? 'text-korean-serif' : ''}`}
             >
               {labels.startProject} →
             </Link>
@@ -176,7 +192,7 @@ export async function Footer({ locale: propLocale }: FooterProps = {}) {
         </div>
 
         {/* 하단 */}
-        <div className="pt-8 border-t border-bg-primary/10 flex justify-between items-center text-mono text-[10px] tracking-[0.2em] uppercase text-bg-primary/40 max-md:flex-col max-md:gap-4">
+        <div className={`pt-8 border-t border-bg-primary/10 flex justify-between items-center text-[10px] tracking-[0.2em] uppercase text-bg-primary/40 max-md:flex-col max-md:gap-4 ${isKo ? 'text-korean-serif normal-case tracking-normal' : 'text-mono'}`}>
           <div>© {new Date().getFullYear()} CHEZSUA · {labels.copyright}</div>
           <div className="flex gap-6">
             <Link href={`/${locale}/terms`} className="hover:text-accent-warm transition-colors">

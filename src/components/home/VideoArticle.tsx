@@ -24,23 +24,20 @@ interface Props {
   reverse?: boolean;
 }
 
-function formatDate(date: string | undefined, locale: Locale): string {
+function formatDate(date: string | undefined): string {
   if (!date) return '';
   try {
     const d = new Date(date);
-    if (locale === 'ko') {
-      return `${d.getFullYear()}.${String(d.getMonth() + 1).padStart(2, '0')}.${String(d.getDate()).padStart(2, '0')}`;
-    }
     return d.toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' });
   } catch {
     return '';
   }
 }
 
-export function VideoArticle({ lookbook, locale, reverse }: Props) {
-  const isKo = locale === 'ko';
-  const title = isKo ? lookbook.title_ko || lookbook.title_en : lookbook.title_en || lookbook.title_ko;
-  const article = isKo ? lookbook.article_ko || lookbook.article_en : lookbook.article_en || lookbook.article_ko;
+export function VideoArticle({ lookbook, reverse }: Props) {
+  // 항상 영어
+  const title = lookbook.title_en || lookbook.title_ko;
+  const article = lookbook.article_en || lookbook.article_ko;
   const coverImage = lookbook.cover_image || (lookbook.images && lookbook.images[0]);
   const date = lookbook.publish_date || lookbook.created_at;
 
@@ -60,7 +57,7 @@ export function VideoArticle({ lookbook, locale, reverse }: Props) {
           <img
             src={coverImage}
             alt={title || ''}
-            className="w-full h-full object-cover group-hover:scale-[1.02] transition-transform duration-1000"
+            className="w-full h-full object-contain group-hover:scale-[1.02] transition-transform duration-1000"
           />
         ) : (
           <div className="w-full h-full flex items-center justify-center text-ink-muted">
@@ -68,7 +65,6 @@ export function VideoArticle({ lookbook, locale, reverse }: Props) {
           </div>
         )}
 
-        {/* Play button */}
         <div className="absolute inset-0 flex items-center justify-center bg-ink-primary/20">
           <div className="w-20 h-20 rounded-full bg-bg-primary/90 flex items-center justify-center group-hover:scale-110 transition-transform">
             <svg width="24" height="28" viewBox="0 0 24 28" fill="none">
@@ -85,17 +81,9 @@ export function VideoArticle({ lookbook, locale, reverse }: Props) {
       {/* Text - 30% */}
       <div className="flex flex-col gap-3 lg:[direction:ltr]">
         <div className="text-mono text-[10px] tracking-[0.3em] uppercase text-accent-green">
-          {formatDate(date, locale)}
+          {formatDate(date)}
         </div>
-        <h2
-          className={`text-[clamp(28px,3vw,44px)] font-light leading-[1.1] tracking-[-0.01em] ${
-            isKo ? 'text-korean-serif' : 'text-serif'
-          }`}
-          style={{
-            wordBreak: 'keep-all',
-            overflowWrap: 'break-word',
-          }}
-        >
+        <h2 className="text-serif text-[clamp(28px,3vw,44px)] font-light leading-[1.1] tracking-[-0.01em]">
           <Link
             href={`/lookbooks/story/${lookbook.slug}`}
             className="hover:text-accent-green transition-colors"
@@ -110,16 +98,12 @@ export function VideoArticle({ lookbook, locale, reverse }: Props) {
         )}
         {article && (
           <p
-            className={`text-base leading-[1.7] text-ink-secondary mt-3 ${
-              isKo ? 'text-korean-serif' : 'text-serif'
-            }`}
+            className="text-serif text-base leading-[1.7] text-ink-secondary mt-3"
             style={{
               display: '-webkit-box',
               WebkitLineClamp: 4,
               WebkitBoxOrient: 'vertical',
               overflow: 'hidden',
-              wordBreak: 'keep-all',
-              overflowWrap: 'break-word',
             }}
           >
             {article.split('\n')[0]}
@@ -129,7 +113,7 @@ export function VideoArticle({ lookbook, locale, reverse }: Props) {
           href={`/lookbooks/story/${lookbook.slug}`}
           className="text-mono text-[10px] tracking-[0.3em] uppercase text-ink-primary border-b border-ink-primary pb-1 mt-4 self-start hover:text-accent-green hover:border-accent-green transition-colors"
         >
-          {isKo ? '영상 보기' : 'Watch Film'} →
+          Watch Film →
         </Link>
       </div>
     </article>
