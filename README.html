@@ -1,0 +1,160 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8" />
+<title>CHEZSUA 통합 패치</title>
+<style>
+  body { font-family: -apple-system, sans-serif; background: #F1F5EF; color: #1A1F1B; max-width: 900px; margin: 0 auto; padding: 40px 24px; line-height: 1.7; }
+  h1 { font-size: 32px; border-bottom: 3px solid #2D3F2E; padding-bottom: 14px; margin-bottom: 24px; }
+  h2 { font-size: 22px; color: #2D3F2E; margin: 32px 0 14px; }
+  h3 { font-size: 17px; margin: 22px 0 10px; }
+  code { background: #E6EDE3; padding: 2px 6px; border-radius: 3px; font-family: monospace; font-size: 13px; color: #2D3F2E; }
+  pre { background: #1A1F1B; color: #C4D0C0; padding: 16px 20px; border-radius: 4px; overflow-x: auto; font-family: monospace; font-size: 13px; line-height: 1.6; }
+  table { width: 100%; border-collapse: collapse; margin: 14px 0; font-size: 13px; background: #fff; }
+  th { background: #E6EDE3; padding: 10px; text-align: left; border: 1px solid #D2DCCE; font-size: 11px; text-transform: uppercase; }
+  td { padding: 10px; border: 1px solid #D2DCCE; vertical-align: top; }
+  td.f { font-family: monospace; color: #2D3F2E; font-weight: 600; font-size: 12px; }
+  .step { background: #fff; border-left: 4px solid #2D3F2E; padding: 18px 22px; margin: 16px 0; }
+  .ok { background: #E8F5E9; border-left: 5px solid #38A169; padding: 16px 20px; margin: 16px 0; }
+  .danger { background: #FFEBEB; border-left: 5px solid #C53030; padding: 14px 18px; margin: 14px 0; }
+  .info { background: #FFF8E0; border-left: 5px solid #D69E2E; padding: 14px 18px; margin: 14px 0; }
+  .tree { background: #f7f9f5; padding: 14px 18px; border: 1px solid #D2DCCE; font-family: monospace; font-size: 12px; line-height: 1.7; }
+</style>
+</head>
+<body>
+
+<h1>🚀 CHEZSUA 통합 패치</h1>
+<p style="color:#6B7068;">지금까지 요청하신 모든 변경사항을 한 번에</p>
+
+<div class="ok">
+<strong>✅ 이 패치 하나로 모두 해결</strong>
+<ol>
+  <li>홈 영상 크기 적당히 (max 800px)</li>
+  <li>YouTube/MP4 URL 자동 임베드</li>
+  <li>중국어(ZH) 버튼 숨김</li>
+  <li>한국어 페이지 영어 통일 (거래/법적만 한국어)</li>
+  <li>헤더 + 메뉴 정리 (로그인은 메뉴 오버레이 안)</li>
+  <li>관리자 페이지 진입 (메뉴에 Dashboard)</li>
+  <li>마이페이지 Admin 배너</li>
+  <li>샘플 데이터 정리 페이지 (/admin/cleanup)</li>
+  <li>Insert Sample Data 버튼</li>
+  <li>signout 페이지 (로그아웃 정상 작동)</li>
+  <li>★ AdminSidebar 수정 (대시보드 콘텐츠 보이게)</li>
+</ol>
+</div>
+
+<h2>🔧 적용 방법 (5분)</h2>
+
+<div class="step">
+<h3>STEP 1. SQL 실행 (선택)</h3>
+<p>이미 적용했으면 스킵 가능. 안 했으면:</p>
+<ol>
+  <li>Supabase Dashboard → SQL Editor</li>
+  <li><code>01_video_column.sql</code> 복사 → 붙여넣기 → Run</li>
+</ol>
+</div>
+
+<div class="step">
+<h3>STEP 2. 파일 드래그 (가장 중요!)</h3>
+<p>윈도우 탐색기 두 개:</p>
+<ul>
+  <li>왼쪽: 압축 푼 폴더</li>
+  <li>오른쪽: <code>C:\Users\BNF\Desktop\chezsua</code></li>
+</ul>
+<p>왼쪽의 <strong>src</strong>와 <strong>messages</strong> 폴더를 → 오른쪽으로 드래그</p>
+<p>"병합/덮어쓰기" 묻으면 <strong>예 / 덮어쓰기</strong></p>
+</div>
+
+<div class="step">
+<h3>STEP 3. 로컬 빌드 (선택)</h3>
+<pre>cd C:\Users\BNF\Desktop\chezsua
+npm run build</pre>
+<p>✓ Compiled successfully 나오면 OK!</p>
+</div>
+
+<div class="step">
+<h3>STEP 4. Git Push</h3>
+<pre>cd C:\Users\BNF\Desktop\chezsua
+
+git add .
+
+git commit -m "Apply all-in-one patch: dashboard fix + i18n + video + cleanup"
+
+git push</pre>
+</div>
+
+<div class="step">
+<h3>STEP 5. Vercel 빌드 확인 (1-2분)</h3>
+<p>Vercel Dashboard → Deployments에서 🟢 Ready 확인</p>
+</div>
+
+<div class="step">
+<h3>STEP 6. 시크릿 창에서 테스트</h3>
+<p><strong>Ctrl + Shift + N</strong> → chezsua.vercel.app</p>
+<ul>
+  <li>홈 → 영상 크기 적당히</li>
+  <li>한국어 페이지 → 메뉴 영어</li>
+  <li>로그인 → 메뉴 Dashboard → 대시보드 콘텐츠 보임 ★</li>
+  <li>/admin/cleanup → Insert Sample Data 클릭</li>
+</ul>
+</div>
+
+<h2>📂 ZIP 안의 구조</h2>
+
+<div class="tree">
+chezsua-all-in-one.zip<br/>
+├── 01_video_column.sql<br/>
+├── README.html (이 파일)<br/>
+├── messages/<br/>
+│   └── ko.json<br/>
+└── src/<br/>
+    ├── app/<br/>
+    │   ├── [locale]/auth/signout/page.tsx<br/>
+    │   ├── admin/cleanup/page.tsx<br/>
+    │   └── api/admin/<br/>
+    │       ├── cleanup/lookbooks/route.ts<br/>
+    │       ├── cleanup/products/route.ts<br/>
+    │       └── seed-samples/route.ts<br/>
+    └── components/<br/>
+        ├── account/AdminBanner.tsx<br/>
+        ├── admin/AdminSidebar.tsx<br/>
+        ├── admin/LookbookForm.tsx<br/>
+        ├── admin/SampleCleanupClient.tsx<br/>
+        ├── home/VideoArticle.tsx<br/>
+        ├── layout/Header.tsx<br/>
+        └── layout/MenuOverlay.tsx
+</div>
+
+<h2>⚠️ 주의</h2>
+
+<div class="danger">
+<strong>덮어쓰기 진행</strong>
+<p>아래 파일은 기존 파일을 덮어써요:</p>
+<ul>
+  <li>AdminSidebar.tsx — userEmail prop 받게 수정</li>
+  <li>Header.tsx, MenuOverlay.tsx</li>
+  <li>VideoArticle.tsx</li>
+  <li>ko.json</li>
+</ul>
+<p>모두 Git에 이력 있으니까 복구 가능!</p>
+</div>
+
+<h2>🎯 다음 단계</h2>
+
+<div class="ok">
+<p><strong>이거 적용되면 PHASE 0 완료!</strong></p>
+<p>다음:</p>
+<ul>
+  <li>PHASE 1: 매거진 고정 기능 (홈에 고정 + 최신순)</li>
+  <li>PHASE 2: 룩북/상품 등록</li>
+  <li>PHASE 3: Supabase 가입 설정</li>
+  <li>PHASE 4: 포트원 결제 연결</li>
+  <li>PHASE 5: 도메인 + 출시!</li>
+</ul>
+</div>
+
+<hr style="margin:30px 0; border:none; border-top:1px solid #D2DCCE;" />
+<p style="text-align:center; color:#6B7068; font-size:13px;">1월 출시 가즈아! 🚀🌿</p>
+
+</body>
+</html>
