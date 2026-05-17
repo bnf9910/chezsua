@@ -58,18 +58,15 @@ export async function Footer({ locale: propLocale }: FooterProps = {}) {
   return (
     <footer className="bg-ink-primary text-bg-primary py-20 px-12 max-md:py-14 max-md:px-6">
       <div className="max-w-[1400px] mx-auto">
-        {/* 상단: 큰 골드 로고 */}
+        {/* 상단: 흰색 텍스트 로고 (어두운 배경에 잘 보이도록) */}
         <div className="text-center mb-16 pb-16 border-b border-bg-primary/10">
           <Link
             href={`/${locale}`}
             className="inline-block mb-4 hover:opacity-80 transition-opacity"
           >
-            {/* eslint-disable-next-line @next/next/no-img-element */}
-            <img
-              src="/logo-gold.png"
-              alt="CHEZSUA"
-              className="h-16 max-md:h-12 mx-auto"
-            />
+            <span className="text-serif text-5xl font-light tracking-[0.3em] text-bg-primary max-md:text-4xl">
+              CHEZSUA
+            </span>
           </Link>
           <p className="text-mono text-[11px] tracking-[0.3em] uppercase text-bg-primary/60 mt-4">
             {settings.site.tagline}
@@ -80,7 +77,7 @@ export async function Footer({ locale: propLocale }: FooterProps = {}) {
         <div className="grid grid-cols-4 gap-10 max-lg:grid-cols-2 max-md:grid-cols-1 max-md:gap-8 mb-16">
           {/* Contact */}
           <div>
-            <h3 className="text-mono text-[10px] tracking-[0.3em] uppercase text-accent-gold mb-4">
+            <h3 className="text-mono text-[10px] tracking-[0.3em] uppercase text-accent-warm mb-4">
               {labels.contact}
             </h3>
             <div className="text-sm text-bg-primary/90 leading-loose">
@@ -88,7 +85,7 @@ export async function Footer({ locale: propLocale }: FooterProps = {}) {
               {settings.contact.email && (
                 <a
                   href={`mailto:${settings.contact.email}`}
-                  className="hover:text-accent-gold transition-colors"
+                  className="hover:text-accent-warm transition-colors"
                 >
                   {settings.contact.email}
                 </a>
@@ -96,9 +93,9 @@ export async function Footer({ locale: propLocale }: FooterProps = {}) {
             </div>
           </div>
 
-          {/* Visit + Hours + Reservation Only (흰색) */}
+          {/* Visit */}
           <div>
-            <h3 className="text-mono text-[10px] tracking-[0.3em] uppercase text-accent-gold mb-4">
+            <h3 className="text-mono text-[10px] tracking-[0.3em] uppercase text-accent-warm mb-4">
               {labels.visit}
             </h3>
             <div className="text-sm text-bg-primary/90 leading-loose">
@@ -106,7 +103,7 @@ export async function Footer({ locale: propLocale }: FooterProps = {}) {
               {settings.contact.hours && (
                 <div className="text-bg-primary/70 mt-1">{settings.contact.hours}</div>
               )}
-              {/* Reservation Only - 흰색으로 변경 */}
+              {/* Reservation Only - 흰색 */}
               <div className="text-mono text-[10px] tracking-[0.15em] text-bg-primary mt-2">
                 {labels.reservationOnly}
               </div>
@@ -115,7 +112,7 @@ export async function Footer({ locale: propLocale }: FooterProps = {}) {
 
           {/* Follow */}
           <div>
-            <h3 className="text-mono text-[10px] tracking-[0.3em] uppercase text-accent-gold mb-4">
+            <h3 className="text-mono text-[10px] tracking-[0.3em] uppercase text-accent-warm mb-4">
               {labels.follow}
             </h3>
             <div className="flex gap-3">
@@ -125,7 +122,7 @@ export async function Footer({ locale: propLocale }: FooterProps = {}) {
                   target="_blank"
                   rel="noopener noreferrer"
                   aria-label="Instagram"
-                  className="w-10 h-10 rounded-full flex items-center justify-center border border-bg-primary/20 text-bg-primary/70 hover:bg-accent-gold hover:text-ink-primary hover:border-accent-gold transition-all"
+                  className="w-10 h-10 rounded-full flex items-center justify-center border border-bg-primary/20 text-bg-primary/70 hover:bg-accent-warm hover:text-ink-primary hover:border-accent-warm transition-all"
                 >
                   <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5">
                     <rect x="2" y="2" width="20" height="20" rx="5" />
@@ -140,7 +137,7 @@ export async function Footer({ locale: propLocale }: FooterProps = {}) {
                   target="_blank"
                   rel="noopener noreferrer"
                   aria-label="YouTube"
-                  className="w-10 h-10 rounded-full flex items-center justify-center border border-bg-primary/20 text-bg-primary/70 hover:bg-accent-gold hover:text-ink-primary hover:border-accent-gold transition-all"
+                  className="w-10 h-10 rounded-full flex items-center justify-center border border-bg-primary/20 text-bg-primary/70 hover:bg-accent-warm hover:text-ink-primary hover:border-accent-warm transition-all"
                 >
                   <svg width="16" height="12" viewBox="0 0 24 17" fill="none" stroke="currentColor" strokeWidth="1.5">
                     <rect x="0.75" y="0.75" width="22.5" height="15.5" rx="4" />
@@ -154,7 +151,7 @@ export async function Footer({ locale: propLocale }: FooterProps = {}) {
                   target="_blank"
                   rel="noopener noreferrer"
                   aria-label="Naver Blog"
-                  className="w-10 h-10 rounded-full flex items-center justify-center border border-bg-primary/20 text-bg-primary/70 hover:bg-accent-gold hover:text-ink-primary hover:border-accent-gold transition-all"
+                  className="w-10 h-10 rounded-full flex items-center justify-center border border-bg-primary/20 text-bg-primary/70 hover:bg-accent-warm hover:text-ink-primary hover:border-accent-warm transition-all"
                 >
                   <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5">
                     <path d="M3 21V3H10L17 14V3H21V21H14L7 10V21H3Z" />
@@ -166,12 +163,12 @@ export async function Footer({ locale: propLocale }: FooterProps = {}) {
 
           {/* Inquiries */}
           <div>
-            <h3 className="text-mono text-[10px] tracking-[0.3em] uppercase text-accent-gold mb-4">
+            <h3 className="text-mono text-[10px] tracking-[0.3em] uppercase text-accent-warm mb-4">
               {labels.inquiries}
             </h3>
             <Link
               href={`/${locale}/project`}
-              className="text-sm text-bg-primary hover:text-accent-gold transition-colors border-b border-bg-primary/30 pb-1 inline-block"
+              className="text-sm text-bg-primary hover:text-accent-warm transition-colors border-b border-bg-primary/30 pb-1 inline-block"
             >
               {labels.startProject} →
             </Link>
@@ -182,10 +179,10 @@ export async function Footer({ locale: propLocale }: FooterProps = {}) {
         <div className="pt-8 border-t border-bg-primary/10 flex justify-between items-center text-mono text-[10px] tracking-[0.2em] uppercase text-bg-primary/40 max-md:flex-col max-md:gap-4">
           <div>© {new Date().getFullYear()} CHEZSUA · {labels.copyright}</div>
           <div className="flex gap-6">
-            <Link href={`/${locale}/terms`} className="hover:text-accent-gold transition-colors">
+            <Link href={`/${locale}/terms`} className="hover:text-accent-warm transition-colors">
               {labels.terms}
             </Link>
-            <Link href={`/${locale}/privacy`} className="hover:text-accent-gold transition-colors">
+            <Link href={`/${locale}/privacy`} className="hover:text-accent-warm transition-colors">
               {labels.privacy}
             </Link>
           </div>

@@ -15,10 +15,9 @@ interface Florist {
 interface Props {
   florist: Florist;
   locale: Locale;
-  isReversed?: boolean;
 }
 
-export function FloristRow({ florist, locale, isReversed }: Props) {
+export function FloristRow({ florist, locale }: Props) {
   const isKo = locale === 'ko';
   const name = isKo ? florist.name_ko || florist.name_en : florist.name_en;
   const role = isKo
@@ -29,13 +28,9 @@ export function FloristRow({ florist, locale, isReversed }: Props) {
     : florist.bio_en || florist.bio_ko;
 
   return (
-    <article
-      className={`grid grid-cols-[420px_1fr] gap-16 items-center max-lg:grid-cols-1 max-lg:gap-8 max-lg:max-w-md max-lg:mx-auto ${
-        isReversed ? 'lg:[direction:rtl]' : ''
-      }`}
-    >
-      {/* Photo */}
-      <div className={`${isReversed ? 'lg:[direction:ltr]' : ''}`}>
+    <article className="grid grid-cols-[420px_1fr] gap-16 items-center max-lg:grid-cols-1 max-lg:gap-8 max-lg:max-w-md max-lg:mx-auto">
+      {/* Photo - 항상 왼쪽 */}
+      <div>
         <div className="aspect-[3/4] bg-bg-primary border border-line overflow-hidden">
           {florist.photo ? (
             // eslint-disable-next-line @next/next/no-img-element
@@ -54,31 +49,26 @@ export function FloristRow({ florist, locale, isReversed }: Props) {
         </div>
       </div>
 
-      {/* Content */}
-      <div className={`${isReversed ? 'lg:[direction:ltr]' : ''}`}>
-        {/* Role */}
+      {/* Content - 항상 오른쪽 */}
+      <div>
         {role && (
           <div className="text-mono text-[10px] tracking-[0.3em] uppercase text-accent-green mb-4">
             {role}
           </div>
         )}
 
-        {/* Name */}
         <h3 className="text-serif text-6xl font-light leading-[1.1] tracking-[-0.01em] text-ink-primary mb-8 max-md:text-5xl">
           {name}
         </h3>
 
-        {/* Decorative line */}
         <div className="w-12 h-px bg-ink-primary mb-8" />
 
-        {/* Bio */}
         {bio && (
           <p className="text-serif text-lg text-ink-secondary leading-[1.85] mb-8 max-md:text-base whitespace-pre-line">
             {bio}
           </p>
         )}
 
-        {/* Instagram */}
         {florist.instagram && (
           <a
             href={florist.instagram}

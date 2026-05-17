@@ -6,24 +6,20 @@
 
 @layer base {
   :root {
-    /* CHEZSUA Color Palette - Sage Green 복원 (좀 더 짙게) */
-    --color-bg-primary: 232 240 228;       /* #E8F0E4 - 좀 더 짙은 sage white */
-    --color-bg-soft: 220 232 215;          /* #DCE8D7 - 더 짙은 soft sage */
-    --color-bg-secondary: 210 224 202;     /* #D2E0CA - 한 단계 더 짙음 */
-    --color-ink-primary: 26 31 27;         /* #1A1F1B - 원본 그대로 */
+    /* CHEZSUA - Sage Green 톤 (골드 없음) */
+    --color-bg-primary: 232 240 228;       /* #E8F0E4 - 짙은 sage white */
+    --color-bg-soft: 220 232 215;          /* #DCE8D7 - soft sage */
+    --color-bg-secondary: 210 224 202;     /* #D2E0CA */
+    --color-ink-primary: 26 31 27;         /* #1A1F1B */
     --color-ink-secondary: 58 63 58;       /* #3A3F3A */
     --color-ink-muted: 107 112 104;        /* #6B7068 */
-    --color-line: 180 200 175;             /* 좀 더 짙은 라인 */
+    --color-line: 180 200 175;
     --color-line-soft: 200 215 195;
     
-    /* Sage Green 강조 (원본 + 짙게) */
-    --color-accent-green: 45 63 46;        /* #2D3F2E - 원본 deep sage */
-    --color-accent-sage: 143 166 140;      /* #8FA68C - 부드러운 sage */
-    
-    /* Gold accent - 로고용 */
-    --color-accent-gold: 201 165 92;       /* #C9A55C - 골드 */
-    --color-accent-gold-soft: 220 192 130; /* #DCC082 */
-    --color-accent-gold-dark: 168 137 75;  /* #A8894B */
+    /* Sage Green 강조색 (메인 액센트) */
+    --color-accent-green: 45 63 46;        /* #2D3F2E - Deep Sage (강조) */
+    --color-accent-sage: 143 166 140;      /* #8FA68C - Soft Sage */
+    --color-accent-warm: 181 194 168;      /* #B5C2A8 - Warm Sage */
   }
 
   html {
@@ -76,31 +72,31 @@
   .text-ink-secondary { color: rgb(var(--color-ink-secondary)); }
   .text-ink-muted { color: rgb(var(--color-ink-muted)); }
   
-  /* Sage Green */
+  /* Sage Green - 메인 액센트 */
   .text-accent-green { color: rgb(var(--color-accent-green)); }
   .text-accent-sage { color: rgb(var(--color-accent-sage)); }
+  .text-accent-warm { color: rgb(var(--color-accent-warm)); }
   .bg-accent-green { background-color: rgb(var(--color-accent-green)); }
   .bg-accent-sage { background-color: rgb(var(--color-accent-sage)); }
+  .bg-accent-warm { background-color: rgb(var(--color-accent-warm)); }
   .border-accent-green { border-color: rgb(var(--color-accent-green)); }
+  .border-accent-sage { border-color: rgb(var(--color-accent-sage)); }
   .hover\:bg-accent-green:hover { background-color: rgb(var(--color-accent-green)); }
   .hover\:text-accent-green:hover { color: rgb(var(--color-accent-green)); }
+  .hover\:text-accent-sage:hover { color: rgb(var(--color-accent-sage)); }
   .hover\:border-accent-green:hover { border-color: rgb(var(--color-accent-green)); }
   
-  /* Gold */
-  .text-accent-gold { color: rgb(var(--color-accent-gold)); }
-  .text-accent-gold-soft { color: rgb(var(--color-accent-gold-soft)); }
-  .text-accent-gold-dark { color: rgb(var(--color-accent-gold-dark)); }
-  .bg-accent-gold { background-color: rgb(var(--color-accent-gold)); }
-  .bg-accent-gold-soft { background-color: rgb(var(--color-accent-gold-soft)); }
-  .border-accent-gold { border-color: rgb(var(--color-accent-gold)); }
-  .hover\:bg-accent-gold:hover { background-color: rgb(var(--color-accent-gold)); }
-  .hover\:text-accent-gold:hover { color: rgb(var(--color-accent-gold)); }
-  .hover\:border-accent-gold:hover { border-color: rgb(var(--color-accent-gold)); }
+  /* Gold 호환성 - sage로 완전히 매핑 (혹시 코드에 남아있을 경우 대비) */
+  .text-accent-gold { color: rgb(var(--color-accent-green)); }
+  .bg-accent-gold { background-color: rgb(var(--color-accent-green)); }
+  .border-accent-gold { border-color: rgb(var(--color-accent-green)); }
+  .hover\:bg-accent-gold:hover { background-color: rgb(var(--color-accent-green)); }
+  .hover\:text-accent-gold:hover { color: rgb(var(--color-accent-green)); }
+  .hover\:border-accent-gold:hover { border-color: rgb(var(--color-accent-green)); }
   
   .border-line { border-color: rgb(var(--color-line)); }
   .border-line-soft { border-color: rgb(var(--color-line-soft)); }
 
-  /* Italic 강조 */
   em {
     font-family: 'Cormorant Garamond', Georgia, serif;
     font-style: italic;
@@ -108,7 +104,6 @@
   }
 }
 
-/* 스크롤바 스타일 */
 ::-webkit-scrollbar {
   width: 8px;
 }

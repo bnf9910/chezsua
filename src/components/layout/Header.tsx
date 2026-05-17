@@ -12,12 +12,7 @@ export function Header({ isAdmin = false }: HeaderProps) {
   const [scrolled, setScrolled] = useState(false);
   const pathname = usePathname();
 
-  // 홈페이지 여부 (홈에서는 검은색 CHEZSUA 텍스트)
   const isHome = pathname?.match(/^\/(en|ko|zh)?\/?$/) !== null;
-
-  // Shop/Lookbooks/About/Project (골드 로고)
-  const isInnerPage =
-    pathname?.match(/^\/(en|ko|zh)\/(shop|lookbooks|about|project|account|terms|privacy|contact|auth)/) !== null;
 
   useEffect(() => {
     function handleScroll() {
@@ -43,21 +38,14 @@ export function Header({ isAdmin = false }: HeaderProps) {
       }`}
     >
       <div className="flex justify-between items-center px-12 max-md:px-6">
-        {/* Logo Area */}
+        {/* Logo */}
         {isHome ? (
-          // 홈: 검은색 CHEZSUA 텍스트
-          <Link
-            href="/"
-            className="text-serif text-2xl tracking-[0.25em] text-ink-primary font-normal hover:text-accent-green transition-colors"
-          >
-            CHEZSUA
-          </Link>
-        ) : isInnerPage ? (
-          // Shop/Lookbooks/About/Project: 골드 로고 (크기 살짝 축소)
+          <div />
+        ) : (
           <Link href="/" className="block">
             {/* eslint-disable-next-line @next/next/no-img-element */}
             <img
-              src="/logo-gold.png"
+              src="/logo-sage.png"
               alt="CHEZSUA"
               className={`transition-all duration-300 ${
                 scrolled
@@ -66,29 +54,19 @@ export function Header({ isAdmin = false }: HeaderProps) {
               }`}
             />
           </Link>
-        ) : (
-          // 기타: 검은색 텍스트
-          <Link
-            href="/"
-            className="text-serif text-2xl tracking-[0.25em] text-ink-primary font-normal hover:text-accent-green transition-colors"
-          >
-            CHEZSUA
-          </Link>
         )}
 
-        {/* Right side */}
+        {/* Right */}
         <div className="flex items-center gap-6 max-md:gap-4">
-          {/* Admin Button */}
           {isAdmin && (
             <Link
               href="/admin"
-              className="text-mono text-[10px] tracking-[0.25em] uppercase text-accent-gold hover:text-bg-primary hover:bg-accent-gold border border-accent-gold px-3 py-1.5 transition-all max-md:px-2 max-md:py-1"
+              className="text-mono text-[10px] tracking-[0.25em] uppercase text-accent-green hover:text-bg-primary hover:bg-accent-green border border-accent-green px-3 py-1.5 transition-all max-md:px-2 max-md:py-1"
             >
               Admin
             </Link>
           )}
 
-          {/* Menu Button */}
           <button
             onClick={openMenu}
             aria-label="Open menu"

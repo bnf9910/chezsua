@@ -15,7 +15,7 @@ export default async function HomePage({ params }: HomePageProps) {
 
   const supabase = await createClient();
 
-  // 1. Featured 룩북 조회
+  // 1. Featured 룩북
   const { data: featured } = await supabase
     .from('lookbooks')
     .select('*')
@@ -25,7 +25,7 @@ export default async function HomePage({ params }: HomePageProps) {
     .order('publish_date', { ascending: false })
     .limit(5);
 
-  // 2. 일반 룩북 (Featured 제외, 최신순)
+  // 2. 일반 룩북
   let recent: typeof featured = [];
   const featuredIds = (featured || []).map((f) => f.id);
 
@@ -49,18 +49,28 @@ export default async function HomePage({ params }: HomePageProps) {
 
   const allLookbooks = [...(featured || []), ...recent];
 
-  // DB 비어있을 때 fallback - 깔끔하게 Coming Soon만 표시
+  // DB 비어있을 때 fallback - 검은색 로고 + 큰 글씨
   if (allLookbooks.length === 0) {
     return (
-      <main className="min-h-screen flex items-center justify-center bg-bg-primary px-12 max-md:px-6">
-        <div className="text-center max-w-2xl">
-          <div className="text-mono text-[11px] tracking-[0.3em] uppercase text-accent-green mb-6">
-            CHEZSUA
+      <main className="min-h-screen flex items-center justify-center bg-bg-primary px-12 max-md:px-6 py-20">
+        <div className="text-center max-w-3xl">
+          {/* 검은색 로고 - 크게 */}
+          <div className="mb-16 max-md:mb-12">
+            {/* eslint-disable-next-line @next/next/no-img-element */}
+            <img
+              src="/logo-black.png"
+              alt="CHEZSUA"
+              className="h-32 max-md:h-20 mx-auto"
+            />
           </div>
-          <h1 className="text-serif text-5xl font-light italic mb-6 max-md:text-4xl">
+
+          {/* Stories Coming Soon - 더 크고 굵게 */}
+          <h1 className="text-serif text-8xl font-medium italic text-ink-primary mb-8 leading-[1.1] tracking-[-0.02em] max-md:text-5xl">
             Stories Coming Soon
           </h1>
-          <p className="text-serif text-lg text-ink-secondary leading-relaxed">
+
+          {/* 부제 */}
+          <p className="text-serif text-2xl text-ink-secondary leading-relaxed max-md:text-lg">
             {locale === 'ko'
               ? '편집실에서 새로운 이야기를 준비하고 있습니다.'
               : 'New stories are being prepared in the editorial room.'}
@@ -94,7 +104,6 @@ export default async function HomePage({ params }: HomePageProps) {
         );
       })}
 
-      {/* 룩북이 있을 때만 홈 맨 밑 Inquiry 섹션 표시 */}
       <HomeInquirySection locale={locale} />
     </main>
   );

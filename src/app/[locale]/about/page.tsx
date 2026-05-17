@@ -118,11 +118,10 @@ export default async function AboutPage({ params }: PageProps) {
         </p>
       </section>
 
-      {/* SECTION 2: Florists - 세로 배치 (각자 한 행) */}
+      {/* SECTION 2: Florists - 모두 사진 왼쪽 (지그재그 X) */}
       {florists.length > 0 && (
         <section className="bg-bg-soft py-24 max-md:py-16">
           <div className="max-w-[1200px] mx-auto px-12 max-md:px-7">
-            {/* Section Title */}
             <div className="text-center mb-20 max-md:mb-12">
               <div className="text-mono text-[11px] tracking-[0.3em] uppercase text-accent-green mb-4">
                 {isKo ? '플로리스트' : 'Florists'}
@@ -141,14 +140,13 @@ export default async function AboutPage({ params }: PageProps) {
               </h2>
             </div>
 
-            {/* Florist Rows - 세로 배치 */}
+            {/* 모든 플로리스트: 사진 왼쪽 + 설명 오른쪽 (isReversed prop 완전 제거) */}
             <div className="space-y-24 max-md:space-y-16">
-              {florists.map((florist, index) => (
+              {florists.map((florist) => (
                 <FloristRow
                   key={florist.id}
                   florist={florist}
                   locale={locale}
-                  isReversed={index % 2 === 1}
                 />
               ))}
             </div>
