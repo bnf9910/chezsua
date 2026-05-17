@@ -1,54 +1,166 @@
-'use client';
-
-import { useTranslations, useLocale } from 'next-intl';
-import { Link } from '@/lib/i18n';
-import { CONTACT_INFO } from '@/lib/constants';
-import { SocialIcons } from '@/components/ui/SocialIcons';
+import Link from 'next/link';
+import { createClient } from '@/lib/supabase/server';
 import type { Locale } from '@/lib/i18n';
 
-export function Footer() {
-  const t = useTranslations('Footer');
-  const locale = useLocale() as Locale;
+interface FooterProps {
+  locale: Locale;
+}
+
+export async function Footer({ locale }: FooterProps) {
+  const supabase = await createClient();
+  const { data: settingsRows } = await supabase.from('settings').select('*');
+
+  const settings: Record<string, Record<string, string>> = {
+    site: { name: 'CHEZSUA', tagline: 'Editorial Floristry · Seoul', description: '' },
+    contact: { phone: '', email: 'chezsuaflower@gmail.com', address: 'Seoul · Gangnam', hours: 'Tue — Sat · 10:00 AM — 7:00 PM' },
+    social: { instagram: 'https://instagram.com/chezsua', naver_blog: '', youtube: '' },
+  };
+
+  (settingsRows || []).forEach((row) => {
+    if (settings[row.key]) {
+      settings[row.key] = { ...settings[row.key], ...(row.value as Record<string, string>) };
+    }
+  });
+
+  const labels = {
+    contact: locale === 'ko' ? '연락처' : 'Contact',
+    visit: locale === 'ko' ? '방문 안내' : 'Visit',
+    follow: locale === 'ko' ? '팔로우' : 'Follow',
+    inquiries: locale === 'ko' ? '문의' : 'Inquiries',
+    startProject: locale === 'ko' ? '프로젝트 시작하기' : 'Start a Project',
+    terms: locale === 'ko' ? '이용약관' : 'Terms',
+    privacy: locale === 'ko' ? '개인정보 처리방침' : 'Privacy',
+    copyright: locale === 'ko' ? '모든 권리 보유' : 'All rights reserved',
+  };
 
   return (
-    <footer className="bg-ink-primary text-bg-primary px-12 pt-20 pb-10 max-md:px-5">
-      <div className="max-w-[1600px] mx-auto grid grid-cols-[1fr_auto_1fr] gap-16 items-center pb-14 border-b border-white/15 max-md:grid-cols-1 max-md:text-center max-md:gap-8 max-md:pb-12">
-        {/* Social - locale별 분기 */}
-        <div className="max-md:flex max-md:justify-center">
-          <SocialIcons locale={locale} variant="dark" size="lg" />
-        </div>
-
-        {/* Logo */}
-        <div className="text-center">
-          <div className="text-serif text-3xl tracking-[0.32em]">
-            CHEZ<span className="text-accent-sage">·</span>SUA
-          </div>
-          <div className="text-mono text-[10px] tracking-[0.3em] uppercase text-white/50 mt-2">
-            {t('tagline')}
-          </div>
-        </div>
-
-        {/* Inquiries */}
-        <div className="text-right max-md:text-center">
-          <div className="text-mono text-[10px] tracking-[0.25em] uppercase text-white/50 mb-2">
-            {t('inquiries')}
-          </div>
+    <footer className="bg-ink-primary text-bg-primary py-20 px-12 max-md:py-14 max-md:px-6">
+      <div className="max-w-[1400px] mx-auto">
+        {/* 상단: 큰 로고 + 태그라인 */}
+        <div className="text-center mb-16 pb-16 border-b border-bg-primary/10">
           <Link
-            href="/project"
-            className="text-serif italic text-2xl text-accent-cream border-b border-accent-cream/40 pb-1 hover:border-accent-cream transition-colors"
+            href={`/${locale}`}
+            className="text-serif text-5xl font-light tracking-[0.3em] text-bg-primary inline-block mb-4 max-md:text-4xl"
           >
-            {t('startProject')} →
+            CHEZSUA
           </Link>
+          <p className="text-mono text-[11px] tracking-[0.3em] uppercase text-bg-primary/60">
+            {settings.site.tagline}
+          </p>
         </div>
-      </div>
 
-      <div className="max-w-[1600px] mx-auto mt-9 flex justify-between text-mono text-[10px] tracking-[0.15em] uppercase text-white/50 flex-wrap gap-4 max-md:justify-center max-md:text-center">
-        <div className="flex gap-8 flex-wrap max-md:justify-center max-md:gap-4">
-          <span>{locale === 'ko' ? CONTACT_INFO.address_ko : CONTACT_INFO.address_en}</span>
-          <span>{CONTACT_INFO.phone}</span>
-          <span>{CONTACT_INFO.email}</span>
+        {/* 4단 그리드: 연락처 / 방문 / 팔로우 / 문의 */}
+        <div className="grid grid-cols-4 gap-10 max-lg:grid-cols-2 max-md:grid-cols-1 max-md:gap-8 mb-16">
+          {/* Contact */}
+          <div>
+            <h3 className="text-mono text-[10px] tracking-[0.3em] uppercase text-bg-primary/50 mb-4">
+              {labels.contact}
+            </h3>
+            <div className="text-sm text-bg-primary/90 leading-loose">
+              {settings.contact.phone && (
+                <div>{settings.contact.phone}</div>
+              )}
+              {settings.contact.email && (
+                <a
+                  href={`mailto:${settings.contact.email}`}
+                  className="hover:text-accent-sage transition-colors"
+                >
+                  {settings.contact.email}
+                </a>
+              )}
+            </div>
+          </div>
+
+          {/* Visit */}
+          <div>
+            <h3 className="text-mono text-[10px] tracking-[0.3em] uppercase text-bg-primary/50 mb-4">
+              {labels.visit}
+            </h3>
+            <div className="text-sm text-bg-primary/90 leading-loose">
+              {settings.contact.address && <div>{settings.contact.address}</div>}
+              {settings.contact.hours && (
+                <div className="text-bg-primary/70 mt-1">{settings.contact.hours}</div>
+              )}
+            </div>
+          </div>
+
+          {/* Follow */}
+          <div>
+            <h3 className="text-mono text-[10px] tracking-[0.3em] uppercase text-bg-primary/50 mb-4">
+              {labels.follow}
+            </h3>
+            <div className="flex gap-3">
+              {settings.social.instagram && (
+                <a
+                  href={settings.social.instagram}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  aria-label="Instagram"
+                  className="w-10 h-10 rounded-full flex items-center justify-center border border-bg-primary/20 text-bg-primary/70 hover:bg-bg-primary hover:text-ink-primary hover:border-bg-primary transition-all"
+                >
+                  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5">
+                    <rect x="2" y="2" width="20" height="20" rx="5" />
+                    <circle cx="12" cy="12" r="4" />
+                    <circle cx="18" cy="6" r="1" fill="currentColor" />
+                  </svg>
+                </a>
+              )}
+              {settings.social.youtube && (
+                <a
+                  href={settings.social.youtube}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  aria-label="YouTube"
+                  className="w-10 h-10 rounded-full flex items-center justify-center border border-bg-primary/20 text-bg-primary/70 hover:bg-bg-primary hover:text-ink-primary hover:border-bg-primary transition-all"
+                >
+                  <svg width="16" height="12" viewBox="0 0 24 17" fill="none" stroke="currentColor" strokeWidth="1.5">
+                    <rect x="0.75" y="0.75" width="22.5" height="15.5" rx="4" />
+                    <path d="M9.5 5L15 8.5L9.5 12V5Z" fill="currentColor" />
+                  </svg>
+                </a>
+              )}
+              {settings.social.naver_blog && (
+                <a
+                  href={settings.social.naver_blog}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  aria-label="Naver Blog"
+                  className="w-10 h-10 rounded-full flex items-center justify-center border border-bg-primary/20 text-bg-primary/70 hover:bg-bg-primary hover:text-ink-primary hover:border-bg-primary transition-all"
+                >
+                  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5">
+                    <path d="M3 21V3H10L17 14V3H21V21H14L7 10V21H3Z" />
+                  </svg>
+                </a>
+              )}
+            </div>
+          </div>
+
+          {/* Inquiries */}
+          <div>
+            <h3 className="text-mono text-[10px] tracking-[0.3em] uppercase text-bg-primary/50 mb-4">
+              {labels.inquiries}
+            </h3>
+            <Link
+              href={`/${locale}/project`}
+              className="text-sm text-bg-primary hover:text-accent-sage transition-colors border-b border-bg-primary/30 pb-1 inline-block"
+            >
+              {labels.startProject} →
+            </Link>
+          </div>
         </div>
-        <span>© {new Date().getFullYear()} CHEZSUA</span>
+
+        {/* 하단: copyright + legal links */}
+        <div className="pt-8 border-t border-bg-primary/10 flex justify-between items-center text-mono text-[10px] tracking-[0.2em] uppercase text-bg-primary/40 max-md:flex-col max-md:gap-4">
+          <div>© {new Date().getFullYear()} CHEZSUA · {labels.copyright}</div>
+          <div className="flex gap-6">
+            <Link href={`/${locale}/terms`} className="hover:text-bg-primary transition-colors">
+              {labels.terms}
+            </Link>
+            <Link href={`/${locale}/privacy`} className="hover:text-bg-primary transition-colors">
+              {labels.privacy}
+            </Link>
+          </div>
+        </div>
       </div>
     </footer>
   );

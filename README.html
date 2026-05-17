@@ -2,216 +2,131 @@
 <html lang="ko">
 <head>
 <meta charset="UTF-8" />
-<title>CHEZSUA PHASE 1A - 룩북 상세 + SEO + Settings</title>
+<title>CHEZSUA PHASE 1B - 최소 기능 마무리</title>
 <style>
   body { font-family: -apple-system, sans-serif; background: #F1F5EF; color: #1A1F1B; max-width: 900px; margin: 0 auto; padding: 40px 24px; line-height: 1.7; }
   h1 { font-size: 30px; border-bottom: 3px solid #2D3F2E; padding-bottom: 14px; }
   h2 { font-size: 22px; color: #2D3F2E; margin: 32px 0 14px; }
   h3 { font-size: 17px; margin: 22px 0 10px; }
-  code { background: #E6EDE3; padding: 2px 6px; border-radius: 3px; font-family: monospace; font-size: 13px; color: #2D3F2E; }
+  code { background: #E6EDE3; padding: 2px 6px; border-radius: 3px; font-family: monospace; font-size: 13px; }
   pre { background: #1A1F1B; color: #C4D0C0; padding: 16px 20px; border-radius: 4px; font-family: monospace; font-size: 13px; }
   .step { background: #fff; border-left: 4px solid #2D3F2E; padding: 18px 22px; margin: 16px 0; }
   .ok { background: #E8F5E9; border-left: 5px solid #38A169; padding: 16px 20px; margin: 16px 0; }
   .danger { background: #FFEBEB; border-left: 5px solid #C53030; padding: 14px 18px; margin: 14px 0; }
   .info { background: #FFF8E0; border-left: 5px solid #D69E2E; padding: 14px 18px; margin: 14px 0; }
-  .tree { background: #f7f9f5; padding: 14px 18px; border: 1px solid #D2DCCE; font-family: monospace; font-size: 12px; line-height: 1.7; }
   table { width: 100%; border-collapse: collapse; margin: 14px 0; font-size: 13px; background: #fff; }
   th { background: #E6EDE3; padding: 10px; text-align: left; border: 1px solid #D2DCCE; font-size: 11px; }
-  td { padding: 10px; border: 1px solid #D2DCCE; vertical-align: top; }
+  td { padding: 10px; border: 1px solid #D2DCCE; }
 </style>
 </head>
 <body>
 
-<h1>🚀 PHASE 1A — 룩북 상세 + SEO + Settings</h1>
-<p style="color:#6B7068;">매거진 클릭 시 큰 사진 + 갤러리, SEO 최적화, Settings 저장 기능</p>
+<h1>🚀 PHASE 1B — 최소 기능 마무리</h1>
 
 <div class="ok">
-<strong>✅ 이 패치로 해결되는 것</strong>
+<strong>✅ 이 패치로 완성되는 것</strong>
 <ol>
-  <li>🎯 매거진 클릭 시 전체 덮은 큰 사진 (히어로 이미지)</li>
-  <li>📸 사진 2장 이상이면 썸네일 갤러리</li>
-  <li>🔍 사진 클릭하면 라이트박스 확대 보기</li>
-  <li>📜 매거진 스타일 본문</li>
-  <li>🌍 SEO/GEO 최적화 (메타태그, Open Graph, JSON-LD)</li>
-  <li>🗺 sitemap.xml + robots.txt 자동 생성</li>
-  <li>⭐ 홈 페이지: Featured 룩북 먼저 + 최신순</li>
-  <li>⚙️ Settings 저장 기능 (실제 작동!)</li>
+  <li>📌 Footer Settings 연동 (실제 입력한 정보 표시)</li>
+  <li>📄 이용약관 페이지 (한국 전자상거래법 기반)</li>
+  <li>📄 개인정보 처리방침 페이지</li>
+  <li>📧 Send Inquiry 이메일 발송 (Resend 연동)</li>
+  <li>🗃 문의 내역 DB 저장 (관리자가 확인 가능)</li>
 </ol>
 </div>
 
 <h2>📁 ZIP 안의 파일들</h2>
 
-<div class="tree">
-src/<br/>
-├── app/<br/>
-│   ├── sitemap.ts                  ← sitemap.xml 자동 생성<br/>
-│   ├── robots.ts                   ← robots.txt<br/>
-│   ├── [locale]/<br/>
-│   │   ├── page.tsx                ← 홈 (Featured + 최신순)<br/>
-│   │   └── lookbooks/story/[slug]/<br/>
-│   │       └── page.tsx            ← 룩북 상세 페이지 ⭐<br/>
-│   ├── admin/settings/<br/>
-│   │   └── page.tsx                ← Settings 페이지<br/>
-│   └── api/admin/settings/<br/>
-│       └── route.ts                ← Settings 저장 API<br/>
-└── components/<br/>
-    ├── admin/<br/>
-    │   └── SettingsClient.tsx      ← Settings 폼<br/>
-    └── lookbook/<br/>
-        └── LookbookStoryGallery.tsx ← 갤러리 컴포넌트
-</div>
+<pre>src/
+├── app/
+│   ├── [locale]/
+│   │   ├── terms/page.tsx          ← 이용약관
+│   │   └── privacy/page.tsx        ← 개인정보 처리방침
+│   └── api/inquiry/route.ts        ← Inquiry API (Resend)
+└── components/layout/
+    └── Footer.tsx                  ← 푸터 (Settings 연동)
+
+03_inquiry_and_users.sql            ← Supabase 실행</pre>
 
 <h2>🔧 적용 순서</h2>
 
 <div class="step">
 <h3>1️⃣ SQL 실행</h3>
-<p>Supabase SQL Editor → <code>02_settings_and_seo.sql</code> 실행</p>
+<p>Supabase SQL Editor → <code>03_inquiry_and_users.sql</code> 실행</p>
 <ul>
-  <li>settings 테이블 생성</li>
-  <li>룩북에 featured_order, seo_title 등 추가</li>
+  <li>project_inquiries 테이블 생성</li>
+  <li>users 테이블에 name, phone 등 추가</li>
 </ul>
 </div>
 
 <div class="step">
-<h3>2️⃣ src 폴더 드래그</h3>
-<p>왼쪽: 압축 푼 폴더 / 오른쪽: chezsua 폴더 → src 드래그 (병합)</p>
+<h3>2️⃣ ZIP 압축 풀기 → src 드래그 (병합)</h3>
 </div>
 
 <div class="step">
-<h3>3️⃣ 로컬 빌드 (선택)</h3>
-<pre>npm run build</pre>
+<h3>3️⃣ Vercel 환경변수 확인</h3>
+<p>Vercel Dashboard → chezsua → Settings → Environment Variables에 다음이 있어야 합니다:</p>
+<table>
+<tr><td><code>RESEND_API_KEY</code></td><td>Resend에서 발급받은 키</td></tr>
+<tr><td><code>INQUIRY_TO_EMAIL</code></td><td>chezsuaflower@gmail.com</td></tr>
+<tr><td><code>INQUIRY_FROM_EMAIL</code></td><td>noreply@chezsua.com 또는 onboarding@resend.dev</td></tr>
+</table>
+
+<p><strong>주의</strong>: Resend에서 chezsua.com 도메인 인증을 안 하셨다면, FROM_EMAIL을 <code>onboarding@resend.dev</code>로 두세요 (Resend 기본 도메인).</p>
 </div>
 
 <div class="step">
 <h3>4️⃣ Git Push</h3>
-<pre>git add .
-git commit -m "PHASE 1A: lookbook story page + SEO + settings"
+<pre>cd C:\Users\(사용자명)\Desktop\chezsua
+git add .
+git commit -m "PHASE 1B: footer settings + terms/privacy + inquiry email"
 git push</pre>
 </div>
 
-<h2>🎯 사용 방법</h2>
+<h2>🎯 테스트 방법</h2>
 
-<h3>1. 룩북 만들기 + 사진 업로드</h3>
+<h3>A. 푸터 정보</h3>
 <ol>
-  <li><code>/admin/lookbooks/new</code> 접속</li>
-  <li>📸 Images에 사진 여러 장 업로드</li>
-  <li>제목, 카테고리, 클라이언트 등 입력</li>
-  <li><strong>Featured</strong> 체크 → 홈에 표시됨</li>
-  <li>Status: Published → Save</li>
+  <li>먼저 <code>/admin/settings</code>에서 전화번호, 이메일, 주소 등 입력 → Save</li>
+  <li>홈으로 가서 푸터 확인</li>
+  <li>✅ 입력한 정보가 푸터에 표시되면 성공!</li>
 </ol>
 
-<h3>2. 매거진 클릭 시</h3>
-<p>홈 → 룩북 article → <strong>View Details</strong> 클릭</p>
-<p>다음 화면이 보입니다:</p>
-<ul>
-  <li>✨ 전체 화면 덮은 큰 사진 (85vh)</li>
-  <li>📸 사진 여러 장이면 ← → 화살표 + 썸네일 갤러리</li>
-  <li>🔍 사진 클릭하면 라이트박스 (✕로 닫기)</li>
-  <li>📜 매거진 스타일 본문 (가운데 정렬, 큰 제목)</li>
-  <li>📚 같은 카테고리 관련 룩북 3개</li>
-</ul>
-
-<h3>3. Settings 페이지에서 사이트 정보 변경</h3>
+<h3>B. 이용약관 / 개인정보 처리방침</h3>
 <ol>
-  <li><code>/admin/settings</code> 접속</li>
-  <li>사이트 정보, 연락처, 소셜, SEO 입력</li>
-  <li>하단 <strong>Save Settings</strong> 클릭</li>
-  <li><strong>"✓ 저장되었습니다"</strong> 메시지 확인</li>
+  <li>푸터 하단의 <strong>이용약관</strong> 또는 <strong>개인정보 처리방침</strong> 클릭</li>
+  <li>✅ 실제 텍스트가 표시되면 성공!</li>
 </ol>
 
-<h3>4. SEO 확인</h3>
-<p>구글 검색에서 사이트 찾을 수 있게 하려면:</p>
+<h3>C. Send Inquiry 이메일</h3>
 <ol>
-  <li><strong>Vercel 배포 후</strong> <code>chezsua.vercel.app/sitemap.xml</code> 접속 → XML 보이면 OK</li>
-  <li><strong><a href="https://search.google.com/search-console" target="_blank">Google Search Console</a></strong> 사이트 등록</li>
-  <li><strong><a href="https://searchadvisor.naver.com/" target="_blank">네이버 웹마스터 도구</a></strong> 사이트 등록</li>
-  <li>sitemap.xml URL 제출</li>
-  <li>1-2주 후 검색 결과에 노출</li>
+  <li><code>/project</code> 페이지 접속</li>
+  <li>폼 작성 → <strong>Send Inquiry</strong> 클릭</li>
+  <li>"Thank you. We will reply within 2 business days." 메시지 확인</li>
+  <li>🔍 <strong>chezsuaflower@gmail.com</strong>에서 메일 확인 (스팸함도!)</li>
+  <li>✅ 메일이 오면 성공!</li>
 </ol>
-
-<h2>📐 룩북 상세 페이지 화면</h2>
-
-<pre>
-┌──────────────────────────────────────────────────┐
-│                                                  │
-│                                                  │
-│      ←  [전체 덮은 메인 사진 85vh]  →            │
-│                                          1/5    │
-│                                                  │
-└──────────────────────────────────────────────────┘
-
-   [□] [□] [□] [□] [□]   ← 썸네일 갤러리
-
-           CHEZSUA · Article N° 042
-           ────────────────────
-
-           A study in *quiet* opulence
-
-           DATE: 2026.09.03 | CATEGORY: Fashion
-           CLIENT: PRADA — Lotte Jamsil
-           MAIN: YOON | SUB: CHOI
-
-           For the autumn unveiling at Lotte
-           Jamsil, we draped the boutique...
-
-           ────────────────────
-           ← Back to Lookbooks
-
-──────────────────────────────────────────────
-        Related Stories
-   [□]          [□]          [□]
-   PRADA        Hermès       Four Seasons
-</pre>
-
-<h2>🌍 SEO 작동 방식</h2>
-
-<table>
-<thead><tr><th>요소</th><th>역할</th></tr></thead>
-<tbody>
-<tr><td><strong>title</strong></td><td>구글 검색 결과 제목 + 브라우저 탭</td></tr>
-<tr><td><strong>description</strong></td><td>구글 검색 결과 설명</td></tr>
-<tr><td><strong>keywords</strong></td><td>검색 키워드 ("서울 플로리스트" 등)</td></tr>
-<tr><td><strong>Open Graph</strong></td><td>페이스북/카톡 공유 시 미리보기</td></tr>
-<tr><td><strong>JSON-LD</strong></td><td>구글 리치 결과 (별점, 이미지 등)</td></tr>
-<tr><td><strong>sitemap.xml</strong></td><td>모든 페이지 URL 목록 → 구글이 크롤링</td></tr>
-</tbody>
-</table>
-
-<h2>💡 추가 SEO 팁</h2>
 
 <div class="info">
-<strong>SEO 효과 극대화 방법</strong>
+<strong>💡 이메일이 안 오면?</strong>
 <ul>
-  <li>매거진 글에 <strong>키워드 자연스럽게</strong> 넣기 (예: "강남 플로리스트", "PRADA")</li>
-  <li>사진 alt 텍스트도 추후 SEO에 반영</li>
-  <li>매거진 글이 <strong>최소 300단어</strong> 이상이면 좋음</li>
-  <li>새로운 룩북 정기적으로 올리기 (월 2-3회)</li>
-  <li>관련 룩북 링크가 자동으로 들어가서 좋음</li>
+  <li>스팸함 확인</li>
+  <li>Vercel 환경변수 <code>RESEND_API_KEY</code> 확인</li>
+  <li>Resend Dashboard → API Keys에서 키 유효한지 확인</li>
+  <li>Resend Dashboard → Emails에서 로그 확인 (발송 시도 기록)</li>
 </ul>
 </div>
 
-<h2>🚨 주의사항</h2>
-
-<div class="danger">
-<strong>적용 후 확인할 것</strong>
-<ul>
-  <li>홈에 룩북 표시되는지 (없으면 "Stories Coming Soon")</li>
-  <li>매거진 클릭 시 새 상세 페이지로 이동하는지</li>
-  <li>사진 갤러리 작동하는지</li>
-  <li>Settings 저장 후 "✓ 저장되었습니다" 표시되는지</li>
-</ul>
-</div>
-
-<h2>📋 다음 PHASE 예고</h2>
+<h2>🌟 다음 단계 (PHASE 1C)</h2>
 
 <div class="ok">
-<p><strong>PHASE 2 (다음): Products 등록 기능</strong></p>
+<strong>회원가입/로그인 활성화</strong>
 <ul>
-  <li>상품 추가/수정 폼 (사진 업로드 통합)</li>
-  <li>상품 목록 페이지 개선</li>
-  <li>가격/사이즈/카테고리 설정</li>
+  <li>Supabase Authentication 설정 가이드</li>
+  <li>회원가입 폼 작동 확인</li>
+  <li>로그인 폼 작동 확인</li>
+  <li>마이페이지 정상 작동</li>
+  <li>관리자 룩북 고정 기능 (is_featured 토글)</li>
 </ul>
-<p><strong>PHASE 3: 결제 시스템 연결</strong></p>
 </div>
 
 <hr style="margin:30px 0; border:none; border-top:1px solid #D2DCCE;" />
