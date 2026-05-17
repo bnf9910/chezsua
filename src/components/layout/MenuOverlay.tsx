@@ -1,7 +1,6 @@
 'use client';
 
 import { useState, useEffect } from 'react';
-import { useLocale } from 'next-intl';
 import { usePathname } from 'next/navigation';
 import NextLink from 'next/link';
 import { Link } from '@/lib/i18n';
@@ -27,7 +26,7 @@ interface MenuOverlayProps {
   userEmail?: string;
 }
 
-// 폴백: DB 메뉴 없을 때 기본 메뉴
+// 폴백: DB 메뉴 없을 때 (Contact 제거, Project로 통합)
 const FALLBACK_LINKS: Partial<MenuItem>[] = [
   { href: '/', label_en: 'Home', label_ko: 'Home', color: '#1A1F1B', font_size: 'text-4xl', font_weight: 'normal' },
   { href: '/shop', label_en: 'Shop', label_ko: 'Shop', color: '#1A1F1B', font_size: 'text-4xl', font_weight: 'normal' },
@@ -39,7 +38,6 @@ const FALLBACK_LINKS: Partial<MenuItem>[] = [
 export function MenuOverlay({ isAdmin = false, userEmail = '' }: MenuOverlayProps) {
   const [open, setOpen] = useState(false);
   const [menus, setMenus] = useState<Partial<MenuItem>[]>(FALLBACK_LINKS);
-  const locale = useLocale();
   const pathname = usePathname();
   const isLoggedIn = !!userEmail;
 
@@ -139,17 +137,18 @@ export function MenuOverlay({ isAdmin = false, userEmail = '' }: MenuOverlayProp
                 href="/admin"
                 className="flex items-center justify-between gap-3 px-4 py-3 bg-ink-primary text-bg-primary hover:bg-accent-green transition-colors group"
               >
-                <span className="text-mono text-[11px] tracking-[0.25em] uppercase">관리자 대시보드</span>
+                <span className="text-mono text-[11px] tracking-[0.25em] uppercase">Admin Dashboard</span>
                 <span className="text-mono text-[16px] group-hover:translate-x-1 transition-transform">→</span>
               </NextLink>
             </div>
           )}
 
-          {/* Main Navigation - DB 동적 메뉴 */}
+          {/* Main Navigation - 항상 영어 라벨 */}
           <nav className="flex-1 px-10 pt-6 max-md:px-7">
             <ul className="space-y-4">
               {menus.map((menu, i) => {
-                const label = locale === 'ko' ? menu.label_ko || menu.label_en : menu.label_en || menu.label_ko;
+                // 메뉴는 항상 영어 (한국어 페이지에서도)
+                const label = menu.label_en || menu.label_ko;
                 const className = `block ${menu.font_size || 'text-4xl'} max-md:!text-3xl hover:italic hover:opacity-70 transition-all`;
                 const style = {
                   color: menu.color || '#1A1F1B',
