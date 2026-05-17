@@ -22,26 +22,28 @@ async function requireAdmin() {
   return { serviceClient };
 }
 
-export async function POST(req: NextRequest) {
+interface RouteParams {
+  params: Promise<{ id: string }>;
+}
+
+export async function PATCH(req: NextRequest, { params }: RouteParams) {
   try {
     const auth = await requireAdmin();
     if (!auth) {
       return NextResponse.json({ ok: false, error: 'Unauthorized' }, { status: 401 });
     }
 
+    const { id } = await params;
     const body = await req.json();
+
     const { data, error } = await auth.serviceClient
       .from('menu_items')
-      .insert({
-        ...body,
-        created_at: new Date().toISOString(),
-        updated_at: new Date().toISOString(),
-      })
+      .update({ ...body, updated_at: new Date().toISOString() })
+      .eq('id', id)
       .select()
       .single();
 
     if (error) {
-      console.error('[menus POST] error:', error);
       return NextResponse.json({ ok: false, error: error.message }, { status: 500 });
     }
 
@@ -51,19 +53,21 @@ export async function POST(req: NextRequest) {
   }
 }
 
-export async function GET() {
+export async function DELETE(req: NextRequest, { params }: RouteParams) {
   try {
-    const supabase = await createClient();
-    const { data, error } = await supabase
-      .from('menu_items')
-      .select('*')
-      .order('display_order', { ascending: true });
+    const auth = await requireAdmin();
+    if (!auth) {
+      return NextResponse.json({ ok: false, error: 'Unauthorized' }, { status: 401 });
+    }
+
+    const { id } = await params;
+    const { error } = await auth.serviceClient.from('menu_items').delete().eq('id', id);
 
     if (error) {
       return NextResponse.json({ ok: false, error: error.message }, { status: 500 });
     }
 
-    return NextResponse.json({ ok: true, menus: data });
+    return NextResponse.json({ ok: true });
   } catch (err) {
     return NextResponse.json({ ok: false, error: String(err) }, { status: 500 });
   }
