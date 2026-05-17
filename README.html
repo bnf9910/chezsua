@@ -2,240 +2,216 @@
 <html lang="ko">
 <head>
 <meta charset="UTF-8" />
-<title>CHEZSUA 사진 업로드 인프라 설정</title>
+<title>CHEZSUA PHASE 1A - 룩북 상세 + SEO + Settings</title>
 <style>
   body { font-family: -apple-system, sans-serif; background: #F1F5EF; color: #1A1F1B; max-width: 900px; margin: 0 auto; padding: 40px 24px; line-height: 1.7; }
   h1 { font-size: 30px; border-bottom: 3px solid #2D3F2E; padding-bottom: 14px; }
-  h2 { font-size: 22px; color: #2D3F2E; margin: 32px 0 14px; padding-top: 8px; }
+  h2 { font-size: 22px; color: #2D3F2E; margin: 32px 0 14px; }
   h3 { font-size: 17px; margin: 22px 0 10px; }
   code { background: #E6EDE3; padding: 2px 6px; border-radius: 3px; font-family: monospace; font-size: 13px; color: #2D3F2E; }
-  pre { background: #1A1F1B; color: #C4D0C0; padding: 16px 20px; border-radius: 4px; overflow-x: auto; font-family: monospace; font-size: 13px; line-height: 1.6; }
+  pre { background: #1A1F1B; color: #C4D0C0; padding: 16px 20px; border-radius: 4px; font-family: monospace; font-size: 13px; }
   .step { background: #fff; border-left: 4px solid #2D3F2E; padding: 18px 22px; margin: 16px 0; }
   .ok { background: #E8F5E9; border-left: 5px solid #38A169; padding: 16px 20px; margin: 16px 0; }
   .danger { background: #FFEBEB; border-left: 5px solid #C53030; padding: 14px 18px; margin: 14px 0; }
   .info { background: #FFF8E0; border-left: 5px solid #D69E2E; padding: 14px 18px; margin: 14px 0; }
-  .important { background: #E0F2FE; border-left: 5px solid #0EA5E9; padding: 14px 18px; margin: 14px 0; }
-  ol { padding-left: 24px; }
-  li { margin: 6px 0; }
+  .tree { background: #f7f9f5; padding: 14px 18px; border: 1px solid #D2DCCE; font-family: monospace; font-size: 12px; line-height: 1.7; }
   table { width: 100%; border-collapse: collapse; margin: 14px 0; font-size: 13px; background: #fff; }
-  th { background: #E6EDE3; padding: 10px; text-align: left; border: 1px solid #D2DCCE; font-size: 11px; text-transform: uppercase; }
-  td { padding: 10px; border: 1px solid #D2DCCE; }
-  .number {
-    display: inline-flex; align-items: center; justify-content: center;
-    width: 28px; height: 28px; background: #2D3F2E; color: white;
-    border-radius: 50%; margin-right: 8px; font-weight: 600; font-size: 14px;
-  }
+  th { background: #E6EDE3; padding: 10px; text-align: left; border: 1px solid #D2DCCE; font-size: 11px; }
+  td { padding: 10px; border: 1px solid #D2DCCE; vertical-align: top; }
 </style>
 </head>
 <body>
 
-<h1>📸 사진 업로드 인프라 설정</h1>
-<p style="color:#6B7068;">룩북/상품 사진을 진짜로 업로드하고 표시되게 만드는 작업</p>
+<h1>🚀 PHASE 1A — 룩북 상세 + SEO + Settings</h1>
+<p style="color:#6B7068;">매거진 클릭 시 큰 사진 + 갤러리, SEO 최적화, Settings 저장 기능</p>
 
-<div class="important">
-<strong>🎯 작업 단계 (총 3가지)</strong>
+<div class="ok">
+<strong>✅ 이 패치로 해결되는 것</strong>
 <ol>
-  <li><strong>PART A</strong>: Supabase Storage 버킷 만들기 (대시보드 클릭)</li>
-  <li><strong>PART B</strong>: SQL 실행 (정책 + 컬럼)</li>
-  <li><strong>PART C</strong>: 코드 적용 + Git push</li>
+  <li>🎯 매거진 클릭 시 전체 덮은 큰 사진 (히어로 이미지)</li>
+  <li>📸 사진 2장 이상이면 썸네일 갤러리</li>
+  <li>🔍 사진 클릭하면 라이트박스 확대 보기</li>
+  <li>📜 매거진 스타일 본문</li>
+  <li>🌍 SEO/GEO 최적화 (메타태그, Open Graph, JSON-LD)</li>
+  <li>🗺 sitemap.xml + robots.txt 자동 생성</li>
+  <li>⭐ 홈 페이지: Featured 룩북 먼저 + 최신순</li>
+  <li>⚙️ Settings 저장 기능 (실제 작동!)</li>
 </ol>
-<p>순서대로 따라하시면 30분 안에 사진 업로드 완성!</p>
 </div>
 
-<h2>🗂 PART A: Supabase Storage 버킷 만들기</h2>
+<h2>📁 ZIP 안의 파일들</h2>
+
+<div class="tree">
+src/<br/>
+├── app/<br/>
+│   ├── sitemap.ts                  ← sitemap.xml 자동 생성<br/>
+│   ├── robots.ts                   ← robots.txt<br/>
+│   ├── [locale]/<br/>
+│   │   ├── page.tsx                ← 홈 (Featured + 최신순)<br/>
+│   │   └── lookbooks/story/[slug]/<br/>
+│   │       └── page.tsx            ← 룩북 상세 페이지 ⭐<br/>
+│   ├── admin/settings/<br/>
+│   │   └── page.tsx                ← Settings 페이지<br/>
+│   └── api/admin/settings/<br/>
+│       └── route.ts                ← Settings 저장 API<br/>
+└── components/<br/>
+    ├── admin/<br/>
+    │   └── SettingsClient.tsx      ← Settings 폼<br/>
+    └── lookbook/<br/>
+        └── LookbookStoryGallery.tsx ← 갤러리 컴포넌트
+</div>
+
+<h2>🔧 적용 순서</h2>
 
 <div class="step">
-<h3><span class="number">1</span>Supabase Dashboard 접속</h3>
-<ol>
-  <li><a href="https://supabase.com/dashboard" target="_blank">supabase.com/dashboard</a> 로그인</li>
-  <li><strong>chezsua</strong> 프로젝트 클릭</li>
-</ol>
-</div>
-
-<div class="step">
-<h3><span class="number">2</span>Storage 메뉴 클릭</h3>
-<ol>
-  <li>좌측 메뉴에서 <strong>Storage</strong> 클릭 (서랍 모양 아이콘)</li>
-</ol>
-</div>
-
-<div class="step">
-<h3><span class="number">3</span>새 버킷 만들기</h3>
-<ol>
-  <li>화면 좌측 또는 가운데에 <strong>"New bucket"</strong> 버튼 클릭</li>
-  <li>다음과 같이 입력:
-    <ul>
-      <li><strong>Name</strong>: <code>chezsua-images</code> (정확히 이대로!)</li>
-      <li><strong>Public bucket</strong>: ✅ 체크 (필수!)</li>
-      <li>나머지는 기본값</li>
-    </ul>
-  </li>
-  <li><strong>Save</strong> 또는 <strong>Create bucket</strong> 클릭</li>
-</ol>
-</div>
-
-<div class="danger">
-<strong>⚠️ 매우 중요</strong>
+<h3>1️⃣ SQL 실행</h3>
+<p>Supabase SQL Editor → <code>02_settings_and_seo.sql</code> 실행</p>
 <ul>
-  <li>버킷 이름: 반드시 <code>chezsua-images</code> (다른 이름이면 코드와 안 맞음)</li>
-  <li>Public 체크: 필수 (체크 안 하면 사진 표시 안 됨)</li>
-</ul>
-</div>
-
-<h2>📋 PART B: SQL 실행</h2>
-
-<div class="step">
-<h3><span class="number">1</span>SQL Editor 접속</h3>
-<ol>
-  <li>좌측 메뉴 <strong>SQL Editor</strong> 클릭</li>
-  <li><strong>New query</strong> 클릭</li>
-</ol>
-</div>
-
-<div class="step">
-<h3><span class="number">2</span>SQL 파일 내용 복사 → 실행</h3>
-<p>ZIP 안의 <code>01_storage_setup.sql</code> 내용을 복사 → SQL Editor에 붙여넣기 → <strong>Run</strong> 클릭</p>
-<p>이 SQL이 하는 일:</p>
-<ul>
-  <li>lookbooks 테이블에 <code>cover_image</code>, <code>images</code> 컬럼 추가</li>
-  <li>products 테이블에 <code>images</code> 컬럼 추가</li>
-  <li>Storage 버킷에 대한 권한 정책 설정</li>
-</ul>
-</div>
-
-<div class="info">
-<strong>💡 이미 컬럼이 있어도 안전</strong>
-<p>SQL에 <code>IF NOT EXISTS</code> 가 있어서 이미 있는 컬럼/정책은 자동 스킵해요.</p>
-</div>
-
-<h2>💻 PART C: 코드 적용</h2>
-
-<div class="step">
-<h3><span class="number">1</span>ZIP 압축 풀기</h3>
-</div>
-
-<div class="step">
-<h3><span class="number">2</span>src 폴더 드래그</h3>
-<p>윈도우 탐색기 두 개:</p>
-<ul>
-  <li>왼쪽: 압축 푼 폴더</li>
-  <li>오른쪽: <code>chezsua\src</code></li>
-</ul>
-<p>왼쪽의 <code>src</code> 안에 있는 폴더들을 → 오른쪽으로 드래그</p>
-<p>"병합하시겠습니까?" → <strong>예</strong></p>
-
-<p><strong>새로 추가/덮어쓰기 되는 파일:</strong></p>
-<ul>
-  <li>✨ NEW: <code>src/app/api/admin/upload/route.ts</code></li>
-  <li>✨ NEW: <code>src/components/admin/ImageUploader.tsx</code></li>
-  <li>🔄 OVERWRITE: <code>src/components/admin/LookbookForm.tsx</code></li>
+  <li>settings 테이블 생성</li>
+  <li>룩북에 featured_order, seo_title 등 추가</li>
 </ul>
 </div>
 
 <div class="step">
-<h3><span class="number">3</span>로컬 빌드 테스트</h3>
-<pre>cd C:\Users\(사용자명)\Desktop\chezsua
-npm run build</pre>
-<p>✓ Compiled successfully 나오면 OK!</p>
+<h3>2️⃣ src 폴더 드래그</h3>
+<p>왼쪽: 압축 푼 폴더 / 오른쪽: chezsua 폴더 → src 드래그 (병합)</p>
 </div>
 
 <div class="step">
-<h3><span class="number">4</span>Git Push</h3>
+<h3>3️⃣ 로컬 빌드 (선택)</h3>
+<pre>npm run build</pre>
+</div>
+
+<div class="step">
+<h3>4️⃣ Git Push</h3>
 <pre>git add .
-git commit -m "Add image upload infrastructure (Supabase Storage + UI)"
+git commit -m "PHASE 1A: lookbook story page + SEO + settings"
 git push</pre>
 </div>
 
-<div class="step">
-<h3><span class="number">5</span>Vercel 빌드 후 (1-2분) 테스트</h3>
-</div>
+<h2>🎯 사용 방법</h2>
 
-<h2>🎯 테스트 방법</h2>
-
-<div class="step">
-<h3>관리자 페이지에서:</h3>
+<h3>1. 룩북 만들기 + 사진 업로드</h3>
 <ol>
-  <li>관리자 로그인</li>
-  <li><strong>/admin/lookbooks/new</strong> 접속 (또는 기존 룩북 Edit)</li>
-  <li>화면 상단의 초록색 <strong>📸 Lookbook Images</strong> 영역</li>
-  <li>"Drop or Click to Upload" 박스 클릭 → 사진 선택</li>
-  <li>또는 사진을 드래그&드롭</li>
-  <li>업로드 진행률 표시 → 완료!</li>
-  <li>썸네일이 격자로 표시됨</li>
-  <li>첫 번째 사진에 <strong>"Cover"</strong> 배지 자동 표시</li>
-  <li>호버하면 ←, →, × 버튼 (순서 변경/삭제)</li>
-  <li>나머지 정보 입력 → Save</li>
+  <li><code>/admin/lookbooks/new</code> 접속</li>
+  <li>📸 Images에 사진 여러 장 업로드</li>
+  <li>제목, 카테고리, 클라이언트 등 입력</li>
+  <li><strong>Featured</strong> 체크 → 홈에 표시됨</li>
+  <li>Status: Published → Save</li>
 </ol>
-</div>
 
-<h2>🎨 UI 미리보기</h2>
+<h3>2. 매거진 클릭 시</h3>
+<p>홈 → 룩북 article → <strong>View Details</strong> 클릭</p>
+<p>다음 화면이 보입니다:</p>
+<ul>
+  <li>✨ 전체 화면 덮은 큰 사진 (85vh)</li>
+  <li>📸 사진 여러 장이면 ← → 화살표 + 썸네일 갤러리</li>
+  <li>🔍 사진 클릭하면 라이트박스 (✕로 닫기)</li>
+  <li>📜 매거진 스타일 본문 (가운데 정렬, 큰 제목)</li>
+  <li>📚 같은 카테고리 관련 룩북 3개</li>
+</ul>
+
+<h3>3. Settings 페이지에서 사이트 정보 변경</h3>
+<ol>
+  <li><code>/admin/settings</code> 접속</li>
+  <li>사이트 정보, 연락처, 소셜, SEO 입력</li>
+  <li>하단 <strong>Save Settings</strong> 클릭</li>
+  <li><strong>"✓ 저장되었습니다"</strong> 메시지 확인</li>
+</ol>
+
+<h3>4. SEO 확인</h3>
+<p>구글 검색에서 사이트 찾을 수 있게 하려면:</p>
+<ol>
+  <li><strong>Vercel 배포 후</strong> <code>chezsua.vercel.app/sitemap.xml</code> 접속 → XML 보이면 OK</li>
+  <li><strong><a href="https://search.google.com/search-console" target="_blank">Google Search Console</a></strong> 사이트 등록</li>
+  <li><strong><a href="https://searchadvisor.naver.com/" target="_blank">네이버 웹마스터 도구</a></strong> 사이트 등록</li>
+  <li>sitemap.xml URL 제출</li>
+  <li>1-2주 후 검색 결과에 노출</li>
+</ol>
+
+<h2>📐 룩북 상세 페이지 화면</h2>
 
 <pre>
-┌─────────────────────────────────────────────────────────┐
-│ IMAGES                                                  │
-│ ┌─────────────────────────────────────────────────────┐ │
-│ │ 📸 Lookbook Images (3/20)                           │ │
-│ │                                                     │ │
-│ │   ┌─────────────────────────────────────────────┐  │ │
-│ │   │           ↑                                  │  │ │
-│ │   │     Drop or Click to Upload                 │  │ │
-│ │   │     JPG, PNG, WebP · Max 10MB each          │  │ │
-│ │   │                                              │  │ │
-│ │   └─────────────────────────────────────────────┘  │ │
-│ │                                                     │ │
-│ │   ┌──────┐ ┌──────┐ ┌──────┐ ┌──────┐             │ │
-│ │   │[Cover]│ │  2   │ │  3   │ │  +  │             │ │
-│ │   │  📸  │ │  📸  │ │  📸  │ │      │             │ │
-│ │   │  1   │ │      │ │      │ │      │             │ │
-│ │   └──────┘ └──────┘ └──────┘ └──────┘             │ │
-│ └─────────────────────────────────────────────────────┘ │
-│                                                         │
-│ TITLE                                                   │
-│ ...                                                     │
-└─────────────────────────────────────────────────────────┘
+┌──────────────────────────────────────────────────┐
+│                                                  │
+│                                                  │
+│      ←  [전체 덮은 메인 사진 85vh]  →            │
+│                                          1/5    │
+│                                                  │
+└──────────────────────────────────────────────────┘
+
+   [□] [□] [□] [□] [□]   ← 썸네일 갤러리
+
+           CHEZSUA · Article N° 042
+           ────────────────────
+
+           A study in *quiet* opulence
+
+           DATE: 2026.09.03 | CATEGORY: Fashion
+           CLIENT: PRADA — Lotte Jamsil
+           MAIN: YOON | SUB: CHOI
+
+           For the autumn unveiling at Lotte
+           Jamsil, we draped the boutique...
+
+           ────────────────────
+           ← Back to Lookbooks
+
+──────────────────────────────────────────────
+        Related Stories
+   [□]          [□]          [□]
+   PRADA        Hermès       Four Seasons
 </pre>
 
-<h2>📝 주의사항</h2>
+<h2>🌍 SEO 작동 방식</h2>
+
+<table>
+<thead><tr><th>요소</th><th>역할</th></tr></thead>
+<tbody>
+<tr><td><strong>title</strong></td><td>구글 검색 결과 제목 + 브라우저 탭</td></tr>
+<tr><td><strong>description</strong></td><td>구글 검색 결과 설명</td></tr>
+<tr><td><strong>keywords</strong></td><td>검색 키워드 ("서울 플로리스트" 등)</td></tr>
+<tr><td><strong>Open Graph</strong></td><td>페이스북/카톡 공유 시 미리보기</td></tr>
+<tr><td><strong>JSON-LD</strong></td><td>구글 리치 결과 (별점, 이미지 등)</td></tr>
+<tr><td><strong>sitemap.xml</strong></td><td>모든 페이지 URL 목록 → 구글이 크롤링</td></tr>
+</tbody>
+</table>
+
+<h2>💡 추가 SEO 팁</h2>
+
+<div class="info">
+<strong>SEO 효과 극대화 방법</strong>
+<ul>
+  <li>매거진 글에 <strong>키워드 자연스럽게</strong> 넣기 (예: "강남 플로리스트", "PRADA")</li>
+  <li>사진 alt 텍스트도 추후 SEO에 반영</li>
+  <li>매거진 글이 <strong>최소 300단어</strong> 이상이면 좋음</li>
+  <li>새로운 룩북 정기적으로 올리기 (월 2-3회)</li>
+  <li>관련 룩북 링크가 자동으로 들어가서 좋음</li>
+</ul>
+</div>
+
+<h2>🚨 주의사항</h2>
 
 <div class="danger">
-<strong>업로드 실패 시 흔한 원인:</strong>
+<strong>적용 후 확인할 것</strong>
 <ul>
-  <li><strong>Storage 버킷 이름 오타</strong> — 반드시 <code>chezsua-images</code></li>
-  <li><strong>Public 체크 안 함</strong> — 다시 Storage → 버킷 클릭 → Settings에서 Public 변경</li>
-  <li><strong>SQL 실행 안 됨</strong> — Storage 정책이 없어서 권한 거부</li>
-  <li><strong>관리자 권한 없음</strong> — users 테이블에서 role='admin' 확인</li>
-  <li><strong>파일 크기 10MB 초과</strong> — 사진 압축 후 재시도</li>
+  <li>홈에 룩북 표시되는지 (없으면 "Stories Coming Soon")</li>
+  <li>매거진 클릭 시 새 상세 페이지로 이동하는지</li>
+  <li>사진 갤러리 작동하는지</li>
+  <li>Settings 저장 후 "✓ 저장되었습니다" 표시되는지</li>
 </ul>
 </div>
 
-<div class="ok">
-<strong>✅ 이 패치 완료 후 가능한 것</strong>
-<ul>
-  <li>룩북에 사진 다중 업로드</li>
-  <li>드래그&드롭으로 업로드</li>
-  <li>업로드 진행률 표시</li>
-  <li>첫 사진이 자동으로 Cover</li>
-  <li>호버해서 순서 변경 (←, →)</li>
-  <li>호버해서 삭제 (×)</li>
-  <li>최대 20장까지</li>
-</ul>
-</div>
-
-<h2>📊 다음 단계 예고</h2>
+<h2>📋 다음 PHASE 예고</h2>
 
 <div class="ok">
-<strong>STEP 2 (다음): 룩북 상세 페이지</strong>
-<p>매거진 클릭하면:</p>
+<p><strong>PHASE 2 (다음): Products 등록 기능</strong></p>
 <ul>
-  <li>업로드한 사진들이 매거진처럼 표시</li>
-  <li>전체 덮은 큰 히어로 사진 (Cover)</li>
-  <li>썸네일 갤러리로 다른 사진들 표시</li>
-  <li>썸네일 클릭하면 큰 사진으로 전환</li>
-  <li>그 밑에 매거진 스타일 본문</li>
+  <li>상품 추가/수정 폼 (사진 업로드 통합)</li>
+  <li>상품 목록 페이지 개선</li>
+  <li>가격/사이즈/카테고리 설정</li>
 </ul>
-
-<strong>STEP 3 (그 다음): 상품 등록</strong>
-<p>같은 ImageUploader를 상품 페이지에도 통합</p>
+<p><strong>PHASE 3: 결제 시스템 연결</strong></p>
 </div>
 
 <hr style="margin:30px 0; border:none; border-top:1px solid #D2DCCE;" />

@@ -1,268 +1,282 @@
-import { setRequestLocale } from 'next-intl/server';
 import { notFound } from 'next/navigation';
-import { Link } from '@/lib/i18n';
+import { setRequestLocale } from 'next-intl/server';
+import Link from 'next/link';
 import { createClient } from '@/lib/supabase/server';
+import { LookbookStoryGallery } from '@/components/lookbook/LookbookStoryGallery';
+import type { Metadata } from 'next';
 import type { Locale } from '@/lib/i18n';
-import type { Lookbook } from '@/lib/types';
-
-// ============ 시안 v6 샘플 룩북 5개 (홈과 동일) ============
-const FALLBACK_LOOKBOOKS: Record<string, Lookbook> = {
-  'sample-1': {
-    id: 'fallback-1',
-    slug: 'sample-1',
-    title_en: 'A study in *quiet* opulence',
-    title_ko: '*조용한* 풍요로움에 대한 연구',
-    title_zh: '*静谧*奢华的研究',
-    article_en: 'For the autumn unveiling at Lotte Jamsil, we draped the boutique in muted blooms — antique garden roses, smoked eucalyptus, dried hydrangea — composing a still life that whispered rather than declared.\n\nEach arrangement carried the weight of restraint, the vocabulary of a season folding into itself.',
-    article_ko: '잠실 롯데백화점 가을 신상 발표를 위해, 우리는 부티크를 차분한 꽃들로 채웠습니다 — 앤틱 가든 로즈, 스모크 유칼립투스, 드라이 하이드랜지아.\n\n각 작품은 절제의 무게를, 한 계절이 스스로에게로 접히는 어휘를 담았습니다.',
-    article_zh: '为乐天蚕室秋季新品发布，我们用静谧的花卉装点精品店 — 古董花园玫瑰、烟熏桉树、干绣球花。',
-    cover_image: '',
-    images: [],
-    category: 'fashion',
-    client: 'PRADA — Lotte Jamsil',
-    main_florist: 'YOON',
-    sub_florist: 'CHOI',
-    publish_date: '2026-09-03',
-    status: 'published',
-    sort_order: 1,
-    is_featured: true,
-    is_video: false,
-    video_url: null,
-    created_at: new Date().toISOString(),
-    updated_at: new Date().toISOString(),
-  } as Lookbook,
-  'sample-2': {
-    id: 'fallback-2',
-    slug: 'sample-2',
-    title_en: 'A lobby, *blooming*',
-    title_ko: '*꽃이 피어나는* 로비',
-    title_zh: '*绽放的*大堂',
-    article_en: "A monumental centerpiece marking the hotel's tenth anniversary — sculpted from cymbidium orchids, white peony, and trailing greenery.",
-    article_ko: '호텔 10주년을 기념하는 기념비적 센터피스 — 심비디움 난, 백작약, 그리고 흐르는 그린.',
-    article_zh: '为酒店十周年打造的纪念性中心装置 — 由心碧兰、白芍药与垂落的绿植雕琢而成。',
-    cover_image: '',
-    images: [],
-    category: 'hotels',
-    client: 'Four Seasons Seoul',
-    main_florist: 'SUA',
-    sub_florist: 'YOON',
-    publish_date: '2026-08-21',
-    status: 'published',
-    sort_order: 2,
-    is_featured: true,
-    is_video: false,
-    video_url: null,
-    created_at: new Date().toISOString(),
-    updated_at: new Date().toISOString(),
-  } as Lookbook,
-  'sample-3': {
-    id: 'fallback-3',
-    slug: 'sample-3',
-    title_en: 'Vows by the *sea*',
-    title_ko: '*바닷가의* 서약',
-    title_zh: '*海边*的誓言',
-    article_en: 'An intimate ceremony framed by hand-tied bouquets of garden roses, ranunculus, and trailing jasmine — captured against the island wind.',
-    article_ko: '가든 로즈, 라넌큘러스, 흐르는 자스민으로 만든 핸드타이드 부케로 둘러싸인 친밀한 예식 — 제주 바람을 배경으로.',
-    article_zh: '由花园玫瑰、毛茛与垂落茉莉手扎花束围绕的私密仪式 — 以济州的风为背景。',
-    cover_image: '',
-    images: [],
-    category: 'wedding',
-    client: 'Private — Jeju',
-    main_florist: 'SUA',
-    sub_florist: 'CHOI',
-    publish_date: '2026-08-12',
-    status: 'published',
-    sort_order: 3,
-    is_featured: true,
-    is_video: true,
-    video_url: null,
-    created_at: new Date().toISOString(),
-    updated_at: new Date().toISOString(),
-  } as Lookbook,
-  'sample-4': {
-    id: 'fallback-4',
-    slug: 'sample-4',
-    title_en: 'Tabletop as *theatre*',
-    title_ko: '*극장으로서의* 테이블',
-    title_zh: '作为*剧场*的餐桌',
-    article_en: 'A seasonal collaboration with chef Anh Sung-jae — twelve courses, twelve compositions, each a fleeting still life.',
-    article_ko: '안성재 셰프와의 시즌 콜라보 — 12개 코스, 12개 구성, 각각이 순간의 정물화.',
-    article_zh: '与安主厨的季节合作 — 十二道菜，十二个构图，每一刻都是静物。',
-    cover_image: '',
-    images: [],
-    category: 'fine-dining',
-    client: 'Mosu Seoul',
-    main_florist: 'YOON',
-    sub_florist: 'SUA',
-    publish_date: '2026-07-29',
-    status: 'published',
-    sort_order: 4,
-    is_featured: true,
-    is_video: false,
-    video_url: null,
-    created_at: new Date().toISOString(),
-    updated_at: new Date().toISOString(),
-  } as Lookbook,
-  'sample-5': {
-    id: 'fallback-5',
-    slug: 'sample-5',
-    title_en: 'A garden of *equestrian* heritage',
-    title_ko: '*승마의* 정원',
-    title_zh: '*马术*遗产的花园',
-    article_en: 'A seasonal window for Maison Dosan — a meditation on equestrian heritage, in saddle-leather browns.',
-    article_ko: '메종 도산의 시즌 윈도우 — 승마 헤리티지에 대한 명상, 안장 가죽의 갈색 톤으로.',
-    article_zh: '为道山之家打造的季节橱窗 — 关于马术遗产的冥想，以鞍革褐色调展现。',
-    cover_image: '',
-    images: [],
-    category: 'fashion',
-    client: 'Hermès — Maison Dosan',
-    main_florist: 'CHOI',
-    sub_florist: 'YOON',
-    publish_date: '2026-07-14',
-    status: 'published',
-    sort_order: 5,
-    is_featured: true,
-    is_video: false,
-    video_url: null,
-    created_at: new Date().toISOString(),
-    updated_at: new Date().toISOString(),
-  } as Lookbook,
-};
-
-const SAMPLE_GRADIENTS: Record<string, string> = {
-  'sample-1': 'linear-gradient(135deg, #E5C5BB 0%, #D9B7A0 50%, #B89882 100%)',
-  'sample-2': 'linear-gradient(135deg, #E8DFC8 0%, #C9B98A 50%, #8FA68C 100%)',
-  'sample-3': 'linear-gradient(135deg, #B5C2A8 0%, #8FA68C 50%, #4A5F4A 100%)',
-  'sample-4': 'linear-gradient(135deg, #E5C5BB 0%, #C9A0A0 50%, #8B5A6B 100%)',
-  'sample-5': 'linear-gradient(135deg, #E8DFC8 0%, #B5A88E 50%, #6B5F4D 100%)',
-};
-
-function renderTitleWithEmphasis(title: string): string {
-  return title.replace(/\*([^*]+)\*/g, '<em>$1</em>');
-}
-
-function formatArticleDate(dateStr: string, locale: Locale): string {
-  const date = new Date(dateStr);
-  if (locale === 'ko') return `${date.getFullYear()}년 ${date.getMonth() + 1}월 ${date.getDate()}일`;
-  if (locale === 'zh') return `${date.getFullYear()}年${date.getMonth() + 1}月${date.getDate()}日`;
-  return date.toLocaleDateString('en-US', { month: 'short', day: '2-digit', year: 'numeric' });
-}
 
 interface PageProps {
-  params: Promise<{ locale: string; slug: string }>;
+  params: Promise<{ locale: Locale; slug: string }>;
+}
+
+// 동적 SEO 메타데이터 생성
+export async function generateMetadata({ params }: PageProps): Promise<Metadata> {
+  const { locale, slug } = await params;
+  const supabase = await createClient();
+
+  const { data: lookbook } = await supabase
+    .from('lookbooks')
+    .select('*')
+    .eq('slug', slug)
+    .eq('status', 'published')
+    .single();
+
+  if (!lookbook) {
+    return { title: 'Not Found · CHEZSUA' };
+  }
+
+  const title = locale === 'ko' ? lookbook.title_ko : lookbook.title_en;
+  const article = locale === 'ko' ? lookbook.article_ko : lookbook.article_en;
+
+  // SEO 필드 우선, 없으면 기본값
+  const seoTitle = lookbook.seo_title || `${title?.replace(/\*([^*]+)\*/g, '$1')} — CHEZSUA`;
+  const seoDescription = lookbook.seo_description || article?.substring(0, 160) || 'CHEZSUA Editorial Floristry';
+  const seoKeywords = lookbook.seo_keywords || `${lookbook.client}, ${lookbook.category}, 서울 플로리스트, CHEZSUA, 챠즈수아`;
+  const ogImage = lookbook.cover_image || (lookbook.images && lookbook.images[0]) || '/og-default.jpg';
+
+  return {
+    title: seoTitle,
+    description: seoDescription,
+    keywords: seoKeywords,
+    openGraph: {
+      title: seoTitle,
+      description: seoDescription,
+      images: [{ url: ogImage, width: 1200, height: 630, alt: title }],
+      type: 'article',
+      publishedTime: lookbook.publish_date,
+    },
+    twitter: {
+      card: 'summary_large_image',
+      title: seoTitle,
+      description: seoDescription,
+      images: [ogImage],
+    },
+    alternates: {
+      canonical: `https://chezsua.com/${locale}/lookbooks/story/${slug}`,
+      languages: {
+        'en': `https://chezsua.com/en/lookbooks/story/${slug}`,
+        'ko': `https://chezsua.com/ko/lookbooks/story/${slug}`,
+      },
+    },
+  };
+}
+
+function formatDate(dateStr: string, locale: Locale): string {
+  const date = new Date(dateStr);
+  if (locale === 'ko') return `${date.getFullYear()}년 ${date.getMonth() + 1}월 ${date.getDate()}일`;
+  return date.toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' });
+}
+
+function magazineCategory(category: string, locale: Locale): string {
+  const map: Record<string, { en: string; ko: string }> = {
+    fashion: { en: 'Fashion', ko: '패션' },
+    brands: { en: 'Brands', ko: '브랜드' },
+    hotels: { en: 'Hotels', ko: '호텔' },
+    company: { en: 'Company', ko: '기업' },
+    'fine-dining': { en: 'Fine Dining', ko: '파인 다이닝' },
+    fineDining: { en: 'Fine Dining', ko: '파인 다이닝' },
+    wedding: { en: 'Wedding', ko: '웨딩' },
+    vip: { en: 'VIP', ko: 'VIP' },
+    etc: { en: 'Etc', ko: '기타' },
+  };
+  return map[category]?.[locale === 'ko' ? 'ko' : 'en'] || category;
+}
+
+function renderEmphasis(text: string): string {
+  return text.replace(/\*([^*]+)\*/g, '<em>$1</em>');
 }
 
 export default async function LookbookStoryPage({ params }: PageProps) {
   const { locale, slug } = await params;
   setRequestLocale(locale);
 
-  // 1. 샘플 룩북 체크 (DB에 룩북 0개일 때 시안 샘플로 표시)
-  let lookbook: Lookbook | null = null;
+  const supabase = await createClient();
 
-  if (slug.startsWith('sample-')) {
-    lookbook = FALLBACK_LOOKBOOKS[slug] || null;
-  } else {
-    // 2. DB에서 가져오기
-    try {
-      const supabase = await createClient();
-      const { data } = await supabase
-        .from('lookbooks')
-        .select('*')
-        .eq('slug', slug)
-        .eq('status', 'published')
-        .single();
-      lookbook = (data as Lookbook) || null;
-    } catch {
-      lookbook = null;
-    }
-  }
+  // 룩북 조회
+  const { data: lookbook } = await supabase
+    .from('lookbooks')
+    .select('*')
+    .eq('slug', slug)
+    .eq('status', 'published')
+    .single();
 
   if (!lookbook) notFound();
 
-  const title = locale === 'ko' ? lookbook.title_ko : locale === 'zh' ? lookbook.title_zh : lookbook.title_en;
-  const article = locale === 'ko' ? lookbook.article_ko : locale === 'zh' ? lookbook.article_zh : lookbook.article_en;
-  const isSample = slug.startsWith('sample-');
-  const gradient = isSample ? SAMPLE_GRADIENTS[slug] : null;
+  // 관련 룩북 3개 (같은 카테고리)
+  const { data: related } = await supabase
+    .from('lookbooks')
+    .select('id, slug, title_en, title_ko, client, cover_image, images, publish_date')
+    .eq('status', 'published')
+    .eq('category', lookbook.category)
+    .neq('id', lookbook.id)
+    .order('publish_date', { ascending: false })
+    .limit(3);
+
+  const title = locale === 'ko' ? lookbook.title_ko : lookbook.title_en;
+  const article = locale === 'ko' ? lookbook.article_ko : lookbook.article_en;
+  const issueNo = String(42 - 0).padStart(3, '0'); // 추후 자동 계산
+
+  // 이미지 배열 만들기 (cover_image + images 통합)
+  const allImages: string[] = [];
+  if (lookbook.cover_image) allImages.push(lookbook.cover_image);
+  if (lookbook.images && Array.isArray(lookbook.images)) {
+    lookbook.images.forEach((img: string) => {
+      if (img && !allImages.includes(img)) allImages.push(img);
+    });
+  }
+
+  const labels = {
+    date: locale === 'ko' ? '일자' : 'Date',
+    client: locale === 'ko' ? '클라이언트' : 'Client',
+    category: locale === 'ko' ? '카테고리' : 'Category',
+    mainFlorist: locale === 'ko' ? '메인 플로리스트' : 'Main Florist',
+    subFlorist: locale === 'ko' ? '서브 플로리스트' : 'Sub Florist',
+    relatedStories: locale === 'ko' ? '관련 스토리' : 'Related Stories',
+    backToLookbooks: locale === 'ko' ? '← 룩북 목록' : '← Back to Lookbooks',
+  };
+
+  // 구조화 데이터 (JSON-LD) for SEO
+  const jsonLd = {
+    '@context': 'https://schema.org',
+    '@type': 'Article',
+    headline: title?.replace(/\*([^*]+)\*/g, '$1'),
+    image: allImages,
+    datePublished: lookbook.publish_date,
+    author: {
+      '@type': 'Organization',
+      name: 'CHEZSUA',
+    },
+    publisher: {
+      '@type': 'Organization',
+      name: 'CHEZSUA',
+      logo: {
+        '@type': 'ImageObject',
+        url: 'https://chezsua.com/logo.png',
+      },
+    },
+    description: article?.substring(0, 200),
+  };
 
   return (
-    <div className="pt-24">
-      {/* Hero */}
-      <section className="relative aspect-[16/9] max-h-[80vh] overflow-hidden bg-bg-secondary">
-        {lookbook.cover_image ? (
-          // eslint-disable-next-line @next/next/no-img-element
-          <img
-            src={lookbook.cover_image}
-            alt={title || lookbook.client}
-            className="absolute inset-0 w-full h-full object-cover"
-          />
-        ) : (
-          <div
-            className="absolute inset-0"
-            style={gradient ? { backgroundImage: gradient } : { backgroundColor: '#E6EDE3' }}
-          />
-        )}
-      </section>
+    <>
+      {/* SEO: 구조화 데이터 */}
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
+      />
 
-      {/* Content */}
-      <article className="max-w-[800px] mx-auto px-7 py-20 max-md:py-12">
-        <div className="text-mono text-[10px] tracking-[0.3em] uppercase text-accent-green mb-5">
-          {lookbook.category} · {formatArticleDate(lookbook.publish_date, locale)}
+      {/* 갤러리 (전체 덮은 사진 + 썸네일 갤러리) */}
+      <LookbookStoryGallery images={allImages} title={title || lookbook.client} />
+
+      {/* 매거진 본문 */}
+      <article className="max-w-[800px] mx-auto px-12 max-md:px-7 py-20 max-md:py-14">
+        {/* 라벨 */}
+        <div className="text-mono text-[11px] tracking-[0.3em] uppercase text-accent-green text-center mb-3">
+          CHEZSUA · Article N° {issueNo}
         </div>
 
+        <div className="w-12 h-px bg-ink-primary mx-auto mb-6" />
+
+        {/* 제목 */}
         <h1
-          className="text-serif font-normal leading-[1.05] tracking-[-0.015em] text-ink-primary mb-8"
-          style={{ fontSize: 'clamp(40px, 5vw, 72px)' }}
-          dangerouslySetInnerHTML={{ __html: renderTitleWithEmphasis(title || '') }}
+          className="text-serif text-5xl font-light leading-[1.1] tracking-[-0.015em] text-ink-primary text-center mb-10 max-md:text-4xl"
+          dangerouslySetInnerHTML={{ __html: renderEmphasis(title || '') }}
         />
 
-        <div className="text-mono text-[10px] tracking-[0.2em] uppercase text-ink-muted mb-12 pb-6 border-b border-line space-y-1">
-          <div>Client · {lookbook.client}</div>
-          {lookbook.main_florist && <div>Main Florist · {lookbook.main_florist}</div>}
-          {lookbook.sub_florist && <div>Sub Florist · {lookbook.sub_florist}</div>}
+        {/* 메타 정보 */}
+        <div className="grid grid-cols-2 md:grid-cols-3 gap-5 mb-12 pt-8 pb-8 border-y border-line max-md:grid-cols-2">
+          <MetaItem label={labels.date} value={formatDate(lookbook.publish_date, locale)} />
+          <MetaItem label={labels.category} value={magazineCategory(lookbook.category, locale)} />
+          <MetaItem label={labels.client} value={lookbook.client} />
+          {lookbook.main_florist && (
+            <MetaItem label={labels.mainFlorist} value={lookbook.main_florist} />
+          )}
+          {lookbook.sub_florist && (
+            <MetaItem label={labels.subFlorist} value={lookbook.sub_florist} />
+          )}
         </div>
 
+        {/* 본문 */}
         {article && (
-          <div className="text-serif text-lg leading-[1.8] text-ink-secondary whitespace-pre-line">
-            {article}
-          </div>
-        )}
-
-        {/* Image gallery */}
-        {lookbook.images && lookbook.images.length > 0 && (
-          <div className="grid grid-cols-2 gap-5 mt-16 max-md:grid-cols-1">
-            {lookbook.images.map((src, i) => (
-              // eslint-disable-next-line @next/next/no-img-element
-              <img
-                key={i}
-                src={src}
-                alt={`${title} ${i + 1}`}
-                className="w-full aspect-[3/4] object-cover bg-bg-secondary"
+          <div className="text-serif text-lg leading-[1.85] text-ink-secondary whitespace-pre-line space-y-6">
+            {article.split('\n\n').map((paragraph, idx) => (
+              <p
+                key={idx}
+                dangerouslySetInnerHTML={{ __html: renderEmphasis(paragraph) }}
               />
             ))}
           </div>
         )}
 
-        {/* 샘플 룩북 안내 */}
-        {isSample && (
-          <div className="mt-16 p-7 bg-bg-soft border border-line border-l-4 border-l-accent-green text-sm text-ink-secondary leading-relaxed">
-            <strong className="text-accent-green text-mono text-[10px] tracking-[0.2em] uppercase block mb-2">Sample Article</strong>
-            {locale === 'ko'
-              ? '이 글은 디자인 샘플입니다. 관리자 페이지에서 실제 룩북을 추가하시면 자동으로 교체됩니다.'
-              : locale === 'zh'
-                ? '此为设计示例。在管理页面添加实际作品集后将自动替换。'
-                : 'This is a design sample. Add real lookbooks via the admin panel and they will replace these automatically.'}
-          </div>
-        )}
-
-        <div className="mt-16 text-center">
+        {/* 뒤로가기 */}
+        <div className="text-center mt-16 pt-10 border-t border-line">
           <Link
-            href="/"
-            className="inline-block text-mono text-[11px] tracking-[0.3em] uppercase text-ink-secondary border-b border-line pb-1.5 hover:text-ink-primary"
+            href={`/${locale}/lookbooks`}
+            className="text-mono text-[11px] tracking-[0.3em] uppercase text-ink-secondary hover:text-ink-primary border-b border-ink-secondary pb-1 transition-colors"
           >
-            ← {locale === 'ko' ? '홈으로' : locale === 'zh' ? '首页' : 'Back to Home'}
+            {labels.backToLookbooks}
           </Link>
         </div>
       </article>
+
+      {/* 관련 룩북 */}
+      {related && related.length > 0 && (
+        <section className="bg-bg-soft py-20 max-md:py-14">
+          <div className="max-w-[1400px] mx-auto px-12 max-md:px-6">
+            <h2 className="text-mono text-[11px] tracking-[0.3em] uppercase text-accent-green text-center mb-12">
+              {labels.relatedStories}
+            </h2>
+
+            <div className="grid grid-cols-3 gap-8 max-md:grid-cols-1">
+              {related.map((item) => {
+                const itemTitle = locale === 'ko' ? item.title_ko : item.title_en;
+                const itemImage = item.cover_image || (item.images && item.images[0]);
+                return (
+                  <Link
+                    key={item.id}
+                    href={`/${locale}/lookbooks/story/${item.slug}`}
+                    className="group block"
+                  >
+                    <div className="aspect-[4/5] bg-ink-primary overflow-hidden mb-4">
+                      {itemImage ? (
+                        // eslint-disable-next-line @next/next/no-img-element
+                        <img
+                          src={itemImage}
+                          alt={itemTitle || item.client}
+                          className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700"
+                        />
+                      ) : (
+                        <div className="w-full h-full bg-gradient-to-br from-accent-sage to-accent-green" />
+                      )}
+                    </div>
+                    <div className="text-mono text-[10px] tracking-[0.25em] uppercase text-ink-muted mb-1">
+                      {item.client}
+                    </div>
+                    <h3
+                      className="text-serif text-xl leading-tight text-ink-primary group-hover:italic transition-all"
+                      dangerouslySetInnerHTML={{ __html: renderEmphasis(itemTitle || '') }}
+                    />
+                  </Link>
+                );
+              })}
+            </div>
+          </div>
+        </section>
+      )}
+    </>
+  );
+}
+
+function MetaItem({ label, value }: { label: string; value: string }) {
+  return (
+    <div>
+      <div className="text-mono text-[10px] tracking-[0.25em] uppercase text-ink-muted mb-1">
+        {label}
+      </div>
+      <div className="text-mono text-[13px] tracking-[0.05em] text-ink-primary">
+        {value}
+      </div>
     </div>
   );
 }
