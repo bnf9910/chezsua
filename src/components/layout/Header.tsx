@@ -2,6 +2,7 @@
 
 import { useState, useEffect } from 'react';
 import { usePathname } from 'next/navigation';
+import NextLink from 'next/link';
 import { Link } from '@/lib/i18n';
 
 interface HeaderProps {
@@ -58,13 +59,14 @@ export function Header({ isAdmin = false }: HeaderProps) {
 
         {/* Right */}
         <div className="flex items-center gap-6 max-md:gap-4">
+          {/* Admin Button - 일반 Next.js Link (locale 접두사 없음) */}
           {isAdmin && (
-            <Link
+            <NextLink
               href="/admin"
               className="text-mono text-[10px] tracking-[0.25em] uppercase text-accent-green hover:text-bg-primary hover:bg-accent-green border border-accent-green px-3 py-1.5 transition-all max-md:px-2 max-md:py-1"
             >
               Admin
-            </Link>
+            </NextLink>
           )}
 
           <button

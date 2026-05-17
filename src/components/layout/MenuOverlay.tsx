@@ -3,6 +3,7 @@
 import { useState, useEffect } from 'react';
 import { useLocale } from 'next-intl';
 import { usePathname } from 'next/navigation';
+import NextLink from 'next/link';
 import { Link } from '@/lib/i18n';
 
 interface MenuOverlayProps {
@@ -24,7 +25,6 @@ export function MenuOverlay({ isAdmin = false, userEmail = '' }: MenuOverlayProp
   const pathname = usePathname();
   const isLoggedIn = !!userEmail;
 
-  // 메뉴 이벤트
   useEffect(() => {
     function handleMenuEvent(e: Event) {
       const detail = (e as CustomEvent).detail;
@@ -34,12 +34,10 @@ export function MenuOverlay({ isAdmin = false, userEmail = '' }: MenuOverlayProp
     return () => window.removeEventListener('chezsua:menu', handleMenuEvent);
   }, []);
 
-  // 페이지 이동 시 닫기
   useEffect(() => {
     setOpen(false);
   }, [pathname]);
 
-  // ESC로 닫기
   useEffect(() => {
     function handleKey(e: KeyboardEvent) {
       if (e.key === 'Escape') setOpen(false);
@@ -50,7 +48,6 @@ export function MenuOverlay({ isAdmin = false, userEmail = '' }: MenuOverlayProp
     }
   }, [open]);
 
-  // body 스크롤 잠금
   useEffect(() => {
     if (open) {
       document.body.style.overflow = 'hidden';
@@ -64,7 +61,6 @@ export function MenuOverlay({ isAdmin = false, userEmail = '' }: MenuOverlayProp
 
   return (
     <>
-      {/* Backdrop */}
       <div
         className={`fixed inset-0 bg-ink-primary/30 backdrop-blur-sm z-40 transition-opacity duration-300 ${
           open ? 'opacity-100 pointer-events-auto' : 'opacity-0 pointer-events-none'
@@ -72,7 +68,6 @@ export function MenuOverlay({ isAdmin = false, userEmail = '' }: MenuOverlayProp
         onClick={() => setOpen(false)}
       />
 
-      {/* Side Menu */}
       <aside
         className={`fixed top-0 right-0 h-full w-[420px] max-md:w-[90vw] bg-bg-primary z-50 shadow-2xl transform transition-transform duration-300 ease-out overflow-y-auto ${
           open ? 'translate-x-0' : 'translate-x-full'
@@ -93,10 +88,10 @@ export function MenuOverlay({ isAdmin = false, userEmail = '' }: MenuOverlayProp
             </button>
           </div>
 
-          {/* Admin Dashboard - 서버에서 받은 isAdmin */}
+          {/* Admin Dashboard - 일반 Link (locale 접두사 없음) */}
           {isAdmin && (
             <div className="px-10 pt-3 pb-2 max-md:px-7">
-              <Link
+              <NextLink
                 href="/admin"
                 className="flex items-center justify-between gap-3 px-4 py-3 bg-ink-primary text-bg-primary hover:bg-accent-green transition-colors group"
               >
@@ -106,11 +101,11 @@ export function MenuOverlay({ isAdmin = false, userEmail = '' }: MenuOverlayProp
                 <span className="text-mono text-[16px] group-hover:translate-x-1 transition-transform">
                   →
                 </span>
-              </Link>
+              </NextLink>
             </div>
           )}
 
-          {/* Main Navigation */}
+          {/* Main Navigation - next-intl Link (locale 접두사 있음) */}
           <nav className="flex-1 px-10 pt-6 max-md:px-7">
             <ul className="space-y-3">
               {MAIN_LINKS.map((link) => (

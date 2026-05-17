@@ -4,6 +4,7 @@ import { getMessages } from 'next-intl/server';
 import { Header } from '@/components/layout/Header';
 import { Footer } from '@/components/layout/Footer';
 import { MenuOverlay } from '@/components/layout/MenuOverlay';
+import { PopupOverlay } from '@/components/layout/PopupOverlay';
 import { getCurrentUser } from '@/lib/auth';
 import type { Locale } from '@/lib/i18n';
 
@@ -20,7 +21,6 @@ export default async function LocaleLayout({ children, params }: LayoutProps) {
 
   const messages = await getMessages();
 
-  // 서버에서 user 정보 (에러나도 빌드 안 멈춤)
   let currentUser = null;
   try {
     currentUser = await getCurrentUser();
@@ -37,6 +37,7 @@ export default async function LocaleLayout({ children, params }: LayoutProps) {
       />
       {children}
       <Footer locale={locale} />
+      <PopupOverlay />
     </NextIntlClientProvider>
   );
 }

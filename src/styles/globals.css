@@ -1,4 +1,5 @@
-@import url('https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;0,600;1,300;1,400;1,500&family=Playfair+Display:ital,wght@0,400;0,500;0,600;0,700;1,400;1,500&family=Montserrat:wght@300;400;500;600;700&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;0,600;1,300;1,400;1,500&family=Playfair+Display:ital,wght@0,400;0,500;0,600;0,700;1,400;1,500&family=Montserrat:wght@300;400;500;600;700&family=Noto+Serif+KR:wght@300;400;500;600;700;900&display=swap');
+@import url('https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/static/pretendard.css');
 
 @tailwind base;
 @tailwind components;
@@ -6,9 +7,9 @@
 
 @layer base {
   :root {
-    /* CHEZSUA - Sage Green 톤 (골드 없음) */
-    --color-bg-primary: 232 240 228;       /* #E8F0E4 - 짙은 sage white */
-    --color-bg-soft: 220 232 215;          /* #DCE8D7 - soft sage */
+    /* CHEZSUA - Sage Green 톤 */
+    --color-bg-primary: 232 240 228;       /* #E8F0E4 */
+    --color-bg-soft: 220 232 215;          /* #DCE8D7 */
     --color-bg-secondary: 210 224 202;     /* #D2E0CA */
     --color-ink-primary: 26 31 27;         /* #1A1F1B */
     --color-ink-secondary: 58 63 58;       /* #3A3F3A */
@@ -16,10 +17,10 @@
     --color-line: 180 200 175;
     --color-line-soft: 200 215 195;
     
-    /* Sage Green 강조색 (메인 액센트) */
-    --color-accent-green: 45 63 46;        /* #2D3F2E - Deep Sage (강조) */
-    --color-accent-sage: 143 166 140;      /* #8FA68C - Soft Sage */
-    --color-accent-warm: 181 194 168;      /* #B5C2A8 - Warm Sage */
+    /* Sage Green */
+    --color-accent-green: 45 63 46;        /* #2D3F2E */
+    --color-accent-sage: 143 166 140;      /* #8FA68C */
+    --color-accent-warm: 181 194 168;      /* #B5C2A8 */
   }
 
   html {
@@ -27,40 +28,53 @@
   }
 
   body {
-    font-family: 'Montserrat', -apple-system, BlinkMacSystemFont, 'Helvetica Neue', sans-serif;
+    /* 본문: Pretendard (한글) + Montserrat (영문) */
+    font-family: 'Pretendard', 'Montserrat', -apple-system, BlinkMacSystemFont, 'Helvetica Neue', sans-serif;
     font-weight: 400;
     color: rgb(var(--color-ink-primary));
     background: rgb(var(--color-bg-primary));
     -webkit-font-smoothing: antialiased;
     -moz-osx-font-smoothing: grayscale;
+    word-break: keep-all;
   }
 }
 
 @layer utilities {
   /* 폰트 클래스 */
+  
+  /* Serif - 럭셔리 한영 통합 */
   .text-serif {
-    font-family: 'Cormorant Garamond', 'Playfair Display', Georgia, serif;
+    font-family: 'Cormorant Garamond', 'Noto Serif KR', 'Playfair Display', Georgia, serif;
     font-weight: 400;
     letter-spacing: 0.005em;
   }
   
   .text-display {
-    font-family: 'Playfair Display', 'Cormorant Garamond', Georgia, serif;
+    font-family: 'Playfair Display', 'Noto Serif KR', 'Cormorant Garamond', Georgia, serif;
+    font-weight: 500;
+  }
+  
+  /* 한글 전용 럭셔리 serif */
+  .text-korean-serif {
+    font-family: 'Noto Serif KR', 'Cormorant Garamond', serif;
     font-weight: 400;
+    letter-spacing: -0.01em;
   }
   
+  /* Sans (본문) */
   .text-sans {
-    font-family: 'Montserrat', -apple-system, sans-serif;
+    font-family: 'Pretendard', 'Montserrat', -apple-system, sans-serif;
   }
   
+  /* Mono (라벨) */
   .text-mono {
-    font-family: 'Montserrat', -apple-system, sans-serif;
+    font-family: 'Montserrat', 'Pretendard', -apple-system, sans-serif;
     font-weight: 500;
     letter-spacing: 0.15em;
     text-transform: uppercase;
   }
 
-  /* Color utilities */
+  /* Colors */
   .bg-bg-primary { background-color: rgb(var(--color-bg-primary)); }
   .bg-bg-soft { background-color: rgb(var(--color-bg-soft)); }
   .bg-bg-secondary { background-color: rgb(var(--color-bg-secondary)); }
@@ -72,7 +86,6 @@
   .text-ink-secondary { color: rgb(var(--color-ink-secondary)); }
   .text-ink-muted { color: rgb(var(--color-ink-muted)); }
   
-  /* Sage Green - 메인 액센트 */
   .text-accent-green { color: rgb(var(--color-accent-green)); }
   .text-accent-sage { color: rgb(var(--color-accent-sage)); }
   .text-accent-warm { color: rgb(var(--color-accent-warm)); }
@@ -84,9 +97,10 @@
   .hover\:bg-accent-green:hover { background-color: rgb(var(--color-accent-green)); }
   .hover\:text-accent-green:hover { color: rgb(var(--color-accent-green)); }
   .hover\:text-accent-sage:hover { color: rgb(var(--color-accent-sage)); }
+  .hover\:text-accent-warm:hover { color: rgb(var(--color-accent-warm)); }
   .hover\:border-accent-green:hover { border-color: rgb(var(--color-accent-green)); }
   
-  /* Gold 호환성 - sage로 완전히 매핑 (혹시 코드에 남아있을 경우 대비) */
+  /* Gold 호환성 (혹시 남아있을 경우 sage로 매핑) */
   .text-accent-gold { color: rgb(var(--color-accent-green)); }
   .bg-accent-gold { background-color: rgb(var(--color-accent-green)); }
   .border-accent-gold { border-color: rgb(var(--color-accent-green)); }
@@ -98,7 +112,7 @@
   .border-line-soft { border-color: rgb(var(--color-line-soft)); }
 
   em {
-    font-family: 'Cormorant Garamond', Georgia, serif;
+    font-family: 'Cormorant Garamond', 'Noto Serif KR', Georgia, serif;
     font-style: italic;
     font-weight: 400;
   }
