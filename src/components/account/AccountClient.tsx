@@ -2,7 +2,6 @@
 
 import { useState } from 'react';
 import Link from 'next/link';
-import { createClient } from '@/lib/supabase/client';
 import type { Locale } from '@/lib/i18n';
 
 interface User {
@@ -12,6 +11,7 @@ interface User {
   phone: string;
   marketing_agreed: boolean;
   role: string;
+  created_at?: string;
 }
 
 interface Order {
@@ -31,53 +31,16 @@ type Tab = 'profile' | 'orders';
 
 export function AccountClient({ locale, user, orders }: Props) {
   const [tab, setTab] = useState<Tab>('profile');
-  const [profile, setProfile] = useState({
-    name: user.name,
-    phone: user.phone,
-    marketing_agreed: user.marketing_agreed,
-  });
-  const [saving, setSaving] = useState(false);
-  const [savedMessage, setSavedMessage] = useState('');
-
-  async function handleSaveProfile(e: React.FormEvent) {
-    e.preventDefault();
-    setSaving(true);
-    setSavedMessage('');
-
-    try {
-      const supabase = createClient();
-      const { error } = await supabase
-        .from('users')
-        .update({
-          name: profile.name,
-          phone: profile.phone,
-          marketing_agreed: profile.marketing_agreed,
-          updated_at: new Date().toISOString(),
-        })
-        .eq('id', user.id);
-
-      if (error) {
-        alert('저장 실패: ' + error.message);
-      } else {
-        setSavedMessage('✓ 저장되었습니다');
-        setTimeout(() => setSavedMessage(''), 3000);
-      }
-    } catch (err) {
-      alert('저장 실패: ' + String(err));
-    } finally {
-      setSaving(false);
-    }
-  }
 
   return (
     <div>
       {/* Header */}
       <div className="mb-12">
         {user.role === 'admin' && (
-          <div className="mb-6 inline-block">
+          <div className="mb-6">
             <Link
               href="/admin"
-              className="inline-flex items-center gap-2 px-4 py-2 bg-ink-primary text-bg-primary text-mono text-[11px] tracking-[0.2em] uppercase hover:bg-accent-green transition-colors"
+              className="inline-flex items-center gap-2 px-5 py-2.5 bg-ink-primary text-bg-primary text-mono text-[11px] tracking-[0.25em] uppercase hover:bg-accent-green transition-colors"
             >
               관리자 대시보드 →
             </Link>
@@ -88,7 +51,7 @@ export function AccountClient({ locale, user, orders }: Props) {
           My Account
         </div>
         <h1 className="text-serif text-5xl font-light italic max-md:text-4xl">
-          안녕하세요, {profile.name || '회원'}님
+          안녕하세요, {user.name || '회원'}님
         </h1>
         <p className="text-sm text-ink-muted mt-2">{user.email}</p>
       </div>
@@ -103,86 +66,52 @@ export function AccountClient({ locale, user, orders }: Props) {
         </TabButton>
       </div>
 
-      {/* Profile Tab */}
+      {/* Profile Tab - 보기 전용 */}
       {tab === 'profile' && (
-        <form onSubmit={handleSaveProfile} className="max-w-2xl">
-          <div className="space-y-6">
-            <Field label="이름">
-              <input
-                type="text"
-                value={profile.name}
-                onChange={(e) => setProfile({ ...profile, name: e.target.value })}
-                className="form-input"
-              />
-            </Field>
+        <div className="max-w-2xl">
+          <div className="bg-bg-soft border border-line p-8 max-md:p-6">
+            <h2 className="text-mono text-[11px] tracking-[0.3em] uppercase text-accent-green mb-6 pb-3 border-b border-line">
+              회원 정보
+            </h2>
 
-            <Field label="이메일" hint="이메일은 변경할 수 없습니다">
-              <input
-                type="email"
-                value={user.email}
-                disabled
-                className="form-input bg-bg-soft text-ink-muted cursor-not-allowed"
+            <div className="space-y-5">
+              <InfoRow label="이름" value={user.name || '—'} />
+              <InfoRow label="이메일" value={user.email} />
+              <InfoRow label="전화번호" value={user.phone || '—'} />
+              <InfoRow
+                label="마케팅 수신"
+                value={user.marketing_agreed ? '동의' : '미동의'}
               />
-            </Field>
-
-            <Field label="전화번호">
-              <input
-                type="tel"
-                value={profile.phone}
-                onChange={(e) => setProfile({ ...profile, phone: e.target.value })}
-                placeholder="010-1234-5678"
-                className="form-input"
-              />
-            </Field>
-
-            <div className="pt-4 border-t border-line">
-              <label className="flex items-start gap-2 text-sm cursor-pointer">
-                <input
-                  type="checkbox"
-                  checked={profile.marketing_agreed}
-                  onChange={(e) => setProfile({ ...profile, marketing_agreed: e.target.checked })}
-                  className="mt-1 cursor-pointer"
+              {user.created_at && (
+                <InfoRow
+                  label="가입일"
+                  value={new Date(user.created_at).toLocaleDateString('ko-KR')}
                 />
-                <span>마케팅 정보 수신에 동의합니다</span>
-              </label>
-            </div>
-          </div>
-
-          <div className="mt-10 pt-6 border-t border-line flex items-center justify-between">
-            <div>
-              {savedMessage && (
-                <div className="text-mono text-[11px] tracking-[0.2em] uppercase text-accent-green">
-                  {savedMessage}
-                </div>
               )}
             </div>
-            <button
-              type="submit"
-              disabled={saving}
-              className="px-8 py-3 bg-ink-primary text-bg-primary hover:bg-accent-green disabled:opacity-30 text-mono text-[11px] tracking-[0.25em] uppercase transition-colors"
-            >
-              {saving ? '저장 중...' : '저장'}
-            </button>
           </div>
 
-          {/* 로그아웃 */}
-          <div className="mt-10 pt-6 border-t border-line">
+          {/* 안내 + 로그아웃 */}
+          <div className="mt-8 pt-6 border-t border-line flex justify-between items-center max-md:flex-col max-md:items-start max-md:gap-4">
+            <p className="text-sm text-ink-muted">
+              정보 변경이 필요하시면 chezsuaflower@gmail.com으로 연락주세요.
+            </p>
             <Link
               href={`/${locale}/auth/signout`}
-              className="text-sm text-ink-secondary hover:text-ink-primary border-b border-ink-secondary pb-0.5"
+              className="text-mono text-[11px] tracking-[0.25em] uppercase text-ink-secondary hover:text-ink-primary border-b border-ink-secondary pb-0.5 whitespace-nowrap"
             >
               로그아웃 →
             </Link>
           </div>
-        </form>
+        </div>
       )}
 
       {/* Orders Tab */}
       {tab === 'orders' && (
         <div>
           {orders.length === 0 ? (
-            <div className="text-center py-20 bg-bg-soft">
-              <div className="text-serif text-xl text-ink-secondary mb-4">
+            <div className="text-center py-20 bg-bg-soft border border-line">
+              <div className="text-serif text-xl text-ink-secondary mb-4 italic">
                 주문 내역이 없습니다
               </div>
               <Link
@@ -221,27 +150,15 @@ export function AccountClient({ locale, user, orders }: Props) {
           )}
         </div>
       )}
-
-      <style jsx>{`
-        .form-input {
-          width: 100%;
-          padding: 12px 14px;
-          background: white;
-          border: 1px solid #D2DCCE;
-          font-size: 15px;
-          font-family: inherit;
-          color: #1A1F1B;
-        }
-        .form-input:focus {
-          outline: none;
-          border-color: #2D3F2E;
-        }
-      `}</style>
     </div>
   );
 }
 
-function TabButton({ active, onClick, children }: {
+function TabButton({
+  active,
+  onClick,
+  children,
+}: {
   active: boolean;
   onClick: () => void;
   children: React.ReactNode;
@@ -261,14 +178,15 @@ function TabButton({ active, onClick, children }: {
   );
 }
 
-function Field({ label, hint, children }: { label: string; hint?: string; children: React.ReactNode }) {
+function InfoRow({ label, value }: { label: string; value: string }) {
   return (
-    <div>
-      <label className="block text-mono text-[11px] tracking-[0.2em] uppercase text-ink-muted mb-2">
+    <div className="flex justify-between items-center gap-4 max-md:flex-col max-md:items-start max-md:gap-1">
+      <div className="text-mono text-[11px] tracking-[0.25em] uppercase text-ink-muted">
         {label}
-      </label>
-      {children}
-      {hint && <p className="text-mono text-[10px] text-ink-muted mt-1">{hint}</p>}
+      </div>
+      <div className="text-base text-ink-primary text-right max-md:text-left">
+        {value}
+      </div>
     </div>
   );
 }

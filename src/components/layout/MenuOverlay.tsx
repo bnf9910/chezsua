@@ -17,10 +17,11 @@ const MAIN_LINKS = [
 export function MenuOverlay() {
   const [open, setOpen] = useState(false);
   const [user, setUser] = useState<{ id: string; email?: string; isAdmin?: boolean } | null>(null);
+  const [userLoading, setUserLoading] = useState(true);
   const locale = useLocale();
   const pathname = usePathname();
 
-  // 메뉴 열림/닫힘 이벤트
+  // 메뉴 이벤트
   useEffect(() => {
     function handleMenuEvent(e: Event) {
       const detail = (e as CustomEvent).detail;
@@ -29,18 +30,6 @@ export function MenuOverlay() {
     window.addEventListener('chezsua:menu', handleMenuEvent);
     return () => window.removeEventListener('chezsua:menu', handleMenuEvent);
   }, []);
-
-  // body 스크롤 잠금
-  useEffect(() => {
-    if (open) {
-      document.body.style.overflow = 'hidden';
-    } else {
-      document.body.style.overflow = '';
-    }
-    return () => {
-      document.body.style.overflow = '';
-    };
-  }, [open]);
 
   // 페이지 이동 시 닫기
   useEffect(() => {
@@ -58,34 +47,66 @@ export function MenuOverlay() {
     }
   }, [open]);
 
-  // 유저 정보 가져오기
+  // body 스크롤 잠금
   useEffect(() => {
-    if (!open) return;
+    if (open) {
+      document.body.style.overflow = 'hidden';
+    } else {
+      document.body.style.overflow = '';
+    }
+    return () => {
+      document.body.style.overflow = '';
+    };
+  }, [open]);
+
+  // 유저 정보 가져오기 (메뉴 열릴 때마다 다시 로드 - 항상 최신)
+  useEffect(() => {
+    let cancelled = false;
 
     async function loadUser() {
-      const supabase = createClient();
-      const { data: { user: authUser } } = await supabase.auth.getUser();
-      if (!authUser) {
-        setUser(null);
-        return;
+      setUserLoading(true);
+      try {
+        const supabase = createClient();
+        const { data: { user: authUser } } = await supabase.auth.getUser();
+
+        if (cancelled) return;
+
+        if (!authUser) {
+          setUser(null);
+          setUserLoading(false);
+          return;
+        }
+
+        const { data: profile } = await supabase
+          .from('users')
+          .select('role')
+          .eq('id', authUser.id)
+          .single();
+
+        if (cancelled) return;
+
+        setUser({
+          id: authUser.id,
+          email: authUser.email,
+          isAdmin: profile?.role === 'admin',
+        });
+      } catch (err) {
+        console.error('[MenuOverlay] loadUser error:', err);
+      } finally {
+        if (!cancelled) setUserLoading(false);
       }
-      const { data: profile } = await supabase
-        .from('users')
-        .select('role')
-        .eq('id', authUser.id)
-        .single();
-      setUser({
-        id: authUser.id,
-        email: authUser.email,
-        isAdmin: profile?.role === 'admin',
-      });
     }
-    loadUser();
+
+    if (open) loadUser();
+
+    return () => {
+      cancelled = true;
+    };
   }, [open]);
 
   return (
     <>
-      {/* Backdrop - 메뉴 외부 클릭 시 닫기 */}
+      {/* Backdrop */}
       <div
         className={`fixed inset-0 bg-ink-primary/30 backdrop-blur-sm z-40 transition-opacity duration-300 ${
           open ? 'opacity-100 pointer-events-auto' : 'opacity-0 pointer-events-none'
@@ -93,7 +114,7 @@ export function MenuOverlay() {
         onClick={() => setOpen(false)}
       />
 
-      {/* Side Menu - 우측에서 슬라이드 */}
+      {/* Side Menu */}
       <aside
         className={`fixed top-0 right-0 h-full w-[420px] max-md:w-[90vw] bg-bg-primary z-50 shadow-2xl transform transition-transform duration-300 ease-out overflow-y-auto ${
           open ? 'translate-x-0' : 'translate-x-full'
@@ -114,8 +135,25 @@ export function MenuOverlay() {
             </button>
           </div>
 
+          {/* Admin Dashboard 버튼 (관리자만, 최상단 강조) */}
+          {!userLoading && user?.isAdmin && (
+            <div className="px-10 pt-3 pb-2 max-md:px-7">
+              <Link
+                href="/admin"
+                className="flex items-center justify-between gap-3 px-4 py-3 bg-ink-primary text-bg-primary hover:bg-accent-green transition-colors group"
+              >
+                <span className="text-mono text-[11px] tracking-[0.25em] uppercase">
+                  관리자 대시보드
+                </span>
+                <span className="text-mono text-[16px] group-hover:translate-x-1 transition-transform">
+                  →
+                </span>
+              </Link>
+            </div>
+          )}
+
           {/* Main Navigation */}
-          <nav className="flex-1 px-10 pt-8 max-md:px-7">
+          <nav className="flex-1 px-10 pt-6 max-md:px-7">
             <ul className="space-y-3">
               {MAIN_LINKS.map((link) => (
                 <li key={link.href}>
@@ -130,18 +168,14 @@ export function MenuOverlay() {
             </ul>
           </nav>
 
-          {/* Footer Section - 계정 관련 */}
+          {/* Footer Section */}
           <div className="px-10 pb-8 pt-6 border-t border-line max-md:px-7">
-            {user ? (
+            {userLoading ? (
+              <div className="text-mono text-[10px] tracking-[0.25em] uppercase text-ink-muted">
+                Loading...
+              </div>
+            ) : user ? (
               <div className="space-y-3">
-                {user.isAdmin && (
-                  <Link
-                    href="/admin"
-                    className="block text-mono text-[11px] tracking-[0.25em] uppercase text-ink-primary hover:text-accent-green transition-colors"
-                  >
-                    Dashboard →
-                  </Link>
-                )}
                 <Link
                   href="/account"
                   className="block text-mono text-[11px] tracking-[0.25em] uppercase text-ink-primary hover:text-accent-green transition-colors"
@@ -155,7 +189,7 @@ export function MenuOverlay() {
                   Logout
                 </Link>
                 {user.email && (
-                  <div className="text-mono text-[10px] text-ink-muted truncate pt-2 border-t border-line-soft">
+                  <div className="text-mono text-[10px] text-ink-muted truncate pt-2 border-t border-line">
                     {user.email}
                   </div>
                 )}

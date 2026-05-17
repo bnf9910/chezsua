@@ -16,14 +16,12 @@ export default async function AccountPage({ params }: PageProps) {
   const { data: { user } } = await supabase.auth.getUser();
   if (!user) redirect(`/${locale}/auth/login`);
 
-  // 프로필 조회
   const { data: profile } = await supabase
     .from('users')
     .select('*')
     .eq('id', user.id)
     .single();
 
-  // 주문 내역 조회 (선택 - orders 테이블이 있으면)
   const { data: orders } = await supabase
     .from('orders')
     .select('*')
@@ -42,6 +40,7 @@ export default async function AccountPage({ params }: PageProps) {
           phone: profile?.phone || '',
           marketing_agreed: profile?.marketing_agreed || false,
           role: profile?.role || 'user',
+          created_at: profile?.created_at,
         }}
         orders={orders || []}
       />
