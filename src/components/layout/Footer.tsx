@@ -45,18 +45,18 @@ export async function Footer({ locale: propLocale }: FooterProps = {}) {
     }
   });
 
-  // Footer 한국어 라벨
+  // Footer 라벨 - 영어/한국어
   const labels = isKo
     ? {
         contact: '연락처',
         visit: '방문 안내',
         follow: '팔로우',
         inquiries: '문의',
-        startProject: '프로젝트 시작하기',
+        startProject: 'Start a Project',  // ✅ 영어 강제
         terms: '이용약관',
         privacy: '개인정보 처리방침',
         copyright: '모든 권리 보유',
-        reservationOnly: '토 / 일 / 공휴일 — 예약제 운영',
+        reservationOnly: 'Sat / Sun / Public Holidays — Reservation Only',  // ✅ 영어 강제
         tagline: '에디토리얼 플로리스트 · 서울',
       }
     : {
@@ -120,7 +120,8 @@ export async function Footer({ locale: propLocale }: FooterProps = {}) {
               {settings.contact.hours && (
                 <div className="text-bg-primary/70 mt-1">{settings.contact.hours}</div>
               )}
-              <div className={`text-[10px] tracking-[0.15em] text-bg-primary mt-2 ${isKo ? 'text-korean-serif' : 'text-mono'}`}>
+              {/* Reservation Only - 항상 영어 */}
+              <div className="text-mono text-[10px] tracking-[0.15em] text-bg-primary mt-2">
                 {labels.reservationOnly}
               </div>
             </div>
@@ -184,7 +185,7 @@ export async function Footer({ locale: propLocale }: FooterProps = {}) {
             </h3>
             <Link
               href={`/${locale}/project`}
-              className={`text-sm text-bg-primary hover:text-accent-warm transition-colors border-b border-bg-primary/30 pb-1 inline-block ${isKo ? 'text-korean-serif' : ''}`}
+              className="text-sm text-bg-primary hover:text-accent-warm transition-colors border-b border-bg-primary/30 pb-1 inline-block"
             >
               {labels.startProject} →
             </Link>
