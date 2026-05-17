@@ -135,13 +135,13 @@ export function AdminSidebar({ userEmail }: AdminSidebarProps) {
       {/* Logo */}
       <div className="px-6 pt-6 pb-3">
         <div className="text-mono text-[9px] tracking-[0.3em] uppercase text-bg-primary/50 mb-3">
-          CHEZSUA · ADMIN
+          ADMIN
         </div>
         <Link
           href="/"
-          className="text-serif text-2xl tracking-[0.3em] text-bg-primary"
+          className="text-serif text-2xl tracking-[0.25em] text-bg-primary font-normal"
         >
-          CHEZ<span className="text-accent-sage">·</span>SUA
+          CHEZSUA
         </Link>
       </div>
 

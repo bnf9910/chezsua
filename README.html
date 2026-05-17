@@ -2,159 +2,244 @@
 <html lang="ko">
 <head>
 <meta charset="UTF-8" />
-<title>CHEZSUA 통합 패치</title>
+<title>CHEZSUA 사진 업로드 인프라 설정</title>
 <style>
   body { font-family: -apple-system, sans-serif; background: #F1F5EF; color: #1A1F1B; max-width: 900px; margin: 0 auto; padding: 40px 24px; line-height: 1.7; }
-  h1 { font-size: 32px; border-bottom: 3px solid #2D3F2E; padding-bottom: 14px; margin-bottom: 24px; }
-  h2 { font-size: 22px; color: #2D3F2E; margin: 32px 0 14px; }
+  h1 { font-size: 30px; border-bottom: 3px solid #2D3F2E; padding-bottom: 14px; }
+  h2 { font-size: 22px; color: #2D3F2E; margin: 32px 0 14px; padding-top: 8px; }
   h3 { font-size: 17px; margin: 22px 0 10px; }
   code { background: #E6EDE3; padding: 2px 6px; border-radius: 3px; font-family: monospace; font-size: 13px; color: #2D3F2E; }
   pre { background: #1A1F1B; color: #C4D0C0; padding: 16px 20px; border-radius: 4px; overflow-x: auto; font-family: monospace; font-size: 13px; line-height: 1.6; }
-  table { width: 100%; border-collapse: collapse; margin: 14px 0; font-size: 13px; background: #fff; }
-  th { background: #E6EDE3; padding: 10px; text-align: left; border: 1px solid #D2DCCE; font-size: 11px; text-transform: uppercase; }
-  td { padding: 10px; border: 1px solid #D2DCCE; vertical-align: top; }
-  td.f { font-family: monospace; color: #2D3F2E; font-weight: 600; font-size: 12px; }
   .step { background: #fff; border-left: 4px solid #2D3F2E; padding: 18px 22px; margin: 16px 0; }
   .ok { background: #E8F5E9; border-left: 5px solid #38A169; padding: 16px 20px; margin: 16px 0; }
   .danger { background: #FFEBEB; border-left: 5px solid #C53030; padding: 14px 18px; margin: 14px 0; }
   .info { background: #FFF8E0; border-left: 5px solid #D69E2E; padding: 14px 18px; margin: 14px 0; }
-  .tree { background: #f7f9f5; padding: 14px 18px; border: 1px solid #D2DCCE; font-family: monospace; font-size: 12px; line-height: 1.7; }
+  .important { background: #E0F2FE; border-left: 5px solid #0EA5E9; padding: 14px 18px; margin: 14px 0; }
+  ol { padding-left: 24px; }
+  li { margin: 6px 0; }
+  table { width: 100%; border-collapse: collapse; margin: 14px 0; font-size: 13px; background: #fff; }
+  th { background: #E6EDE3; padding: 10px; text-align: left; border: 1px solid #D2DCCE; font-size: 11px; text-transform: uppercase; }
+  td { padding: 10px; border: 1px solid #D2DCCE; }
+  .number {
+    display: inline-flex; align-items: center; justify-content: center;
+    width: 28px; height: 28px; background: #2D3F2E; color: white;
+    border-radius: 50%; margin-right: 8px; font-weight: 600; font-size: 14px;
+  }
 </style>
 </head>
 <body>
 
-<h1>🚀 CHEZSUA 통합 패치</h1>
-<p style="color:#6B7068;">지금까지 요청하신 모든 변경사항을 한 번에</p>
+<h1>📸 사진 업로드 인프라 설정</h1>
+<p style="color:#6B7068;">룩북/상품 사진을 진짜로 업로드하고 표시되게 만드는 작업</p>
 
-<div class="ok">
-<strong>✅ 이 패치 하나로 모두 해결</strong>
+<div class="important">
+<strong>🎯 작업 단계 (총 3가지)</strong>
 <ol>
-  <li>홈 영상 크기 적당히 (max 800px)</li>
-  <li>YouTube/MP4 URL 자동 임베드</li>
-  <li>중국어(ZH) 버튼 숨김</li>
-  <li>한국어 페이지 영어 통일 (거래/법적만 한국어)</li>
-  <li>헤더 + 메뉴 정리 (로그인은 메뉴 오버레이 안)</li>
-  <li>관리자 페이지 진입 (메뉴에 Dashboard)</li>
-  <li>마이페이지 Admin 배너</li>
-  <li>샘플 데이터 정리 페이지 (/admin/cleanup)</li>
-  <li>Insert Sample Data 버튼</li>
-  <li>signout 페이지 (로그아웃 정상 작동)</li>
-  <li>★ AdminSidebar 수정 (대시보드 콘텐츠 보이게)</li>
+  <li><strong>PART A</strong>: Supabase Storage 버킷 만들기 (대시보드 클릭)</li>
+  <li><strong>PART B</strong>: SQL 실행 (정책 + 컬럼)</li>
+  <li><strong>PART C</strong>: 코드 적용 + Git push</li>
 </ol>
+<p>순서대로 따라하시면 30분 안에 사진 업로드 완성!</p>
 </div>
 
-<h2>🔧 적용 방법 (5분)</h2>
+<h2>🗂 PART A: Supabase Storage 버킷 만들기</h2>
 
 <div class="step">
-<h3>STEP 1. SQL 실행 (선택)</h3>
-<p>이미 적용했으면 스킵 가능. 안 했으면:</p>
+<h3><span class="number">1</span>Supabase Dashboard 접속</h3>
 <ol>
-  <li>Supabase Dashboard → SQL Editor</li>
-  <li><code>01_video_column.sql</code> 복사 → 붙여넣기 → Run</li>
+  <li><a href="https://supabase.com/dashboard" target="_blank">supabase.com/dashboard</a> 로그인</li>
+  <li><strong>chezsua</strong> 프로젝트 클릭</li>
 </ol>
 </div>
 
 <div class="step">
-<h3>STEP 2. 파일 드래그 (가장 중요!)</h3>
+<h3><span class="number">2</span>Storage 메뉴 클릭</h3>
+<ol>
+  <li>좌측 메뉴에서 <strong>Storage</strong> 클릭 (서랍 모양 아이콘)</li>
+</ol>
+</div>
+
+<div class="step">
+<h3><span class="number">3</span>새 버킷 만들기</h3>
+<ol>
+  <li>화면 좌측 또는 가운데에 <strong>"New bucket"</strong> 버튼 클릭</li>
+  <li>다음과 같이 입력:
+    <ul>
+      <li><strong>Name</strong>: <code>chezsua-images</code> (정확히 이대로!)</li>
+      <li><strong>Public bucket</strong>: ✅ 체크 (필수!)</li>
+      <li>나머지는 기본값</li>
+    </ul>
+  </li>
+  <li><strong>Save</strong> 또는 <strong>Create bucket</strong> 클릭</li>
+</ol>
+</div>
+
+<div class="danger">
+<strong>⚠️ 매우 중요</strong>
+<ul>
+  <li>버킷 이름: 반드시 <code>chezsua-images</code> (다른 이름이면 코드와 안 맞음)</li>
+  <li>Public 체크: 필수 (체크 안 하면 사진 표시 안 됨)</li>
+</ul>
+</div>
+
+<h2>📋 PART B: SQL 실행</h2>
+
+<div class="step">
+<h3><span class="number">1</span>SQL Editor 접속</h3>
+<ol>
+  <li>좌측 메뉴 <strong>SQL Editor</strong> 클릭</li>
+  <li><strong>New query</strong> 클릭</li>
+</ol>
+</div>
+
+<div class="step">
+<h3><span class="number">2</span>SQL 파일 내용 복사 → 실행</h3>
+<p>ZIP 안의 <code>01_storage_setup.sql</code> 내용을 복사 → SQL Editor에 붙여넣기 → <strong>Run</strong> 클릭</p>
+<p>이 SQL이 하는 일:</p>
+<ul>
+  <li>lookbooks 테이블에 <code>cover_image</code>, <code>images</code> 컬럼 추가</li>
+  <li>products 테이블에 <code>images</code> 컬럼 추가</li>
+  <li>Storage 버킷에 대한 권한 정책 설정</li>
+</ul>
+</div>
+
+<div class="info">
+<strong>💡 이미 컬럼이 있어도 안전</strong>
+<p>SQL에 <code>IF NOT EXISTS</code> 가 있어서 이미 있는 컬럼/정책은 자동 스킵해요.</p>
+</div>
+
+<h2>💻 PART C: 코드 적용</h2>
+
+<div class="step">
+<h3><span class="number">1</span>ZIP 압축 풀기</h3>
+</div>
+
+<div class="step">
+<h3><span class="number">2</span>src 폴더 드래그</h3>
 <p>윈도우 탐색기 두 개:</p>
 <ul>
   <li>왼쪽: 압축 푼 폴더</li>
-  <li>오른쪽: <code>C:\Users\BNF\Desktop\chezsua</code></li>
+  <li>오른쪽: <code>chezsua\src</code></li>
 </ul>
-<p>왼쪽의 <strong>src</strong>와 <strong>messages</strong> 폴더를 → 오른쪽으로 드래그</p>
-<p>"병합/덮어쓰기" 묻으면 <strong>예 / 덮어쓰기</strong></p>
+<p>왼쪽의 <code>src</code> 안에 있는 폴더들을 → 오른쪽으로 드래그</p>
+<p>"병합하시겠습니까?" → <strong>예</strong></p>
+
+<p><strong>새로 추가/덮어쓰기 되는 파일:</strong></p>
+<ul>
+  <li>✨ NEW: <code>src/app/api/admin/upload/route.ts</code></li>
+  <li>✨ NEW: <code>src/components/admin/ImageUploader.tsx</code></li>
+  <li>🔄 OVERWRITE: <code>src/components/admin/LookbookForm.tsx</code></li>
+</ul>
 </div>
 
 <div class="step">
-<h3>STEP 3. 로컬 빌드 (선택)</h3>
-<pre>cd C:\Users\BNF\Desktop\chezsua
+<h3><span class="number">3</span>로컬 빌드 테스트</h3>
+<pre>cd C:\Users\(사용자명)\Desktop\chezsua
 npm run build</pre>
 <p>✓ Compiled successfully 나오면 OK!</p>
 </div>
 
 <div class="step">
-<h3>STEP 4. Git Push</h3>
-<pre>cd C:\Users\BNF\Desktop\chezsua
-
-git add .
-
-git commit -m "Apply all-in-one patch: dashboard fix + i18n + video + cleanup"
-
+<h3><span class="number">4</span>Git Push</h3>
+<pre>git add .
+git commit -m "Add image upload infrastructure (Supabase Storage + UI)"
 git push</pre>
 </div>
 
 <div class="step">
-<h3>STEP 5. Vercel 빌드 확인 (1-2분)</h3>
-<p>Vercel Dashboard → Deployments에서 🟢 Ready 확인</p>
+<h3><span class="number">5</span>Vercel 빌드 후 (1-2분) 테스트</h3>
 </div>
+
+<h2>🎯 테스트 방법</h2>
 
 <div class="step">
-<h3>STEP 6. 시크릿 창에서 테스트</h3>
-<p><strong>Ctrl + Shift + N</strong> → chezsua.vercel.app</p>
-<ul>
-  <li>홈 → 영상 크기 적당히</li>
-  <li>한국어 페이지 → 메뉴 영어</li>
-  <li>로그인 → 메뉴 Dashboard → 대시보드 콘텐츠 보임 ★</li>
-  <li>/admin/cleanup → Insert Sample Data 클릭</li>
-</ul>
+<h3>관리자 페이지에서:</h3>
+<ol>
+  <li>관리자 로그인</li>
+  <li><strong>/admin/lookbooks/new</strong> 접속 (또는 기존 룩북 Edit)</li>
+  <li>화면 상단의 초록색 <strong>📸 Lookbook Images</strong> 영역</li>
+  <li>"Drop or Click to Upload" 박스 클릭 → 사진 선택</li>
+  <li>또는 사진을 드래그&드롭</li>
+  <li>업로드 진행률 표시 → 완료!</li>
+  <li>썸네일이 격자로 표시됨</li>
+  <li>첫 번째 사진에 <strong>"Cover"</strong> 배지 자동 표시</li>
+  <li>호버하면 ←, →, × 버튼 (순서 변경/삭제)</li>
+  <li>나머지 정보 입력 → Save</li>
+</ol>
 </div>
 
-<h2>📂 ZIP 안의 구조</h2>
+<h2>🎨 UI 미리보기</h2>
 
-<div class="tree">
-chezsua-all-in-one.zip<br/>
-├── 01_video_column.sql<br/>
-├── README.html (이 파일)<br/>
-├── messages/<br/>
-│   └── ko.json<br/>
-└── src/<br/>
-    ├── app/<br/>
-    │   ├── [locale]/auth/signout/page.tsx<br/>
-    │   ├── admin/cleanup/page.tsx<br/>
-    │   └── api/admin/<br/>
-    │       ├── cleanup/lookbooks/route.ts<br/>
-    │       ├── cleanup/products/route.ts<br/>
-    │       └── seed-samples/route.ts<br/>
-    └── components/<br/>
-        ├── account/AdminBanner.tsx<br/>
-        ├── admin/AdminSidebar.tsx<br/>
-        ├── admin/LookbookForm.tsx<br/>
-        ├── admin/SampleCleanupClient.tsx<br/>
-        ├── home/VideoArticle.tsx<br/>
-        ├── layout/Header.tsx<br/>
-        └── layout/MenuOverlay.tsx
-</div>
+<pre>
+┌─────────────────────────────────────────────────────────┐
+│ IMAGES                                                  │
+│ ┌─────────────────────────────────────────────────────┐ │
+│ │ 📸 Lookbook Images (3/20)                           │ │
+│ │                                                     │ │
+│ │   ┌─────────────────────────────────────────────┐  │ │
+│ │   │           ↑                                  │  │ │
+│ │   │     Drop or Click to Upload                 │  │ │
+│ │   │     JPG, PNG, WebP · Max 10MB each          │  │ │
+│ │   │                                              │  │ │
+│ │   └─────────────────────────────────────────────┘  │ │
+│ │                                                     │ │
+│ │   ┌──────┐ ┌──────┐ ┌──────┐ ┌──────┐             │ │
+│ │   │[Cover]│ │  2   │ │  3   │ │  +  │             │ │
+│ │   │  📸  │ │  📸  │ │  📸  │ │      │             │ │
+│ │   │  1   │ │      │ │      │ │      │             │ │
+│ │   └──────┘ └──────┘ └──────┘ └──────┘             │ │
+│ └─────────────────────────────────────────────────────┘ │
+│                                                         │
+│ TITLE                                                   │
+│ ...                                                     │
+└─────────────────────────────────────────────────────────┘
+</pre>
 
-<h2>⚠️ 주의</h2>
+<h2>📝 주의사항</h2>
 
 <div class="danger">
-<strong>덮어쓰기 진행</strong>
-<p>아래 파일은 기존 파일을 덮어써요:</p>
+<strong>업로드 실패 시 흔한 원인:</strong>
 <ul>
-  <li>AdminSidebar.tsx — userEmail prop 받게 수정</li>
-  <li>Header.tsx, MenuOverlay.tsx</li>
-  <li>VideoArticle.tsx</li>
-  <li>ko.json</li>
+  <li><strong>Storage 버킷 이름 오타</strong> — 반드시 <code>chezsua-images</code></li>
+  <li><strong>Public 체크 안 함</strong> — 다시 Storage → 버킷 클릭 → Settings에서 Public 변경</li>
+  <li><strong>SQL 실행 안 됨</strong> — Storage 정책이 없어서 권한 거부</li>
+  <li><strong>관리자 권한 없음</strong> — users 테이블에서 role='admin' 확인</li>
+  <li><strong>파일 크기 10MB 초과</strong> — 사진 압축 후 재시도</li>
 </ul>
-<p>모두 Git에 이력 있으니까 복구 가능!</p>
 </div>
 
-<h2>🎯 다음 단계</h2>
+<div class="ok">
+<strong>✅ 이 패치 완료 후 가능한 것</strong>
+<ul>
+  <li>룩북에 사진 다중 업로드</li>
+  <li>드래그&드롭으로 업로드</li>
+  <li>업로드 진행률 표시</li>
+  <li>첫 사진이 자동으로 Cover</li>
+  <li>호버해서 순서 변경 (←, →)</li>
+  <li>호버해서 삭제 (×)</li>
+  <li>최대 20장까지</li>
+</ul>
+</div>
+
+<h2>📊 다음 단계 예고</h2>
 
 <div class="ok">
-<p><strong>이거 적용되면 PHASE 0 완료!</strong></p>
-<p>다음:</p>
+<strong>STEP 2 (다음): 룩북 상세 페이지</strong>
+<p>매거진 클릭하면:</p>
 <ul>
-  <li>PHASE 1: 매거진 고정 기능 (홈에 고정 + 최신순)</li>
-  <li>PHASE 2: 룩북/상품 등록</li>
-  <li>PHASE 3: Supabase 가입 설정</li>
-  <li>PHASE 4: 포트원 결제 연결</li>
-  <li>PHASE 5: 도메인 + 출시!</li>
+  <li>업로드한 사진들이 매거진처럼 표시</li>
+  <li>전체 덮은 큰 히어로 사진 (Cover)</li>
+  <li>썸네일 갤러리로 다른 사진들 표시</li>
+  <li>썸네일 클릭하면 큰 사진으로 전환</li>
+  <li>그 밑에 매거진 스타일 본문</li>
 </ul>
+
+<strong>STEP 3 (그 다음): 상품 등록</strong>
+<p>같은 ImageUploader를 상품 페이지에도 통합</p>
 </div>
 
 <hr style="margin:30px 0; border:none; border-top:1px solid #D2DCCE;" />
-<p style="text-align:center; color:#6B7068; font-size:13px;">1월 출시 가즈아! 🚀🌿</p>
+<p style="text-align:center; color:#6B7068; font-size:13px;">진행해보시고 결과 알려주세요. 🌿</p>
 
 </body>
 </html>

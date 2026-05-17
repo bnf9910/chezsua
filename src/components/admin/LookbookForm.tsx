@@ -2,6 +2,7 @@
 
 import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
+import { ImageUploader } from './ImageUploader';
 import type { Lookbook } from '@/lib/types';
 
 interface LookbookFormProps {
@@ -21,7 +22,6 @@ const CATEGORIES = [
   { value: 'etc', label: 'Etc / 기타' },
 ];
 
-// YouTube URL → embed URL 변환
 function getYouTubeEmbedUrl(url: string): string | null {
   if (!url) return null;
   const shortMatch = url.match(/youtu\.be\/([a-zA-Z0-9_-]{11})/);
@@ -54,13 +54,23 @@ export function LookbookForm({ initialData, isEditMode, lookbookId }: LookbookFo
     sub_florist: initialData?.sub_florist || '',
     publish_date: initialData?.publish_date?.split('T')[0] || new Date().toISOString().split('T')[0],
     cover_image: initialData?.cover_image || '',
+    images: (initialData?.images as string[]) || [],
     video_url: initialData?.video_url || '',
     is_video: initialData?.is_video || false,
-    status: initialData?.status || 'draft',
     is_featured: initialData?.is_featured || false,
+    status: initialData?.status || 'draft',
   });
 
-  // video_url이 변경될 때마다 is_video 자동 업데이트
+  // 첫 번째 이미지를 자동으로 cover_image로 설정
+  useEffect(() => {
+    if (form.images.length > 0 && form.cover_image !== form.images[0]) {
+      setForm((prev) => ({ ...prev, cover_image: prev.images[0] }));
+    } else if (form.images.length === 0 && form.cover_image) {
+      setForm((prev) => ({ ...prev, cover_image: '' }));
+    }
+  }, [form.images, form.cover_image]);
+
+  // video_url에 따라 is_video 자동
   useEffect(() => {
     const hasVideo = !!form.video_url && (
       getYouTubeEmbedUrl(form.video_url) !== null || isVideoFileUrl(form.video_url)
@@ -112,6 +122,20 @@ export function LookbookForm({ initialData, isEditMode, lookbookId }: LookbookFo
         {isEditMode ? 'Edit Lookbook' : 'New Lookbook'}
       </h1>
 
+      {/* Images - 가장 위로 올림 (가장 자주 쓰니까) */}
+      <SectionTitle>Images</SectionTitle>
+      <div className="mb-6 p-5 bg-bg-soft border border-line border-l-4 border-l-accent-green">
+        <ImageUploader
+          value={form.images}
+          onChange={(urls) => update('images', urls)}
+          folder="lookbooks"
+          multiple
+          maxImages={20}
+          label="📸 Lookbook Images"
+        />
+      </div>
+
+      {/* Basic Info */}
       <div className="grid grid-cols-2 gap-6 mb-6 max-md:grid-cols-1">
         <Field label="Slug (URL) *" hint="예: prada-fall-2026 (영문, 하이픈)">
           <input type="text" value={form.slug} onChange={(e) => update('slug', e.target.value)} required className="input" />
@@ -171,16 +195,10 @@ export function LookbookForm({ initialData, isEditMode, lookbookId }: LookbookFo
         </Field>
       </div>
 
-      <SectionTitle>Media</SectionTitle>
-      <div className="mb-6">
-        <Field label="Cover Image URL" hint="대표 이미지 URL (없으면 그라디언트 표시)">
-          <input type="text" value={form.cover_image} onChange={(e) => update('cover_image', e.target.value)} placeholder="https://..." className="input" />
-        </Field>
-      </div>
-
-      {/* === 영상 URL (홈에 영상 article로 표시) === */}
+      {/* === 영상 URL === */}
+      <SectionTitle>Video (Optional)</SectionTitle>
       <div className="mb-6 p-5 bg-bg-soft border border-line border-l-4 border-l-accent-green">
-        <Field label="🎬 Video URL (영상)" hint="YouTube 또는 MP4 파일 URL — 입력하면 홈에서 영상 article로 표시됩니다">
+        <Field label="🎬 Video URL" hint="YouTube 또는 MP4 파일 URL — 입력하면 홈에서 영상 article로 표시됩니다">
           <input
             type="text"
             value={form.video_url}
@@ -190,15 +208,10 @@ export function LookbookForm({ initialData, isEditMode, lookbookId }: LookbookFo
           />
         </Field>
 
-        {/* 지원 형식 안내 */}
         <div className="text-mono text-[10px] text-ink-muted mt-2 leading-relaxed">
-          지원 형식:
-          <br />• YouTube: <code>https://www.youtube.com/watch?v=ABC123</code>
-          <br />• YouTube 단축: <code>https://youtu.be/ABC123</code>
-          <br />• 파일: <code>https://....mp4</code>, <code>....webm</code>, <code>....mov</code>
+          지원: YouTube (watch, youtu.be), .mp4, .webm, .mov
         </div>
 
-        {/* 영상 미리보기 */}
         {form.video_url && hasValidVideo && (
           <div className="mt-4">
             <div className="text-mono text-[10px] tracking-[0.2em] uppercase text-accent-green mb-2">
@@ -206,12 +219,7 @@ export function LookbookForm({ initialData, isEditMode, lookbookId }: LookbookFo
             </div>
             <div className="aspect-[16/9] max-w-[600px] bg-ink-primary relative overflow-hidden">
               {youtubeEmbed && (
-                <iframe
-                  src={youtubeEmbed}
-                  title="Preview"
-                  className="absolute inset-0 w-full h-full"
-                  allowFullScreen
-                />
+                <iframe src={youtubeEmbed} title="Preview" className="absolute inset-0 w-full h-full" allowFullScreen />
               )}
               {!youtubeEmbed && isVideoFile && (
                 // eslint-disable-next-line jsx-a11y/media-has-caption
@@ -223,7 +231,7 @@ export function LookbookForm({ initialData, isEditMode, lookbookId }: LookbookFo
 
         {form.video_url && !hasValidVideo && (
           <div className="mt-3 p-3 bg-rose-50 border border-rose-200 text-rose-800 text-xs">
-            ⚠️ 인식되지 않는 URL 형식입니다. YouTube 또는 .mp4/.webm/.mov 파일 URL인지 확인해주세요.
+            ⚠️ 인식되지 않는 URL 형식입니다.
           </div>
         )}
       </div>
@@ -249,14 +257,6 @@ export function LookbookForm({ initialData, isEditMode, lookbookId }: LookbookFo
           </label>
         </Field>
       </div>
-
-      {/* 자동 감지된 video 상태 표시 */}
-      {form.is_video && (
-        <div className="mb-6 p-4 bg-accent-green/10 border border-accent-green/30 text-sm">
-          <strong className="text-accent-green">✓ Video Lookbook</strong>
-          <span className="ml-2 text-ink-secondary">홈에 영상 article 형태(좌 메타/중앙 영상/우 텍스트)로 표시됩니다.</span>
-        </div>
-      )}
 
       <div className="flex gap-3 justify-end pt-6 border-t border-line">
         <button

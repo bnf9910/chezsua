@@ -12,11 +12,10 @@ interface HeaderProps {
   menus?: SiteMenuItem[];
 }
 
-// 표시할 언어 목록 (zh는 일단 숨김 - 코드와 라우팅은 유지)
+// 표시할 언어 (zh는 일단 숨김)
 const VISIBLE_LANGUAGES: Array<{ code: 'en' | 'ko'; label: string }> = [
   { code: 'en', label: 'EN' },
   { code: 'ko', label: 'KO' },
-  // { code: 'zh', label: 'ZH' }, // 중국어 - 일단 가림
 ];
 
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
@@ -47,15 +46,15 @@ export function Header({ locale, menus }: HeaderProps) {
   return (
     <header className="fixed top-0 left-0 right-0 z-30 px-12 pt-7 max-md:px-6 max-md:pt-5 pointer-events-none">
       <div className="flex justify-between items-center pointer-events-auto">
-        {/* Left: 홈에서는 빈 공간, 다른 페이지에선 CHEZ·SUA 로고 */}
+        {/* Left: 홈에서는 빈 공간, 다른 페이지에선 CHEZSUA 로고 */}
         {isHome ? (
           <span aria-hidden="true" />
         ) : (
           <Link
             href="/"
-            className="text-serif text-xl tracking-[0.3em] text-ink-primary"
+            className="text-serif text-xl tracking-[0.25em] text-ink-primary font-normal"
           >
-            CHEZ<span className="text-accent-green">·</span>SUA
+            CHEZSUA
           </Link>
         )}
 
