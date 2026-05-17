@@ -4,7 +4,11 @@ import { useState, useEffect } from 'react';
 import { useLocale } from 'next-intl';
 import { usePathname } from 'next/navigation';
 import { Link } from '@/lib/i18n';
-import { createClient } from '@/lib/supabase/client';
+
+interface MenuOverlayProps {
+  isAdmin?: boolean;
+  userEmail?: string;
+}
 
 const MAIN_LINKS = [
   { href: '/', label_en: 'Home', label_ko: 'Home' },
@@ -14,12 +18,11 @@ const MAIN_LINKS = [
   { href: '/project', label_en: 'Project', label_ko: 'Project' },
 ];
 
-export function MenuOverlay() {
+export function MenuOverlay({ isAdmin = false, userEmail = '' }: MenuOverlayProps) {
   const [open, setOpen] = useState(false);
-  const [user, setUser] = useState<{ id: string; email?: string; isAdmin?: boolean } | null>(null);
-  const [userLoading, setUserLoading] = useState(true);
   const locale = useLocale();
   const pathname = usePathname();
+  const isLoggedIn = !!userEmail;
 
   // 메뉴 이벤트
   useEffect(() => {
@@ -59,51 +62,6 @@ export function MenuOverlay() {
     };
   }, [open]);
 
-  // 유저 정보 가져오기 (메뉴 열릴 때마다 다시 로드 - 항상 최신)
-  useEffect(() => {
-    let cancelled = false;
-
-    async function loadUser() {
-      setUserLoading(true);
-      try {
-        const supabase = createClient();
-        const { data: { user: authUser } } = await supabase.auth.getUser();
-
-        if (cancelled) return;
-
-        if (!authUser) {
-          setUser(null);
-          setUserLoading(false);
-          return;
-        }
-
-        const { data: profile } = await supabase
-          .from('users')
-          .select('role')
-          .eq('id', authUser.id)
-          .single();
-
-        if (cancelled) return;
-
-        setUser({
-          id: authUser.id,
-          email: authUser.email,
-          isAdmin: profile?.role === 'admin',
-        });
-      } catch (err) {
-        console.error('[MenuOverlay] loadUser error:', err);
-      } finally {
-        if (!cancelled) setUserLoading(false);
-      }
-    }
-
-    if (open) loadUser();
-
-    return () => {
-      cancelled = true;
-    };
-  }, [open]);
-
   return (
     <>
       {/* Backdrop */}
@@ -135,8 +93,8 @@ export function MenuOverlay() {
             </button>
           </div>
 
-          {/* Admin Dashboard 버튼 (관리자만, 최상단 강조) */}
-          {!userLoading && user?.isAdmin && (
+          {/* Admin Dashboard - 서버에서 받은 isAdmin */}
+          {isAdmin && (
             <div className="px-10 pt-3 pb-2 max-md:px-7">
               <Link
                 href="/admin"
@@ -170,11 +128,7 @@ export function MenuOverlay() {
 
           {/* Footer Section */}
           <div className="px-10 pb-8 pt-6 border-t border-line max-md:px-7">
-            {userLoading ? (
-              <div className="text-mono text-[10px] tracking-[0.25em] uppercase text-ink-muted">
-                Loading...
-              </div>
-            ) : user ? (
+            {isLoggedIn ? (
               <div className="space-y-3">
                 <Link
                   href="/account"
@@ -188,11 +142,9 @@ export function MenuOverlay() {
                 >
                   Logout
                 </Link>
-                {user.email && (
-                  <div className="text-mono text-[10px] text-ink-muted truncate pt-2 border-t border-line">
-                    {user.email}
-                  </div>
-                )}
+                <div className="text-mono text-[10px] text-ink-muted truncate pt-2 border-t border-line">
+                  {userEmail}
+                </div>
               </div>
             ) : (
               <div className="space-y-3">

@@ -1,12 +1,29 @@
 import Link from 'next/link';
+import { getLocale } from 'next-intl/server';
 import { createClient } from '@/lib/supabase/server';
 import type { Locale } from '@/lib/i18n';
 
 interface FooterProps {
-  locale: Locale;
+  locale?: Locale | string;
 }
 
-export async function Footer({ locale }: FooterProps) {
+export async function Footer({ locale: propLocale }: FooterProps = {}) {
+  // locale 안전하게 가져오기 (3중 안전장치)
+  let locale: string = 'en';
+  
+  if (propLocale && typeof propLocale === 'string' && propLocale !== 'undefined') {
+    locale = propLocale;
+  } else {
+    try {
+      const intlLocale = await getLocale();
+      if (intlLocale && intlLocale !== 'undefined') {
+        locale = intlLocale;
+      }
+    } catch {
+      locale = 'en';
+    }
+  }
+
   const supabase = await createClient();
   const { data: settingsRows } = await supabase.from('settings').select('*');
 
@@ -36,7 +53,7 @@ export async function Footer({ locale }: FooterProps) {
   return (
     <footer className="bg-ink-primary text-bg-primary py-20 px-12 max-md:py-14 max-md:px-6">
       <div className="max-w-[1400px] mx-auto">
-        {/* 상단: 큰 로고 + 태그라인 */}
+        {/* 상단 로고 */}
         <div className="text-center mb-16 pb-16 border-b border-bg-primary/10">
           <Link
             href={`/${locale}`}
@@ -49,7 +66,7 @@ export async function Footer({ locale }: FooterProps) {
           </p>
         </div>
 
-        {/* 4단 그리드: 연락처 / 방문 / 팔로우 / 문의 */}
+        {/* 4단 그리드 */}
         <div className="grid grid-cols-4 gap-10 max-lg:grid-cols-2 max-md:grid-cols-1 max-md:gap-8 mb-16">
           {/* Contact */}
           <div>
@@ -57,9 +74,7 @@ export async function Footer({ locale }: FooterProps) {
               {labels.contact}
             </h3>
             <div className="text-sm text-bg-primary/90 leading-loose">
-              {settings.contact.phone && (
-                <div>{settings.contact.phone}</div>
-              )}
+              {settings.contact.phone && <div>{settings.contact.phone}</div>}
               {settings.contact.email && (
                 <a
                   href={`mailto:${settings.contact.email}`}
@@ -149,7 +164,7 @@ export async function Footer({ locale }: FooterProps) {
           </div>
         </div>
 
-        {/* 하단: copyright + legal links */}
+        {/* 하단 */}
         <div className="pt-8 border-t border-bg-primary/10 flex justify-between items-center text-mono text-[10px] tracking-[0.2em] uppercase text-bg-primary/40 max-md:flex-col max-md:gap-4">
           <div>© {new Date().getFullYear()} CHEZSUA · {labels.copyright}</div>
           <div className="flex gap-6">
