@@ -2,7 +2,6 @@ import { setRequestLocale } from 'next-intl/server';
 import { createClient } from '@/lib/supabase/server';
 import { MagazineArticle } from '@/components/home/MagazineArticle';
 import { VideoArticle } from '@/components/home/VideoArticle';
-import { HomeInquirySection } from '@/components/home/HomeInquirySection';
 import type { Locale } from '@/lib/i18n';
 
 interface HomePageProps {
@@ -49,12 +48,11 @@ export default async function HomePage({ params }: HomePageProps) {
 
   const allLookbooks = [...(featured || []), ...recent];
 
-  // DB 비어있을 때 fallback - 검은색 로고 + 큰 글씨
+  // DB 비어있을 때 fallback
   if (allLookbooks.length === 0) {
     return (
       <main className="min-h-screen flex items-center justify-center bg-bg-primary px-12 max-md:px-6 py-20">
         <div className="text-center max-w-3xl">
-          {/* 검은색 로고 - 크게 */}
           <div className="mb-16 max-md:mb-12">
             {/* eslint-disable-next-line @next/next/no-img-element */}
             <img
@@ -64,12 +62,10 @@ export default async function HomePage({ params }: HomePageProps) {
             />
           </div>
 
-          {/* Stories Coming Soon - 더 크고 굵게 */}
           <h1 className="text-serif text-8xl font-medium italic text-ink-primary mb-8 leading-[1.1] tracking-[-0.02em] max-md:text-5xl">
             Stories Coming Soon
           </h1>
 
-          {/* 부제 */}
           <p className="text-serif text-2xl text-ink-secondary leading-relaxed max-md:text-lg">
             {locale === 'ko'
               ? '편집실에서 새로운 이야기를 준비하고 있습니다.'
@@ -80,17 +76,25 @@ export default async function HomePage({ params }: HomePageProps) {
     );
   }
 
+  // 룩북이 있으면 풀와이드 매거진 레이아웃
   return (
     <main>
       {allLookbooks.map((lookbook, index) => {
         if (lookbook.is_video || lookbook.video_url) {
           return (
-            <VideoArticle
+            <section
               key={lookbook.id}
-              lookbook={lookbook}
-              locale={locale}
-              index={index}
-            />
+              className="py-20 max-md:py-12 px-12 max-md:px-6"
+            >
+              <div className="max-w-[1400px] mx-auto">
+                <VideoArticle
+                  lookbook={lookbook}
+                  locale={locale}
+                  index={index}
+                  reverse={index % 2 === 1}
+                />
+              </div>
+            </section>
           );
         }
         return (
@@ -103,8 +107,6 @@ export default async function HomePage({ params }: HomePageProps) {
           />
         );
       })}
-
-      <HomeInquirySection locale={locale} />
     </main>
   );
 }
