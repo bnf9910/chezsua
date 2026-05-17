@@ -3,7 +3,32 @@
 import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import { ImageUploader } from './ImageUploader';
-import type { Lookbook } from '@/lib/types';
+
+interface Lookbook {
+  id?: string;
+  slug?: string;
+  title_en?: string;
+  title_ko?: string;
+  title_zh?: string;
+  article_en?: string;
+  article_ko?: string;
+  article_zh?: string;
+  category?: string;
+  client?: string;
+  main_florist?: string;
+  sub_florist?: string;
+  publish_date?: string;
+  cover_image?: string;
+  images?: string[];
+  video_url?: string;
+  is_video?: boolean;
+  is_featured?: boolean;
+  featured_order?: number;
+  status?: string;
+  seo_title?: string;
+  seo_description?: string;
+  seo_keywords?: string;
+}
 
 interface LookbookFormProps {
   initialData?: Partial<Lookbook>;
@@ -58,10 +83,14 @@ export function LookbookForm({ initialData, isEditMode, lookbookId }: LookbookFo
     video_url: initialData?.video_url || '',
     is_video: initialData?.is_video || false,
     is_featured: initialData?.is_featured || false,
+    featured_order: initialData?.featured_order || null,
     status: initialData?.status || 'draft',
+    seo_title: initialData?.seo_title || '',
+    seo_description: initialData?.seo_description || '',
+    seo_keywords: initialData?.seo_keywords || '',
   });
 
-  // 첫 번째 이미지를 자동으로 cover_image로 설정
+  // 첫 이미지를 cover_image로 자동
   useEffect(() => {
     if (form.images.length > 0 && form.cover_image !== form.images[0]) {
       setForm((prev) => ({ ...prev, cover_image: prev.images[0] }));
@@ -70,7 +99,7 @@ export function LookbookForm({ initialData, isEditMode, lookbookId }: LookbookFo
     }
   }, [form.images, form.cover_image]);
 
-  // video_url에 따라 is_video 자동
+  // 비디오 자동 감지
   useEffect(() => {
     const hasVideo = !!form.video_url && (
       getYouTubeEmbedUrl(form.video_url) !== null || isVideoFileUrl(form.video_url)
@@ -105,6 +134,7 @@ export function LookbookForm({ initialData, isEditMode, lookbookId }: LookbookFo
       if (res.ok) {
         alert(isEditMode ? '수정되었습니다.' : '저장되었습니다.');
         router.push('/admin/lookbooks');
+        router.refresh();
       } else {
         const data = await res.json().catch(() => ({}));
         alert('저장 실패: ' + (data.error || res.statusText));
@@ -122,8 +152,8 @@ export function LookbookForm({ initialData, isEditMode, lookbookId }: LookbookFo
         {isEditMode ? 'Edit Lookbook' : 'New Lookbook'}
       </h1>
 
-      {/* Images - 가장 위로 올림 (가장 자주 쓰니까) */}
-      <SectionTitle>Images</SectionTitle>
+      {/* Images - 가장 위에 */}
+      <SectionTitle>Images / 이미지</SectionTitle>
       <div className="mb-6 p-5 bg-bg-soft border border-line border-l-4 border-l-accent-green">
         <ImageUploader
           value={form.images}
@@ -138,79 +168,140 @@ export function LookbookForm({ initialData, isEditMode, lookbookId }: LookbookFo
       {/* Basic Info */}
       <div className="grid grid-cols-2 gap-6 mb-6 max-md:grid-cols-1">
         <Field label="Slug (URL) *" hint="예: prada-fall-2026 (영문, 하이픈)">
-          <input type="text" value={form.slug} onChange={(e) => update('slug', e.target.value)} required className="input" />
+          <input
+            type="text"
+            value={form.slug}
+            onChange={(e) => update('slug', e.target.value)}
+            required
+            className="w-full px-3 py-2.5 bg-white border border-line text-sm"
+          />
         </Field>
 
         <Field label="Publish Date *">
-          <input type="date" value={form.publish_date} onChange={(e) => update('publish_date', e.target.value)} required className="input" />
+          <input
+            type="date"
+            value={form.publish_date}
+            onChange={(e) => update('publish_date', e.target.value)}
+            required
+            className="w-full px-3 py-2.5 bg-white border border-line text-sm"
+          />
         </Field>
       </div>
 
-      <SectionTitle>Title</SectionTitle>
+      <SectionTitle>Title / 제목</SectionTitle>
       <p className="text-mono text-[10px] text-ink-muted mb-3">
         💡 *별표*로 감싸면 italic 강조: A study in *quiet* opulence
       </p>
       <div className="grid grid-cols-3 gap-4 mb-6 max-md:grid-cols-1">
         <Field label="Title EN *">
-          <input type="text" value={form.title_en} onChange={(e) => update('title_en', e.target.value)} required className="input" />
+          <input
+            type="text"
+            value={form.title_en}
+            onChange={(e) => update('title_en', e.target.value)}
+            required
+            className="w-full px-3 py-2.5 bg-white border border-line text-sm"
+          />
         </Field>
         <Field label="Title KO">
-          <input type="text" value={form.title_ko} onChange={(e) => update('title_ko', e.target.value)} className="input" />
+          <input
+            type="text"
+            value={form.title_ko}
+            onChange={(e) => update('title_ko', e.target.value)}
+            className="w-full px-3 py-2.5 bg-white border border-line text-sm"
+          />
         </Field>
         <Field label="Title ZH">
-          <input type="text" value={form.title_zh} onChange={(e) => update('title_zh', e.target.value)} className="input" />
+          <input
+            type="text"
+            value={form.title_zh}
+            onChange={(e) => update('title_zh', e.target.value)}
+            className="w-full px-3 py-2.5 bg-white border border-line text-sm"
+          />
         </Field>
       </div>
 
-      <SectionTitle>Article (본문)</SectionTitle>
+      <SectionTitle>Article / 본문</SectionTitle>
       <div className="grid grid-cols-3 gap-4 mb-6 max-md:grid-cols-1">
         <Field label="Article EN">
-          <textarea value={form.article_en} onChange={(e) => update('article_en', e.target.value)} rows={6} className="input" />
+          <textarea
+            value={form.article_en}
+            onChange={(e) => update('article_en', e.target.value)}
+            rows={8}
+            className="w-full px-3 py-2.5 bg-white border border-line text-sm"
+          />
         </Field>
         <Field label="Article KO">
-          <textarea value={form.article_ko} onChange={(e) => update('article_ko', e.target.value)} rows={6} className="input" />
+          <textarea
+            value={form.article_ko}
+            onChange={(e) => update('article_ko', e.target.value)}
+            rows={8}
+            className="w-full px-3 py-2.5 bg-white border border-line text-sm"
+          />
         </Field>
         <Field label="Article ZH">
-          <textarea value={form.article_zh} onChange={(e) => update('article_zh', e.target.value)} rows={6} className="input" />
+          <textarea
+            value={form.article_zh}
+            onChange={(e) => update('article_zh', e.target.value)}
+            rows={8}
+            className="w-full px-3 py-2.5 bg-white border border-line text-sm"
+          />
         </Field>
       </div>
 
-      <SectionTitle>Meta Info</SectionTitle>
+      <SectionTitle>Meta Info / 기본 정보</SectionTitle>
       <div className="grid grid-cols-2 gap-4 mb-6 max-md:grid-cols-1">
         <Field label="Category *">
-          <select value={form.category} onChange={(e) => update('category', e.target.value)} className="input">
+          <select
+            value={form.category}
+            onChange={(e) => update('category', e.target.value)}
+            className="w-full px-3 py-2.5 bg-white border border-line text-sm"
+          >
             {CATEGORIES.map((c) => (
               <option key={c.value} value={c.value}>{c.label}</option>
             ))}
           </select>
         </Field>
         <Field label="Client *" hint="예: PRADA — Lotte Jamsil">
-          <input type="text" value={form.client} onChange={(e) => update('client', e.target.value)} required className="input" />
+          <input
+            type="text"
+            value={form.client}
+            onChange={(e) => update('client', e.target.value)}
+            required
+            className="w-full px-3 py-2.5 bg-white border border-line text-sm"
+          />
         </Field>
         <Field label="Main Florist">
-          <input type="text" value={form.main_florist} onChange={(e) => update('main_florist', e.target.value)} placeholder="YOON" className="input" />
+          <input
+            type="text"
+            value={form.main_florist}
+            onChange={(e) => update('main_florist', e.target.value)}
+            placeholder="YOON"
+            className="w-full px-3 py-2.5 bg-white border border-line text-sm"
+          />
         </Field>
         <Field label="Sub Florist">
-          <input type="text" value={form.sub_florist} onChange={(e) => update('sub_florist', e.target.value)} placeholder="CHOI" className="input" />
+          <input
+            type="text"
+            value={form.sub_florist}
+            onChange={(e) => update('sub_florist', e.target.value)}
+            placeholder="CHOI"
+            className="w-full px-3 py-2.5 bg-white border border-line text-sm"
+          />
         </Field>
       </div>
 
-      {/* === 영상 URL === */}
-      <SectionTitle>Video (Optional)</SectionTitle>
+      {/* Video */}
+      <SectionTitle>Video / 영상 (Optional)</SectionTitle>
       <div className="mb-6 p-5 bg-bg-soft border border-line border-l-4 border-l-accent-green">
-        <Field label="🎬 Video URL" hint="YouTube 또는 MP4 파일 URL — 입력하면 홈에서 영상 article로 표시됩니다">
+        <Field label="🎬 Video URL" hint="YouTube 또는 MP4 파일 URL - 입력하면 홈에서 영상 article로 표시">
           <input
             type="text"
             value={form.video_url}
             onChange={(e) => update('video_url', e.target.value)}
             placeholder="https://www.youtube.com/watch?v=... 또는 https://...mp4"
-            className="input"
+            className="w-full px-3 py-2.5 bg-white border border-line text-sm"
           />
         </Field>
-
-        <div className="text-mono text-[10px] text-ink-muted mt-2 leading-relaxed">
-          지원: YouTube (watch, youtu.be), .mp4, .webm, .mov
-        </div>
 
         {form.video_url && hasValidVideo && (
           <div className="mt-4">
@@ -219,33 +310,75 @@ export function LookbookForm({ initialData, isEditMode, lookbookId }: LookbookFo
             </div>
             <div className="aspect-[16/9] max-w-[600px] bg-ink-primary relative overflow-hidden">
               {youtubeEmbed && (
-                <iframe src={youtubeEmbed} title="Preview" className="absolute inset-0 w-full h-full" allowFullScreen />
+                <iframe
+                  src={youtubeEmbed}
+                  title="Preview"
+                  className="absolute inset-0 w-full h-full"
+                  allowFullScreen
+                />
               )}
               {!youtubeEmbed && isVideoFile && (
                 // eslint-disable-next-line jsx-a11y/media-has-caption
-                <video src={form.video_url} controls className="absolute inset-0 w-full h-full object-cover" />
+                <video
+                  src={form.video_url}
+                  controls
+                  className="absolute inset-0 w-full h-full object-cover"
+                />
               )}
             </div>
           </div>
         )}
-
-        {form.video_url && !hasValidVideo && (
-          <div className="mt-3 p-3 bg-rose-50 border border-rose-200 text-rose-800 text-xs">
-            ⚠️ 인식되지 않는 URL 형식입니다.
-          </div>
-        )}
       </div>
 
-      <SectionTitle>Settings</SectionTitle>
+      {/* SEO */}
+      <SectionTitle>SEO / 검색 최적화</SectionTitle>
+      <div className="mb-6 p-5 bg-bg-soft border border-line">
+        <div className="grid grid-cols-1 gap-4">
+          <Field label="SEO Title" hint="구글 검색 결과 제목 (50-60자 권장)">
+            <input
+              type="text"
+              value={form.seo_title}
+              onChange={(e) => update('seo_title', e.target.value)}
+              placeholder="자동 생성됨"
+              className="w-full px-3 py-2.5 bg-white border border-line text-sm"
+            />
+          </Field>
+          <Field label="SEO Description" hint="검색 결과 설명 (160자 이내)">
+            <textarea
+              value={form.seo_description}
+              onChange={(e) => update('seo_description', e.target.value)}
+              rows={2}
+              placeholder="자동 생성됨"
+              className="w-full px-3 py-2.5 bg-white border border-line text-sm"
+            />
+          </Field>
+          <Field label="SEO Keywords" hint="검색 키워드 (쉼표로 구분)">
+            <input
+              type="text"
+              value={form.seo_keywords}
+              onChange={(e) => update('seo_keywords', e.target.value)}
+              placeholder="서울 플로리스트, PRADA, 럭셔리 플로리스트..."
+              className="w-full px-3 py-2.5 bg-white border border-line text-sm"
+            />
+          </Field>
+        </div>
+      </div>
+
+      {/* Settings */}
+      <SectionTitle>Settings / 설정</SectionTitle>
       <div className="grid grid-cols-2 gap-4 mb-8 max-md:grid-cols-1">
         <Field label="Status">
-          <select value={form.status} onChange={(e) => update('status', e.target.value)} className="input">
+          <select
+            value={form.status}
+            onChange={(e) => update('status', e.target.value)}
+            className="w-full px-3 py-2.5 bg-white border border-line text-sm"
+          >
             <option value="draft">Draft (비공개)</option>
             <option value="published">Published (공개)</option>
             <option value="archived">Archived (보관)</option>
           </select>
         </Field>
-        <Field label="Featured">
+        <Field label="Featured / 홈 고정">
           <label className="flex items-center gap-2 cursor-pointer pt-2">
             <input
               type="checkbox"
@@ -253,12 +386,24 @@ export function LookbookForm({ initialData, isEditMode, lookbookId }: LookbookFo
               onChange={(e) => update('is_featured', e.target.checked)}
               className="w-4 h-4 cursor-pointer"
             />
-            <span className="text-sm">Show on homepage (홈에 표시)</span>
+            <span className="text-sm">홈 페이지에 고정 표시</span>
           </label>
         </Field>
+        {form.is_featured && (
+          <Field label="Featured Order / 고정 순서" hint="작은 숫자가 먼저 (1, 2, 3...) — 비워두면 자동">
+            <input
+              type="number"
+              value={form.featured_order || ''}
+              onChange={(e) => update('featured_order', e.target.value ? parseInt(e.target.value) : null)}
+              placeholder="1"
+              className="w-full px-3 py-2.5 bg-white border border-line text-sm"
+            />
+          </Field>
+        )}
       </div>
 
-      <div className="flex gap-3 justify-end pt-6 border-t border-line">
+      {/* Save */}
+      <div className="flex gap-3 justify-end pt-6 border-t border-line sticky bottom-0 bg-bg-primary py-4">
         <button
           type="button"
           onClick={() => router.push('/admin/lookbooks')}
@@ -274,22 +419,6 @@ export function LookbookForm({ initialData, isEditMode, lookbookId }: LookbookFo
           {saving ? 'Saving...' : (isEditMode ? 'Update' : 'Create')}
         </button>
       </div>
-
-      <style jsx>{`
-        .input {
-          width: 100%;
-          padding: 10px 12px;
-          background: white;
-          border: 1px solid #D2DCCE;
-          font-size: 14px;
-          font-family: inherit;
-          color: #1A1F1B;
-        }
-        .input:focus {
-          outline: none;
-          border-color: #2D3F2E;
-        }
-      `}</style>
     </form>
   );
 }

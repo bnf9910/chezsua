@@ -3,12 +3,12 @@
 import { useState, useRef } from 'react';
 
 interface ImageUploaderProps {
-  value: string[];                    // 현재 이미지 URL 배열
-  onChange: (urls: string[]) => void; // 변경 콜백
-  folder?: string;                    // 저장 폴더 (lookbooks/products/etc)
-  multiple?: boolean;                 // 여러 파일 허용
-  maxImages?: number;                 // 최대 개수
-  label?: string;                     // 라벨
+  value: string[];
+  onChange: (urls: string[]) => void;
+  folder?: string;
+  multiple?: boolean;
+  maxImages?: number;
+  label?: string;
 }
 
 export function ImageUploader({
@@ -38,7 +38,7 @@ export function ImageUploader({
       if (res.ok && data.ok) {
         return data.url;
       } else {
-        console.error('[upload] failed:', data.error);
+        console.error('[upload] failed:', data);
         alert(`업로드 실패: ${data.error || res.statusText}`);
         return null;
       }
@@ -53,7 +53,6 @@ export function ImageUploader({
     const fileArray = Array.from(files);
     if (fileArray.length === 0) return;
 
-    // 최대 개수 체크
     if (value.length + fileArray.length > maxImages) {
       alert(`최대 ${maxImages}장까지만 업로드 가능합니다.`);
       return;
@@ -90,7 +89,7 @@ export function ImageUploader({
   function handleSelect(e: React.ChangeEvent<HTMLInputElement>) {
     if (e.target.files && e.target.files.length > 0) {
       handleFiles(e.target.files);
-      e.target.value = ''; // 같은 파일 다시 선택 가능하도록
+      e.target.value = '';
     }
   }
 
@@ -114,7 +113,6 @@ export function ImageUploader({
         {label} {value.length > 0 && `(${value.length}/${maxImages})`}
       </label>
 
-      {/* Drop zone */}
       <div
         onDragOver={(e) => {
           e.preventDefault();
@@ -167,7 +165,7 @@ export function ImageUploader({
               <line x1="12" y1="3" x2="12" y2="15" strokeLinecap="round" />
             </svg>
             <div className="text-mono text-[11px] tracking-[0.2em] uppercase text-ink-secondary mb-1">
-              Drop or Click to Upload
+              Click to Upload or Drag &amp; Drop
             </div>
             <div className="text-mono text-[10px] text-ink-muted">
               JPG, PNG, WebP · Max 10MB each
@@ -176,12 +174,11 @@ export function ImageUploader({
         )}
       </div>
 
-      {/* Preview grid */}
       {value.length > 0 && (
         <div className="grid grid-cols-4 gap-3 mt-4 max-md:grid-cols-2">
           {value.map((url, index) => (
             <div key={url + index} className="relative group aspect-square bg-bg-soft border border-line overflow-hidden">
-              {/* 이미지 */}
+              {/* eslint-disable-next-line @next/next/no-img-element */}
               <img
                 src={url}
                 alt={`Image ${index + 1}`}
@@ -189,21 +186,17 @@ export function ImageUploader({
                 loading="lazy"
               />
 
-              {/* 첫 번째는 Cover로 표시 */}
               {index === 0 && (
                 <span className="absolute top-2 left-2 text-mono text-[9px] tracking-[0.15em] uppercase bg-ink-primary text-bg-primary px-1.5 py-0.5 rounded">
                   Cover
                 </span>
               )}
 
-              {/* 순서 번호 */}
               <span className="absolute top-2 right-2 text-mono text-[9px] tracking-[0.1em] bg-bg-primary/90 text-ink-primary px-1.5 py-0.5 rounded">
                 {index + 1}
               </span>
 
-              {/* 호버 시 액션 버튼들 */}
               <div className="absolute inset-0 bg-ink-primary/60 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center gap-2">
-                {/* 왼쪽 이동 */}
                 {index > 0 && (
                   <button
                     type="button"
@@ -218,7 +211,6 @@ export function ImageUploader({
                   </button>
                 )}
 
-                {/* 삭제 */}
                 <button
                   type="button"
                   onClick={(e) => {
@@ -231,7 +223,6 @@ export function ImageUploader({
                   ×
                 </button>
 
-                {/* 오른쪽 이동 */}
                 {index < value.length - 1 && (
                   <button
                     type="button"
