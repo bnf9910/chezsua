@@ -1,66 +1,96 @@
+import { redirect } from 'next/navigation';
 import Link from 'next/link';
 import { createClient } from '@/lib/supabase/server';
 import { formatPrice } from '@/lib/utils';
 
 export default async function AdminProductsPage() {
   const supabase = await createClient();
+
+  const { data: { user } } = await supabase.auth.getUser();
+  if (!user) redirect('/auth/login');
+
+  const { data: profile } = await supabase.from('users').select('role').eq('id', user.id).single();
+  if (profile?.role !== 'admin') redirect('/');
+
   const { data: products } = await supabase
     .from('products')
     .select('*')
     .order('created_at', { ascending: false });
 
   return (
-    <div className="p-12 max-md:p-7">
-      <div className="flex justify-between items-end mb-12 max-md:flex-col max-md:items-start max-md:gap-4">
-        <h1 className="text-serif text-5xl font-light italic">Products</h1>
-        <Link href="/admin/products/new" className="bg-ink-primary text-bg-primary py-3 px-6 text-mono text-[11px] tracking-[0.25em] uppercase hover:bg-accent-green">
-          New Product +
+    <div className="p-12 max-md:p-6 max-w-[1400px] mx-auto">
+      <div className="flex justify-between items-center mb-8 max-md:flex-col max-md:items-start max-md:gap-4">
+        <div>
+          <h1 className="text-serif text-5xl font-light italic mb-2">Products</h1>
+          <p className="text-mono text-[11px] tracking-[0.2em] uppercase text-ink-muted">
+            {products?.length || 0} products
+          </p>
+        </div>
+        <Link
+          href="/admin/products/new"
+          className="px-7 py-3 bg-ink-primary text-bg-primary hover:bg-accent-green text-mono text-[11px] tracking-[0.25em] uppercase"
+        >
+          + New Product
         </Link>
       </div>
 
-      <div className="bg-bg-primary border border-line overflow-x-auto">
-        <table className="w-full min-w-[700px]">
-          <thead>
-            <tr className="border-b border-line bg-bg-soft">
-              <th className="text-left text-mono text-[10px] tracking-[0.2em] uppercase text-ink-muted px-5 py-3">Name</th>
-              <th className="text-left text-mono text-[10px] tracking-[0.2em] uppercase text-ink-muted px-5 py-3">Category</th>
-              <th className="text-left text-mono text-[10px] tracking-[0.2em] uppercase text-ink-muted px-5 py-3">Price</th>
-              <th className="text-left text-mono text-[10px] tracking-[0.2em] uppercase text-ink-muted px-5 py-3">Stock</th>
-              <th className="text-left text-mono text-[10px] tracking-[0.2em] uppercase text-ink-muted px-5 py-3">Status</th>
-              <th />
-            </tr>
-          </thead>
-          <tbody>
-            {(products || []).map((p) => (
-              <tr key={p.id} className="border-b border-line-soft last:border-0">
-                <td className="px-5 py-4 text-sm font-serif text-base">{p.name_en}</td>
-                <td className="px-5 py-4 text-sm">{p.category}</td>
-                <td className="px-5 py-4 text-sm">{formatPrice(p.price_krw)}</td>
-                <td className="px-5 py-4 text-sm">{p.stock}</td>
-                <td className="px-5 py-4 text-sm capitalize">
-                  <span className={`text-mono text-[10px] tracking-[0.15em] uppercase px-2 py-0.5 ${
-                    p.status === 'active' ? 'bg-accent-green text-bg-primary' : 'bg-line'
-                  }`}>
-                    {p.status}
+      {!products || products.length === 0 ? (
+        <div className="p-10 bg-bg-soft text-center">
+          <p className="text-serif text-lg text-ink-secondary italic">아직 등록된 상품이 없습니다</p>
+          <Link
+            href="/admin/products/new"
+            className="text-mono text-[11px] tracking-[0.25em] uppercase text-accent-green hover:text-ink-primary border-b border-accent-green pb-1 mt-4 inline-block"
+          >
+            첫 상품 등록 →
+          </Link>
+        </div>
+      ) : (
+        <div className="grid grid-cols-4 gap-5 max-lg:grid-cols-3 max-md:grid-cols-2">
+          {products.map((product) => (
+            <Link
+              key={product.id}
+              href={`/admin/products/${product.id}`}
+              className="group block"
+            >
+              <div className="aspect-square bg-bg-soft border border-line overflow-hidden mb-3">
+                {product.cover_image || (product.images && product.images[0]) ? (
+                  // eslint-disable-next-line @next/next/no-img-element
+                  <img
+                    src={product.cover_image || product.images[0]}
+                    alt={product.name_en || ''}
+                    className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
+                  />
+                ) : (
+                  <div className="w-full h-full flex items-center justify-center text-ink-muted text-xs">
+                    No Image
+                  </div>
+                )}
+              </div>
+              <div className="flex items-center gap-2 mb-1">
+                <span className="text-mono text-[10px] tracking-[0.2em] uppercase text-ink-muted">
+                  {product.category}
+                </span>
+                {product.status === 'draft' && (
+                  <span className="text-mono text-[9px] tracking-[0.15em] uppercase bg-amber-100 text-amber-800 px-1 py-0.5 rounded">
+                    DRAFT
                   </span>
-                </td>
-                <td className="px-5 py-4">
-                  <Link href={`/admin/products/${p.id}`} className="text-mono text-[10px] tracking-[0.2em] uppercase border-b border-ink-secondary text-ink-secondary hover:text-ink-primary">
-                    Edit
-                  </Link>
-                </td>
-              </tr>
-            ))}
-            {(!products || products.length === 0) && (
-              <tr>
-                <td colSpan={6} className="text-center py-16 text-ink-muted italic">
-                  No products yet. <Link href="/admin/products/new" className="text-accent-green underline">Add your first product</Link>
-                </td>
-              </tr>
-            )}
-          </tbody>
-        </table>
-      </div>
+                )}
+                {product.status === 'sold-out' && (
+                  <span className="text-mono text-[9px] tracking-[0.15em] uppercase bg-rose-100 text-rose-800 px-1 py-0.5 rounded">
+                    SOLD OUT
+                  </span>
+                )}
+              </div>
+              <h3 className="text-serif text-base leading-tight mb-1 group-hover:italic">
+                {product.name_en || product.name_ko}
+              </h3>
+              <p className="text-mono text-sm text-ink-primary">
+                {formatPrice(product.price || 0, 'KRW')}
+              </p>
+            </Link>
+          ))}
+        </div>
+      )}
     </div>
   );
 }

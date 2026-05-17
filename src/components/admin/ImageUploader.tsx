@@ -11,6 +11,83 @@ interface ImageUploaderProps {
   label?: string;
 }
 
+// 이미지를 4MB 이하로 자동 압축
+async function compressImage(file: File, maxSizeMB = 3.5): Promise<File> {
+  // 4MB 이하면 그대로 사용
+  if (file.size <= maxSizeMB * 1024 * 1024) {
+    return file;
+  }
+
+  return new Promise((resolve, reject) => {
+    const img = new Image();
+    const reader = new FileReader();
+
+    reader.onload = (e) => {
+      img.src = e.target?.result as string;
+    };
+
+    img.onload = () => {
+      let { width, height } = img;
+      const maxDimension = 2400; // 최대 가로/세로 픽셀
+
+      // 비율 유지하면서 크기 줄임
+      if (width > maxDimension || height > maxDimension) {
+        if (width > height) {
+          height = (height / width) * maxDimension;
+          width = maxDimension;
+        } else {
+          width = (width / height) * maxDimension;
+          height = maxDimension;
+        }
+      }
+
+      const canvas = document.createElement('canvas');
+      canvas.width = width;
+      canvas.height = height;
+
+      const ctx = canvas.getContext('2d');
+      if (!ctx) {
+        reject(new Error('Canvas not supported'));
+        return;
+      }
+      ctx.drawImage(img, 0, 0, width, height);
+
+      // 품질 조절하면서 압축 (4MB 이하 될 때까지)
+      let quality = 0.92;
+
+      const tryCompress = () => {
+        canvas.toBlob(
+          (blob) => {
+            if (!blob) {
+              reject(new Error('Compression failed'));
+              return;
+            }
+
+            if (blob.size <= maxSizeMB * 1024 * 1024 || quality <= 0.5) {
+              const compressedFile = new File([blob], file.name, {
+                type: 'image/jpeg',
+                lastModified: Date.now(),
+              });
+              resolve(compressedFile);
+            } else {
+              quality -= 0.1;
+              tryCompress();
+            }
+          },
+          'image/jpeg',
+          quality
+        );
+      };
+
+      tryCompress();
+    };
+
+    img.onerror = () => reject(new Error('Image load failed'));
+    reader.onerror = () => reject(new Error('File read failed'));
+    reader.readAsDataURL(file);
+  });
+}
+
 export function ImageUploader({
   value = [],
   onChange,
@@ -21,30 +98,43 @@ export function ImageUploader({
 }: ImageUploaderProps) {
   const [uploading, setUploading] = useState(false);
   const [dragOver, setDragOver] = useState(false);
-  const [progress, setProgress] = useState<{ current: number; total: number } | null>(null);
+  const [progress, setProgress] = useState<{ current: number; total: number; status: string } | null>(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
 
   async function uploadFile(file: File): Promise<string | null> {
-    const formData = new FormData();
-    formData.append('file', file);
-    formData.append('folder', folder);
-
     try {
+      // 1. 압축
+      setProgress((prev) => prev ? { ...prev, status: '압축 중...' } : null);
+      const compressed = await compressImage(file);
+
+      // 2. 업로드
+      setProgress((prev) => prev ? { ...prev, status: '업로드 중...' } : null);
+      const formData = new FormData();
+      formData.append('file', compressed);
+      formData.append('folder', folder);
+
       const res = await fetch('/api/admin/upload', {
         method: 'POST',
         body: formData,
       });
-      const data = await res.json();
+
+      // JSON 응답이 아닐 수도 있으니 텍스트로 먼저 받기
+      const text = await res.text();
+      let data;
+      try {
+        data = JSON.parse(text);
+      } catch {
+        return null; // JSON 파싱 실패 = 서버 에러
+      }
+
       if (res.ok && data.ok) {
         return data.url;
       } else {
-        console.error('[upload] failed:', data);
         alert(`업로드 실패: ${data.error || res.statusText}`);
         return null;
       }
     } catch (err) {
-      console.error('[upload] exception:', err);
-      alert('업로드 실패: ' + String(err));
+      alert('업로드 실패: ' + (err instanceof Error ? err.message : String(err)));
       return null;
     }
   }
@@ -59,12 +149,11 @@ export function ImageUploader({
     }
 
     setUploading(true);
-    setProgress({ current: 0, total: fileArray.length });
 
     const uploadedUrls: string[] = [];
 
     for (let i = 0; i < fileArray.length; i++) {
-      setProgress({ current: i + 1, total: fileArray.length });
+      setProgress({ current: i + 1, total: fileArray.length, status: '시작...' });
       const url = await uploadFile(fileArray[i]);
       if (url) uploadedUrls.push(url);
     }
@@ -138,7 +227,7 @@ export function ImageUploader({
 
         {uploading && progress ? (
           <div>
-            <div className="text-serif text-lg italic mb-2">업로드 중...</div>
+            <div className="text-serif text-lg italic mb-2">{progress.status}</div>
             <div className="text-mono text-[11px] tracking-[0.15em] text-ink-muted">
               {progress.current} / {progress.total}
             </div>
@@ -168,7 +257,7 @@ export function ImageUploader({
               Click to Upload or Drag &amp; Drop
             </div>
             <div className="text-mono text-[10px] text-ink-muted">
-              JPG, PNG, WebP · Max 10MB each
+              JPG, PNG, WebP · 자동 압축됨
             </div>
           </>
         )}
@@ -243,7 +332,7 @@ export function ImageUploader({
       )}
 
       <p className="text-mono text-[10px] text-ink-muted mt-2 leading-relaxed">
-        💡 첫 번째 이미지가 대표 이미지(Cover)로 사용됩니다. 호버 시 ← → 로 순서 변경 가능.
+        💡 첫 번째 이미지가 대표 이미지(Cover)로 사용됩니다. 큰 사진도 자동 압축되니 그대로 올리시면 됩니다.
       </p>
     </div>
   );

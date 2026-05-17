@@ -49,28 +49,23 @@ export default async function HomePage({ params }: HomePageProps) {
 
   const allLookbooks = [...(featured || []), ...recent];
 
-  // DB 비어있을 때 fallback
+  // DB 비어있을 때 fallback - 깔끔하게 Coming Soon만 표시
   if (allLookbooks.length === 0) {
     return (
-      <main>
-        <section className="min-h-screen flex items-center justify-center bg-bg-soft px-12 max-md:px-6">
-          <div className="text-center max-w-2xl">
-            <div className="text-mono text-[11px] tracking-[0.3em] uppercase text-accent-green mb-6">
-              CHEZSUA
-            </div>
-            <h1 className="text-serif text-5xl font-light italic mb-6 max-md:text-4xl">
-              Stories Coming Soon
-            </h1>
-            <p className="text-serif text-lg text-ink-secondary leading-relaxed mb-8">
-              {locale === 'ko'
-                ? '편집실에서 새로운 이야기를 준비하고 있습니다.'
-                : 'New stories are being prepared in the editorial room.'}
-            </p>
+      <main className="min-h-screen flex items-center justify-center bg-bg-primary px-12 max-md:px-6">
+        <div className="text-center max-w-2xl">
+          <div className="text-mono text-[11px] tracking-[0.3em] uppercase text-accent-green mb-6">
+            CHEZSUA
           </div>
-        </section>
-
-        {/* Inquiry 섹션은 항상 표시 */}
-        <HomeInquirySection locale={locale} />
+          <h1 className="text-serif text-5xl font-light italic mb-6 max-md:text-4xl">
+            Stories Coming Soon
+          </h1>
+          <p className="text-serif text-lg text-ink-secondary leading-relaxed">
+            {locale === 'ko'
+              ? '편집실에서 새로운 이야기를 준비하고 있습니다.'
+              : 'New stories are being prepared in the editorial room.'}
+          </p>
+        </div>
       </main>
     );
   }
@@ -99,7 +94,7 @@ export default async function HomePage({ params }: HomePageProps) {
         );
       })}
 
-      {/* 홈 맨 밑 Inquiry 섹션 */}
+      {/* 룩북이 있을 때만 홈 맨 밑 Inquiry 섹션 표시 */}
       <HomeInquirySection locale={locale} />
     </main>
   );
